@@ -1,0 +1,24 @@
+# Dữ liệu người trả lời (có tên trường, không đưa lên GitHub)
+data/raw/*
+data/processed/*
+!data/raw/.gitkeep
+!data/processed/.gitkeep
+
+# Khóa bí mật
+.env
+
+# Python và Jupyter
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+.pytest_cache/
+.venv/
+
+# Kết quả sinh ra, tạo lại được bằng một lệnh
+outputs/figures/*
+outputs/tables/*
+!outputs/figures/.gitkeep
+!outputs/tables/.gitkeep
+
+# Bảng duyệt tên trường sinh từ dữ liệu người trả lời
+content/school_review.csv

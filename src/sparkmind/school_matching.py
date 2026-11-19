@@ -1,0 +1,154 @@
+"""Chuẩn hóa tên trường (A3) từ chữ tự do.
+
+Làm 3 lớp, từ chắc chắn đến cần người duyệt:
+1. Chuẩn hóa chữ: bỏ dấu, hoa thường, bỏ khoảng trắng thừa -> `truong_khoa`.
+2. Suy ra cấp học (THCS / THPT / Liên cấp / Đại học / Không rõ) -> `truong_cap`.
+3. Tra bảng người duyệt `content/school_overrides.csv` (khoa -> tên chuẩn, tỉnh) -> `truong_chuan`, `truong_tinh`.
+Không đoán tỉnh hay tên thật khi chữ không đủ thông tin: để trống chờ người duyệt.
+"""
+import hashlib
+import re
+import unicodedata
+
+import pandas as pd
+
+from . import config
+
+FILE_CHUAN = config.ROOT / "content" / "school_overrides.csv"
+FILE_DS = config.ROOT / "content" / "schools.csv"  # danh sách trường (tạo bằng scripts/import_schools.py)
+
+# Viết tắt trường đại học hay gặp. ĐÂY LÀ GỢI Ý, cần Trang xác nhận.
+VIET_TAT_DH = {
+    "ueh": "Đại học Kinh tế TP.HCM", "neu": "Đại học Kinh tế Quốc dân", "tdtu": "Đại học Tôn Đức Thắng",
+    "fptu": "Đại học FPT", "fpt": "Đại học FPT", "dh fpt": "Đại học FPT", "hutech": "Đại học HUTECH",
+    "uah": "Đại học Kiến trúc TP.HCM", "utehy": "Đại học Sư phạm Kỹ thuật Hưng Yên",
+}
+
+
+def bo_dau(text: str) -> str:
+    t = unicodedata.normalize("NFD", str(text).lower().replace("đ", "d"))
+    t = "".join(c for c in t if unicodedata.category(c) != "Mn")
+    return " ".join(re.sub(r"[^a-z0-9 ]+", " ", t).split())
+
+
+def suy_cap(khoa: str) -> str:
+    """Cấp học từ tên đã bỏ dấu. Thứ tự kiểm tra quan trọng (liên cấp trước)."""
+    if re.search(r"\b(thcs va thpt|thpt va thcs|lien cap|thcs thpt)\b", khoa):
+        return "Liên cấp"
+    if re.search(r"\b(thcs|trung hoc co so|cap 2)\b", khoa):
+        return "THCS"
+    if re.search(r"\b(thpt|trung hoc pho thong|cap 3|chuyen)\b", khoa):
+        return "THPT"
+    if re.search(r"\b(dai hoc|dh|hoc vien|cao dang|cd|university)\b", khoa) or khoa in VIET_TAT_DH:
+        return "Đại học"
+    return "Không rõ"
+
+
+_TIEN_TO = r"^(truong |trung hoc co so |trung hoc pho thong |thcs va thpt |thpt va thcs |thcs thpt |thcs pt |thcs |thpt |dai hoc |hoc vien |dh |cao dang )+"
+
+
+def tao_khoa(text) -> tuple:
+    """Trả (cấp học, khóa so khớp). Khóa = cấp + phần tên đã bỏ tiền tố."""
+    if text is None or (isinstance(text, float) and text != text):
+        return "Không rõ", ""
+    k = bo_dau(text)
+    k = re.sub(r"\b(tp hcm|tphcm|tp ho chi minh|hcm)\b", "thanh pho ho chi minh", k)  # viết tắt hay gặp
+    cap = suy_cap(k)
+    loi = re.sub(_TIEN_TO, "", k).strip()
+    return cap, f"{cap}|{loi}" if loi else f"{cap}|"
+
+
+def doc_bang_chuan() -> pd.DataFrame:
+    if FILE_CHUAN.exists():
+        return pd.read_csv(FILE_CHUAN, dtype=str, encoding="utf-8-sig").fillna("")
+    return pd.DataFrame(columns=["truong_khoa", "truong_chuan", "truong_tinh"])
+
+
+def them_cot_truong(df: pd.DataFrame) -> pd.DataFrame:
+    """Thêm truong_cap, truong_khoa, truong_chuan, truong_tinh vào bảng (cần cột A3)."""
+    kq = df["A3"].map(tao_khoa)
+    df["truong_cap"] = kq.map(lambda x: x[0])
+    df["truong_khoa"] = kq.map(lambda x: x[1])
+    chuan = doc_bang_chuan().drop_duplicates("truong_khoa").set_index("truong_khoa")
+    df["truong_chuan"] = df["truong_khoa"].map(chuan.get("truong_chuan", pd.Series(dtype=str)))
+    df["truong_tinh"] = df["truong_khoa"].map(chuan.get("truong_tinh", pd.Series(dtype=str)))
+    return khop_truong(df)
+
+
+def bang_can_duyet(df: pd.DataFrame) -> pd.DataFrame:
+    """Bảng để người duyệt điền: mỗi dòng là một nhóm tên trường, kèm các cách viết gốc."""
+    g = (df.assign(goc=df["A3"].astype(str).str.strip())
+           .groupby("truong_khoa")
+           .agg(truong_cap=("truong_cap", "first"), so_form=("goc", "size"),
+                cach_viet=("goc", lambda s: " | ".join(sorted(set(s))[:6])))
+           .reset_index().sort_values("so_form", ascending=False))
+    g["gop_y"] = g["truong_khoa"].str.split("|").str[1].map(
+        lambda c: VIET_TAT_DH.get(c, "") if c else "")
+    g["truong_chuan"] = ""
+    g["truong_tinh"] = ""
+    return g
+
+
+def chuan_hoa_ds(ds: pd.DataFrame) -> pd.DataFrame:
+    """Chuẩn hóa danh sách trường gốc (STT, Tên trường, Tên viết tắt, Cấp) thành bảng dùng để khớp."""
+    d = ds.iloc[:, :4].copy()
+    d.columns = ["stt", "ten", "viet_tat", "cap"]
+    d["ten"] = d["ten"].astype(str).str.strip()
+
+    def cap(c):
+        c = str(c)
+        if "Liên" in c or "&" in c:
+            return "Liên cấp"
+        return "Đại học" if "Đại" in c else ("THCS" if "2" in c else "THPT")
+
+    d["cap_chuan"] = d["cap"].map(cap)
+    d["khoa"] = d["ten"].map(lambda t: tao_khoa(t)[1].split("|", 1)[1])
+    d["key"] = d["cap_chuan"] + "|" + d["khoa"]
+    d["id"] = d["ten"].map(lambda t: hashlib.sha1(t.encode()).hexdigest()[:12])
+    return d
+
+
+def doc_ds_truong() -> pd.DataFrame:
+    if FILE_DS.exists():
+        return pd.read_csv(FILE_DS, dtype=str, encoding="utf-8-sig").fillna("")
+    return pd.DataFrame()
+
+
+def khop_truong(df: pd.DataFrame, ds: pd.DataFrame | None = None) -> pd.DataFrame:
+    """Khớp tên trường tự gõ với danh sách. Kết quả truong_khop:
+    thu_cong (đã duyệt tay), khop_1 (đúng một trường), khop_nhieu (trùng nhiều trường),
+    khong_thay, chua_co_ds. Không đoán khi không chắc."""
+    ds = doc_ds_truong() if ds is None else ds
+    df["truong_khop"], df["truong_ds_ten"], df["truong_ds_id"] = "chua_co_ds", "", ""
+    if ds.empty:
+        return df
+    theo_key = ds.groupby("key").apply(lambda g: list(zip(g["id"], g["ten"])), include_groups=False).to_dict()
+    vt = {}
+    for _, r in ds[ds["viet_tat"] != ""].iterrows():
+        for ma in re.split(r"[,;/]", r["viet_tat"]):
+            vt.setdefault(bo_dau(ma), []).append((r["id"], r["ten"]))
+
+    def tim(r):
+        tc = r.get("truong_chuan")
+        if isinstance(tc, str) and tc:  # ô trống (NaN) không tính là đã duyệt
+            return "thu_cong", tc, ""
+        core = r["truong_khoa"].split("|", 1)[1] if "|" in r["truong_khoa"] else ""
+        cap_lop = r["cap_hoc"]                       # cấp học tính từ lớp: chuẩn để so khớp
+        lien_cap = theo_key.get(f"Liên cấp|{core}", [])
+        if r["truong_cap"] == "Liên cấp":            # người dùng ghi rõ liên cấp
+            cands = lien_cap
+        else:                                        # lớp 6-9 -> THCS, lớp 10-12 -> THPT
+            cands = theo_key.get(f"{cap_lop}|{core}") or lien_cap
+        if not cands and cap_lop == "Đại học":
+            cands = vt.get(core)
+        if not cands:
+            return "khong_thay", "", ""
+        if len(cands) == 1:
+            return "khop_1", cands[0][1], cands[0][0]
+        return "khop_nhieu", "", ""
+
+    df["truong_mau_thuan_cap"] = (df["truong_cap"].isin(["THCS", "THPT", "Đại học"])
+                                  & (df["truong_cap"] != df["cap_hoc"]))
+    kq = df.apply(tim, axis=1, result_type="expand")
+    df["truong_khop"], df["truong_ds_ten"], df["truong_ds_id"] = kq[0], kq[1], kq[2]
+    return df
