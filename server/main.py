@@ -1,0 +1,44 @@
+"""Server SparkMind (bản tối thiểu): /health và nhận form từ Google Form.
+
+Chạy thử trên máy:  uvicorn server.main:app --reload
+Chạy trên Render:   uvicorn server.main:app --host 0.0.0.0 --port $PORT
+"""
+import hmac
+import sys
+from functools import lru_cache
+from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
+
+from fastapi import Depends, FastAPI, Header, HTTPException  # noqa: E402
+from sparkmind import config  # noqa: E402
+from sparkmind.db import lay_db  # noqa: E402
+from sparkmind.ingest import nhan_form  # noqa: E402
+
+app = FastAPI(title="SparkMind")
+
+
+@lru_cache
+def lay_db_dung_chung():
+    """Mở kết nối MongoDB một lần rồi dùng lại."""
+    return lay_db()
+
+
+def kiem_tra_khoa(x_api_key: str = Header(default="")) -> None:
+    """Chỉ cho phép nơi biết khóa bí mật (Apps Script) gửi form vào."""
+    if not config.INGEST_SECRET or not hmac.compare_digest(x_api_key, config.INGEST_SECRET):
+        raise HTTPException(status_code=401, detail="Sai khóa")
+
+
+@app.get("/health")
+def health():
+    """Để cron-job.org ping, giữ server không ngủ."""
+    return {"status": "ok"}
+
+
+@app.post("/api/ingest/google-form", dependencies=[Depends(kiem_tra_khoa)])
+def ingest_google_form(answers: dict, db=Depends(lay_db_dung_chung)):
+    try:
+        return nhan_form(db, answers, nguon="google_form")
+    except ValueError as loi:
+        raise HTTPException(status_code=422, detail=str(loi))

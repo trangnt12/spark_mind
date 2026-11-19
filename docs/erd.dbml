@@ -1,0 +1,157 @@
+// ERD for dbdiagram.io (final 19/11/2026). Source of truth for the MongoDB collections.
+Project spark_mind {
+  database_type: 'MongoDB'
+}
+
+Table schools {
+  id objectid [pk]
+  name varchar [not null]
+  abbreviation varchar
+  name_key varchar [note: 'accent-free lowercase key for matching']
+  level varchar [note: 'THCS / THPT / Đại học / Liên cấp']
+  indexes { name_key }
+}
+
+Table survey_raw {
+  id varchar [pk, note: 'hash of the content, same form never duplicates']
+  source varchar [note: 'google_form | web']
+  submitted_at datetime
+  a1_grade varchar
+  a2_gender varchar
+  a3_school varchar [note: 'free text as typed']
+  a4_uses_ai varchar
+  b1_tools varchar
+  b2_frequency varchar
+  b3_purposes varchar
+  b4_1 int
+  b4_2 int
+  b4_3 int
+  b4_4 int
+  b4_5 int
+  b4_6 int
+  b4_7 int
+  b5_duration varchar
+  b6_prompting varchar
+  b7_after_answer varchar
+  c1 int
+  c2 int
+  c3 int
+  c4 int
+  c5 int
+  c6 varchar
+}
+
+Table survey_clean {
+  id varchar [pk, note: 'same id as survey_raw']
+  batch varchar
+  creativity_score float [note: '0-100']
+  behavior_score float
+  level varchar [note: 'Thap / Trung_binh / Cao']
+  grade_level varchar [note: 'THCS / THPT / Đại học, from the grade']
+  school_key varchar
+  school_id objectid
+  flag_straightline_12 boolean
+  flag_straightline_c boolean
+  flag_straightline_b boolean
+  flag_contradiction boolean
+  in_main boolean
+  in_strict boolean
+  in_very_strict boolean
+}
+
+Table access_codes {
+  id objectid [pk]
+  code varchar [unique, not null]
+  source varchar [note: 'hired_team | volunteer']
+  is_used boolean [default: false]
+  used_at datetime
+  created_at datetime
+}
+
+Table participants {
+  id objectid [pk]
+  code_id objectid [not null]
+  source varchar [note: 'hired_team | volunteer']
+  email varchar [not null, note: 'normalized, NOT unique, used to count submissions per email']
+  grade varchar
+  gender varchar
+  school_name varchar
+  school_id objectid
+  consent boolean [not null]
+  consent_at datetime
+  guardian_consent boolean [note: 'required if under 18']
+  ip_hash varchar [note: 'HMAC with secret key, for flagging only']
+  user_agent varchar
+  started_at datetime
+  completed_at datetime
+  indexes {
+    code_id [unique]
+    email
+    ip_hash
+  }
+}
+
+Table behavior_answers {
+  id objectid [pk]
+  participant_id objectid [unique, not null]
+  b2_frequency varchar
+  b5_duration varchar
+  b6_prompting varchar
+  b7_after_answer varchar
+  b4_1 int
+  b4_2 int
+  b4_3 int
+  b4_4 int
+  b4_5 int
+  b4_6 int
+  b4_7 int
+  duration_sec int
+}
+
+Table self_assessment {
+  id objectid [pk]
+  participant_id objectid [unique, not null]
+  c1 int
+  c2 int
+  c3 int
+  c4 int
+  c5 int
+  c6 varchar
+  creativity_score float
+}
+
+Table game_responses {
+  id objectid [pk]
+  participant_id objectid [not null]
+  game int [not null, note: '1 | 2 | 3']
+  prompt_id varchar
+  answer json
+  duration_sec int
+  paste_count int
+  tab_leave_count int
+  answer_length int
+  submitted_at datetime
+  indexes { (participant_id, game) [unique] }
+}
+
+Table scores {
+  id objectid [pk]
+  response_id objectid [not null]
+  rater varchar [note: 'auto | model name | human_1 | human_2']
+  criteria json [note: 'score per criterion']
+  total float
+  model_name varchar
+  model_version varchar
+  prompt_version varchar
+  scored_at datetime
+  indexes { (response_id, rater) [unique] }
+}
+
+Ref: access_codes.id - participants.code_id
+Ref: participants.id - behavior_answers.participant_id
+Ref: participants.id - self_assessment.participant_id
+Ref: participants.id < game_responses.participant_id
+Ref: game_responses.id < scores.response_id
+Ref: survey_raw.id - survey_clean.id
+Ref: schools.id < survey_clean.school_id
+Ref: schools.id < participants.school_id

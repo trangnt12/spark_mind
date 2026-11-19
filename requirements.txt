@@ -12,3 +12,6 @@ pymongo[srv]
 python-dotenv
 pytest
 mongomock
+fastapi
+uvicorn
+httpx

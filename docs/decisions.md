@@ -1,0 +1,39 @@
+# Quyết định đã chốt (cập nhật 19/11/2026)
+
+Tài liệu này để Claude Code (và người mới vào dự án) hiểu bối cảnh mà không cần đọc lại các cuộc trao đổi cũ.
+Sơ đồ cơ sở dữ liệu: `docs/erd.dbml`. Luồng dữ liệu: `docs/data_flow.md`.
+
+## Phạm vi và lịch
+- Hạn nộp: tháng 1/2027 (chưa rõ ngày). Code hai hướng xong trong tuần đầu tháng 12 (dự phòng 5–6/12).
+- Hướng 1 cần khoảng 1000 form (hiện 460; Google Form thu đến hết tháng 12). Hướng 2: 300 người, thu từ 7/12 đến khoảng 20/12.
+- Cuối tháng 12 viết báo cáo. Đầu tháng 1 gửi file cho 2 người chấm / nộp.
+
+## Một web, hai chế độ
+- **Demo**: ai cũng dùng được, làm lại bao nhiêu lần cũng được, KHÔNG đưa vào bộ dữ liệu nghiên cứu.
+- **Nghiên cứu (hướng 2)**: bắt buộc có mã tham gia dùng một lần (`access_codes`). Mỗi người: thông tin cơ bản (có email) → form B → C1–C5 trả lời ngay trên web → 3 game (đủ cả 3).
+- Hướng 1 trên web là form tự chấm: người dùng điền B và nhận mức, điểm 0–100, 3 yếu tố ảnh hưởng nhất, lời khuyên.
+
+## Dữ liệu cá nhân và chống spam
+- Thu email ở hướng 2, dạng rõ, không xác thực, không OTP, không ràng buộc duy nhất (để đếm số bài mỗi email). Không thu số điện thoại.
+- Chống spam: mã dùng một lần; `ip_hash` (HMAC) chỉ để gắn cờ, không chặn; giới hạn tốc độ theo IP ở endpoint nhập mã; chống gian lận trong bài (đồng hồ, chặn dán, đếm lần dán và rời tab, 2 câu kiểm tra chú ý).
+- Email và IP không bao giờ được xuất vào CSV phân tích hay báo cáo. Có người dưới 18 tuổi: cần ghi chú đồng ý phụ huynh/giáo viên.
+
+## Làm sạch dữ liệu
+- Chỉ một nơi: `src/sparkmind/cleaning.py`. Cờ tính riêng từng form nên làm sạch được ngay khi nộp (`ingest.py`).
+- Dữ liệu gốc `survey_form1` không bao giờ sửa. Gắn cờ, không xóa. Ba bản: chính (361), chặt (297), rất chặt (231) trên 460 form.
+- B4.3 và B4.6 đảo chiều khi tính điểm hành vi tổng; B4.5 giữ nguyên.
+- Chưa chốt bản chính cho báo cáo (361 hay 297): phải chốt TRƯỚC khi xem kết quả mô hình.
+- Mô hình không tự huấn luyện lại khi có form mới. Khi chốt số cho báo cáo thì đóng băng một phiên bản dữ liệu (ghi ngày và số form).
+
+## Tên trường
+- Cấp học lấy từ lớp (A1): lớp 6–9 THCS, 10–12 THPT, năm đại học là Đại học. Không dựa vào tên trường để đoán cấp.
+- Khớp tên trường với `content/schools.csv` (3748 trường, không có tỉnh). Kết quả: `khop_1`, `khop_nhieu`, `khong_thay`; không đoán khi không chắc. Báo cáo thống kê theo cấp học, không theo từng trường.
+- Trường Bắc Bình chiếm khoảng 9% mẫu: ghi vào hạn chế của đề tài.
+
+## Công nghệ
+- FastAPI, MongoDB Atlas M0 (database `spark_mind`), Render miễn phí + cron-job.org ping `/health` mỗi 10 phút. Mô hình XGBoost lưu định dạng gốc, giải thích từng người bằng `pred_contribs`.
+- Google Form → Apps Script (`integrations/google_apps_script.gs`) → `POST /api/ingest/google-form` (khóa `x-api-key` = `INGEST_SECRET`).
+
+## Quy ước làm việc
+- Tên file bằng tiếng Anh. Commit message bằng tiếng Anh có gitmoji.
+- Trang chưa biết Python: giải thích đơn giản, nói rõ cách kiểm tra và kết quả đúng.

@@ -9,7 +9,8 @@ Dự đoán năng lực tư duy sáng tạo (tự nhận thức) của học sin
 | `src/sparkmind/` | Code dùng chung: tên cột, làm sạch, kết nối MongoDB, đọc dữ liệu |
 | `scripts/` | Lệnh chạy một lần hoặc theo lịch (nhập Excel, làm sạch, sao lưu...) |
 | `notebooks/` | Notebook phân tích: 01 làm sạch, 02 mô tả, 03 mô hình, 04 SHAP, 05 xuất |
-| `server/` | Web FastAPI (làm từ ngày 21/11) |
+| `server/` | Web FastAPI. Hiện có `/health` và nhận form từ Google Form; còn lại làm từ 21/11 |
+| `integrations/` | Code chạy ở dịch vụ khác (Google Apps Script) |
 | `content/` | Nội dung đổi được: câu hỏi, đề game, lời khuyên (không nằm trong code) |
 | `data/raw/` | File Excel gốc. **Không lên GitHub** |
 | `data/processed/` | CSV đã làm sạch. **Không lên GitHub** |
@@ -36,6 +37,7 @@ python scripts/run_cleaning.py --csv         # làm sạch và ghi thêm CSV
 python scripts/run_cleaning.py --tu-excel    # thử không cần MongoDB
 python scripts/import_schools.py --file <danh_sach_truong.xlsx>   # nạp danh sách trường
 python scripts/export_school_review.py       # xuất bảng tên trường cần duyệt tay
+uvicorn server.main:app --reload            # chạy thử server trên máy
 python -m pytest tests -q                    # kiểm tra
 ```
 
