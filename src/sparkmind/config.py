@@ -20,5 +20,9 @@ PROCESSED = ROOT / "data" / "processed"
 COL_RAW = "survey_form1"     # dữ liệu gốc, không sửa
 COL_CLEAN = "survey_clean"   # dữ liệu đã làm sạch kèm cờ chất lượng
 
+# Bản dữ liệu CHÍNH của báo cáo (chốt 20/11/2026): bản chặt, 297 form. Khóa cũ không đổi tên.
+# Notebook và script lấy bản mặc định từ đây: lay_ban(sach, config.BAN_CHINH)
+BAN_CHINH = "chat"
+
 # Tên file xuất ra cho từng bản dữ liệu (khóa nội bộ -> tên tiếng Anh)
 FILE_NAME = {"chinh": "main", "chat": "strict", "rat_chat": "very_strict"}

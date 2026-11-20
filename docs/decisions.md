@@ -20,9 +20,10 @@ Sơ đồ cơ sở dữ liệu: `docs/erd.dbml`. Luồng dữ liệu: `docs/data
 
 ## Làm sạch dữ liệu
 - Chỉ một nơi: `src/sparkmind/cleaning.py`. Cờ tính riêng từng form nên làm sạch được ngay khi nộp (`ingest.py`).
-- Dữ liệu gốc `survey_form1` không bao giờ sửa. Gắn cờ, không xóa. Ba bản: chính (361), chặt (297), rất chặt (231) trên 460 form.
+- Dữ liệu gốc `survey_form1` không bao giờ sửa. Gắn cờ, không xóa. Ba bản trên 460 form: rộng (361, khóa `chinh`), chính (297, khóa `chat`), rất chặt (231, khóa `rat_chat`).
 - B4.3 và B4.6 đảo chiều khi tính điểm hành vi tổng; B4.5 giữ nguyên.
-- Chưa chốt bản chính cho báo cáo (361 hay 297): phải chốt TRƯỚC khi xem kết quả mô hình.
+- **Đã chốt ngày 20/11/2026: bản phân tích CHÍNH của báo cáo là bản chặt (khóa `chat`, 297 form).** Lý do: tiêu chí chất lượng định trước là loại người trả lời một chiều (cùng một mức cho cả khối C hoặc cả khối B). Bản `chinh` (361) là bản rộng và bản `rat_chat` (231) là bản rất chặt; cả hai chỉ dùng để phân tích độ nhạy. Quyết định này đưa ra sau thống kê mô tả (notebook 02) và TRƯỚC khi xem kết quả mô hình.
+- **Quy ước gọi tên khi viết báo cáo:** bản rộng = 361 (khóa `chinh`), bản chính = 297 (khóa `chat`), bản rất chặt = 231 (khóa `rat_chat`). Trong code, khóa và tên file cũ giữ nguyên (không đổi tên); chữ "chính" trong khóa `chinh` KHÔNG còn nghĩa là bản chính của báo cáo. Bản mặc định lấy từ `config.BAN_CHINH`.
 - Mô hình không tự huấn luyện lại khi có form mới. Khi chốt số cho báo cáo thì đóng băng một phiên bản dữ liệu (ghi ngày và số form).
 
 ## Tên trường
