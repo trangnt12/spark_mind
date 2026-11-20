@@ -10,7 +10,7 @@ import numpy as np
 import pandas as pd
 
 from .school_matching import them_cot_truong
-from .columns import (B1_KW, B3_KW, B4, B6_KW, B7_KW, CC, DOT_MAC_DINH_SAU, DOT_RULES,
+from .columns import (B1_KW, B3_KW, B4, B6_KW, B7_KW, C6_TIEN_TO, CC, DOT_MAC_DINH_SAU, DOT_RULES,
                       NEG, NGAY_CUOI_DOT3, NGUONG_CAO, NGUONG_THAP, ORD2, ORD5, RAW_KEYS)
 
 VERSIONS = ("chinh", "chat", "rat_chat")
@@ -28,20 +28,31 @@ def gan_dot(df: pd.DataFrame) -> pd.Series:
     return dot
 
 
+_NAM_CHU = {"nhất": 1, "hai": 2, "ba": 3, "tư": 4}
+
+
 def _lop(text) -> float:
-    m = re.search(r"Lớp (\d+)", str(text))
+    """Đổi câu trả lời A1 thành số lớp (6-12) hoặc 12 + năm đại học. Nhận chữ cũ và mới."""
+    t = str(text)
+    m = re.search(r"Lớp (\d+)", t)
     if m:
         return int(m.group(1))
-    m = re.search(r"Năm (\d) Đại học", str(text))
-    return 12 + int(m.group(1)) if m else np.nan
+    m = re.search(r"Năm (\d) Đại học", t)  # chữ cũ
+    if m:
+        return 12 + int(m.group(1))
+    m = re.search(r"Sinh viên năm (nhất|hai|ba|tư)", t)  # chữ mới
+    if m:
+        return 12 + _NAM_CHU[m.group(1)]
+    return 17 if t.startswith("Sinh viên năm 5") else np.nan  # "năm 5 trở lên" tính là năm 5
 
 
 def _nhieu(df: pd.DataFrame, cot: str, kw: dict) -> None:
-    """Câu chọn nhiều: mỗi phương án một cột 0/1 và một cột đếm số phương án."""
+    """Câu chọn nhiều: mỗi phương án một cột 0/1 (khớp một trong các từ khóa) và một cột đếm."""
     ten = []
     for ten_cot, tu_khoa in kw.items():
         c = f"{cot}_{ten_cot}"
-        df[c] = df[cot].astype("string").str.contains(tu_khoa, regex=False).astype(float).where(df[cot].notna())
+        mau = "|".join(re.escape(k) for k in tu_khoa)
+        df[c] = df[cot].astype("string").str.contains(mau, regex=True).astype(float).where(df[cot].notna())
         ten.append(c)
     df[f"{cot}_so"] = df[ten].sum(axis=1, min_count=1)
 
@@ -80,8 +91,8 @@ def clean(raw: pd.DataFrame) -> pd.DataFrame:
     df["B2_so"] = df["B2"].map(ORD2)
     df["B5_so"] = df["B5"].map(ORD5)
     c6 = df["C6"].astype(str)
-    df["C6_so"] = np.select([c6.str.startswith("Chưa"), c6.str.startswith("Có tham gia"),
-                             c6.str.startswith("Đã từng và")], [0, 1, 2], default=-1).astype(float)
+    df["C6_so"] = np.select([c6.str.startswith(t) for t in C6_TIEN_TO.values()],
+                            list(C6_TIEN_TO), default=-1).astype(float)
     df.loc[df["C6"].isna(), "C6_so"] = np.nan
     df["lop_so"] = df["A1"].map(_lop)
     df["A2_nu"] = (df["A2"] == "Nữ").astype(int)

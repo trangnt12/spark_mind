@@ -27,13 +27,14 @@ function onFormSubmit(e) {
     var item = ir.getItem();
     var resp = ir.getResponse();
 
-    // Bảng chọn (B4.1-B4.7 và C1-C5): lấy khóa từ nhãn của từng dòng
+    // Bảng chọn (B4.1-B4.7 và C1-C5): lấy khóa từ nhãn của từng dòng.
+    // Nhận cả nhãn cũ (C1..C5) lẫn mới (C1.1..C1.5); khóa nội bộ luôn là C1..C5.
     if (item.getType() == FormApp.ItemType.GRID) {
       var rows = item.asGridItem().getRows();
       resp.forEach(function (v, i) {
-        var khoa = String(rows[i]).match(/^(B4\.\d|C\d)/);
+        var khoa = khoaTuNhanDong(String(rows[i]));
         var so = String(v).match(/[1-5]/);
-        if (khoa && so) answers[khoa[1].replace('.', '_')] = parseInt(so[0], 10);
+        if (khoa && so) answers[khoa] = parseInt(so[0], 10);
       });
       return;
     }
@@ -42,6 +43,7 @@ function onFormSubmit(e) {
     var m = item.getTitle().match(/^(A\d|B\d|C\d)\./);
     if (!m) return;
     var key = m[1];
+    if (key == 'C2') key = 'C6';  // form mới: câu hoạt động sáng tạo 12 tháng đánh số C2, khóa nội bộ vẫn là C6
     if (/^C[1-5]$/.test(key)) {
       var s = String(resp).match(/[1-5]/);
       if (s) answers[key] = parseInt(s[0], 10);
@@ -51,6 +53,16 @@ function onFormSubmit(e) {
   });
 
   guiVoiThuLai(url, secret, answers);
+}
+
+// Nhãn dòng lưới -> khóa nội bộ: "B4.3 ..." -> B4_3; "C1.2 ..." (mới) -> C2; "C2 ..." (cũ) -> C2.
+function khoaTuNhanDong(nhan) {
+  var m = nhan.match(/^B4\.(\d)/);
+  if (m) return 'B4_' + m[1];
+  m = nhan.match(/^C1\.(\d)/);   // phải thử trước nhãn cũ, kẻo C1.1..C1.5 cùng thành C1 và ghi đè nhau
+  if (m) return 'C' + m[1];
+  m = nhan.match(/^C(\d)/);
+  return m ? 'C' + m[1] : null;
 }
 
 // Server miễn phí trên Render có thể đang ngủ, nên thử lại tối đa 3 lần.

@@ -41,7 +41,7 @@ def test_luu_goc_va_lam_sach_ngay(client):
     assert r.status_code == 200 and r.json()["in_chinh"] is True
     assert db[config.COL_RAW].count_documents({}) == 1
     sach = db[config.COL_CLEAN].find_one()
-    assert sach["diem_sang_tao"] == 75.0 and sach["dot"] == "dot4_sau_5_11" and sach["cap_hoc"] == "THPT"
+    assert sach["diem_sang_tao"] == 75.0 and sach["dot"] == "dot5_form_v2" and sach["cap_hoc"] == "THPT"
 
 
 def test_gui_hai_lan_khong_nhan_doi(client):

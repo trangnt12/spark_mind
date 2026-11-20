@@ -37,3 +37,11 @@ Sơ đồ cơ sở dữ liệu: `docs/erd.dbml`. Luồng dữ liệu: `docs/data
 ## Quy ước làm việc
 - Tên file bằng tiếng Anh. Commit message bằng tiếng Anh có gitmoji.
 - Trang chưa biết Python: giải thích đơn giản, nói rõ cách kiểm tra và kết quả đúng.
+
+## Form v2 (đổi chữ ngày 20/11/2026)
+Chi tiết từng chữ đổi: `docs/form_changes_log.md`. Nguyên tắc: code nhận CẢ chữ cũ lẫn chữ mới, khóa nội bộ giữ nguyên (C1–C5, C6, B4_1..B4_7), dữ liệu gốc không sửa.
+- `columns.py`: thêm alias cho B2 (`ORD2`) và B5 (`ORD5`); từ khóa B3/B6/B7 là bộ nhiều từ khóa (chữ cũ + chữ mới); thêm `C6_TIEN_TO` (tiền tố câu C6 cũ + mới).
+- `cleaning.py`: `_lop` nhận "Sinh viên năm nhất/hai/ba/tư" (năm 1–4 → 13–16) và "Sinh viên năm 5 trở lên" (năm 5 → 17, Đại học); "Khác" vẫn là không rõ. C6 nhận chữ mới ("Đã tham gia…", "Đã từng tham gia và…").
+- Tiêu đề cột: dòng lưới mới `[C1.1]..[C1.5]` → C1..C5 (nhãn cũ `[C1.]..[C5.]` vẫn đọc được); câu tiêu đề "C2." (mới) hoặc "C6." (cũ) → C6. Cùng quy tắc trong `integrations/google_apps_script.gs` (hàm `khoaTuNhanDong`; cần dán lại script vào Google Form).
+- Đợt mới `dot5_form_v2`: form nộp từ 2026-11-20 (`DOT_RULES`). Form 6–19/11 vẫn là `dot4_sau_5_11`. Form từ web vẫn là đợt `web`.
+- Cột `A4`, `A2`, `B1`: không cần đổi (chữ mới vẫn cho cùng kết quả). Ba bản dữ liệu vẫn 361/297/231.
