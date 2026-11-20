@@ -1,11 +1,12 @@
 """Chuẩn hóa tên trường (A3) từ chữ tự do.
 
-Làm 3 lớp, từ chắc chắn đến cần người duyệt:
+Làm 3 lớp (khớp danh sách và so gần đúng xem `khop_truong`; KHÔNG cần duyệt tay):
 1. Chuẩn hóa chữ: bỏ dấu, hoa thường, bỏ khoảng trắng thừa -> `truong_khoa`.
 2. Suy ra cấp học (THCS / THPT / Liên cấp / Đại học / Không rõ) -> `truong_cap`.
 3. Tra bảng người duyệt `content/school_overrides.csv` (khoa -> tên chuẩn, tỉnh) -> `truong_chuan`, `truong_tinh`.
 Không đoán tỉnh hay tên thật khi chữ không đủ thông tin: để trống chờ người duyệt.
 """
+import difflib
 import hashlib
 import re
 import unicodedata
@@ -114,41 +115,91 @@ def doc_ds_truong() -> pd.DataFrame:
     return pd.DataFrame()
 
 
+NGUONG_GAN_DUNG = 0.90  # độ giống tối thiểu để tự thay tên gần đúng
+TRANG_THAI_DS = ("thu_cong", "khop_1", "khop_cung_ten", "khop_gan_dung")  # đã ra tên chuẩn từ danh sách/duyệt tay
+
+
+def chuan_chu(text) -> str:
+    """Giữ chữ người gõ, chỉ gộp khoảng trắng và viết hoa chữ cái đầu mỗi từ."""
+    if text is None or pd.isna(text):
+        return ""
+    return " ".join(w[:1].upper() + w[1:] for w in str(text).split())
+
+
+def _chi_muc(ds: pd.DataFrame) -> tuple:
+    """Dựng bảng tra nhanh từ danh sách trường: theo khóa, theo viết tắt, theo cấp học."""
+    theo_key, vt, theo_cap = {}, {}, {}
+    for r in ds.itertuples():
+        m = (r.id, r.ten, r.cap_chuan)
+        theo_key.setdefault(r.key, []).append(m)
+        theo_cap.setdefault(r.cap_chuan, []).append((r.khoa, m))
+        for ma in re.split(r"[,;/]", r.viet_tat):
+            if ma.strip():
+                vt.setdefault(bo_dau(ma), []).append(m)
+    return theo_key, vt, theo_cap
+
+
+def _quyet_dinh(cands: list) -> tuple:
+    """Một trường -> khop_1. Nhiều trường cùng cấp và cùng tên chuẩn (giống từng chữ, kể cả dấu) -> khop_cung_ten (bỏ id)."""
+    if len(cands) == 1:
+        return "khop_1", cands[0][1], cands[0][0]
+    if len({" ".join(c[1].split()).casefold() for c in cands}) == 1 and len({c[2] for c in cands}) == 1:
+        return "khop_cung_ten", cands[0][1], ""
+    return "khop_nhieu", "", ""
+
+
+def _gan_dung(core: str, cap: str, theo_cap: dict):
+    """So gần đúng CHỈ trong trường cùng cấp học. Trả trường nếu có đúng một tên giống >= ngưỡng."""
+    if not core or cap not in theo_cap:
+        return None
+    sm = difflib.SequenceMatcher(None)
+    sm.set_seq2(core)
+    tot = {}
+    for khoa, m in theo_cap[cap]:
+        sm.set_seq1(khoa)
+        if sm.real_quick_ratio() >= NGUONG_GAN_DUNG and sm.quick_ratio() >= NGUONG_GAN_DUNG                 and sm.ratio() >= NGUONG_GAN_DUNG:
+            tot.setdefault(bo_dau(m[1]), m)
+    return next(iter(tot.values())) if len(tot) == 1 else None
+
+
+def _tim_ds(r, idx: tuple) -> tuple:
+    """Tìm trường cho một dòng: trả (trạng thái, tên, id). Không chắc thì trả khong_thay / khop_nhieu."""
+    theo_key, vt, theo_cap = idx
+    core = r["truong_khoa"].split("|", 1)[1] if "|" in r["truong_khoa"] else ""
+    cap_lop = r["cap_hoc"]                       # cấp học tính từ lớp: chuẩn để so khớp
+    lien_cap = theo_key.get(f"Liên cấp|{core}", [])
+    if r["truong_cap"] == "Liên cấp":            # người dùng ghi rõ liên cấp
+        cands = lien_cap
+    else:                                        # lớp 6-9 -> THCS, lớp 10-12 -> THPT
+        cands = theo_key.get(f"{cap_lop}|{core}") or lien_cap
+    if not cands and cap_lop == "Đại học":
+        cands = vt.get(core)
+    if cands:
+        return _quyet_dinh(cands)
+    m = _gan_dung(core, cap_lop, theo_cap)
+    return ("khop_gan_dung", m[1], m[0]) if m else ("khong_thay", "", "")
+
+
 def khop_truong(df: pd.DataFrame, ds: pd.DataFrame | None = None) -> pd.DataFrame:
-    """Khớp tên trường tự gõ với danh sách. Kết quả truong_khop:
-    thu_cong (đã duyệt tay), khop_1 (đúng một trường), khop_nhieu (trùng nhiều trường),
-    khong_thay, chua_co_ds. Không đoán khi không chắc."""
+    """Chuẩn hóa tên trường. Kết quả truong_khop (không duyệt tay):
+    thu_cong (có trong overrides), khop_1, khop_cung_ten (nhiều trường cùng cấp, cùng tên),
+    khop_gan_dung (đúng một ứng viên giống >= 0.90, cùng cấp), chua_chuan_hoa (còn lại: giữ chữ người gõ,
+    chỉ chuẩn hóa khoảng trắng và viết hoa). truong_chuan luôn có tên dùng để báo cáo."""
     ds = doc_ds_truong() if ds is None else ds
-    df["truong_khop"], df["truong_ds_ten"], df["truong_ds_id"] = "chua_co_ds", "", ""
-    if ds.empty:
-        return df
-    theo_key = ds.groupby("key").apply(lambda g: list(zip(g["id"], g["ten"])), include_groups=False).to_dict()
-    vt = {}
-    for _, r in ds[ds["viet_tat"] != ""].iterrows():
-        for ma in re.split(r"[,;/]", r["viet_tat"]):
-            vt.setdefault(bo_dau(ma), []).append((r["id"], r["ten"]))
+    idx = _chi_muc(ds)
 
     def tim(r):
         tc = r.get("truong_chuan")
         if isinstance(tc, str) and tc:  # ô trống (NaN) không tính là đã duyệt
             return "thu_cong", tc, ""
-        core = r["truong_khoa"].split("|", 1)[1] if "|" in r["truong_khoa"] else ""
-        cap_lop = r["cap_hoc"]                       # cấp học tính từ lớp: chuẩn để so khớp
-        lien_cap = theo_key.get(f"Liên cấp|{core}", [])
-        if r["truong_cap"] == "Liên cấp":            # người dùng ghi rõ liên cấp
-            cands = lien_cap
-        else:                                        # lớp 6-9 -> THCS, lớp 10-12 -> THPT
-            cands = theo_key.get(f"{cap_lop}|{core}") or lien_cap
-        if not cands and cap_lop == "Đại học":
-            cands = vt.get(core)
-        if not cands:
-            return "khong_thay", "", ""
-        if len(cands) == 1:
-            return "khop_1", cands[0][1], cands[0][0]
-        return "khop_nhieu", "", ""
+        tt, ten, ma = _tim_ds(r, idx)
+        if tt in ("khong_thay", "khop_nhieu"):
+            return "chua_chuan_hoa", chuan_chu(r.get("A3")), ""
+        return tt, ten, ma
 
     df["truong_mau_thuan_cap"] = (df["truong_cap"].isin(["THCS", "THPT", "Đại học"])
                                   & (df["truong_cap"] != df["cap_hoc"]))
     kq = df.apply(tim, axis=1, result_type="expand")
-    df["truong_khop"], df["truong_ds_ten"], df["truong_ds_id"] = kq[0], kq[1], kq[2]
+    df["truong_khop"], df["truong_chuan"], df["truong_ds_id"] = kq[0], kq[1], kq[2]
+    df["truong_ds_ten"] = df["truong_chuan"].where(df["truong_khop"].isin(TRANG_THAI_DS), "")
     return df

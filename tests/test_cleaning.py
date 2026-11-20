@@ -84,7 +84,7 @@ def test_khop_ten_truong_voi_danh_sach():
     d["truong_cap"], d["truong_khoa"] = zip(*d["A3"].map(kq))
     d["truong_chuan"] = ""
     khop_truong(d, ds)
-    assert d["truong_khop"].tolist() == ["khop_1", "khop_1", "khong_thay"]
+    assert d["truong_khop"].tolist() == ["khop_1", "khop_1", "chua_chuan_hoa"]
     assert d["truong_ds_ten"].iloc[1] == "Trường Đại học Kinh tế Quốc dân"
 
 
