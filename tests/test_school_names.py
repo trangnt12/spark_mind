@@ -31,11 +31,12 @@ def test_khop_cung_ten_bo_id():
     assert d["truong_chuan"].iloc[0] == "Trường THPT Lê Lợi" and d["truong_ds_id"].iloc[0] == ""
 
 
-def test_trung_khac_ten_van_la_khop_nhieu_nen_giu_chu_nguoi_go():
-    """Hai trường khác tên chuẩn nhưng cùng khóa (khác dấu) -> không đoán -> chua_chuan_hoa."""
+def test_trung_khac_ten_di_so_gan_dung_lay_ung_vien_dau():
+    """Hai trường khác tên chuẩn nhưng cùng khóa (khác dấu): so gần đúng, giống ngang nhau lấy trường đầu."""
     ds = ds_mau([("Trường THPT Phú Mỹ", "Cấp 3"), ("Trường THPT Phù Mỹ", "Cấp 3")])
     d = chay(ds, [("thpt phu my", 11)])
-    assert d["truong_khop"].iloc[0] == "chua_chuan_hoa" and d["truong_chuan"].iloc[0] == "Thpt Phu My"
+    assert d["truong_khop"].iloc[0] == "khop_gan_dung" and d["truong_do_giong"].iloc[0] == 1.0
+    assert d["truong_chuan"].iloc[0] == "Trường THPT Phú Mỹ"
 
 
 def test_gan_dung_mot_ung_vien():
@@ -45,22 +46,32 @@ def test_gan_dung_mot_ung_vien():
     assert d["truong_chuan"].iloc[0] == "Trường THPT Nguyễn Trung Trực" and d["truong_ds_id"].iloc[0] != ""
 
 
-def test_gan_dung_hai_ung_vien_khong_doan():
-    ds = ds_mau([("Trường THPT Nguyễn Trung Trực 1", "Cấp 3"), ("Trường THPT Nguyễn Trung Trực 2", "Cấp 3")])
-    d = chay(ds, [("THPT Nguyễn Trung Trực", 11)])  # giống cả hai (>= 0.90) -> không chọn
-    assert d["truong_khop"].iloc[0] == "chua_chuan_hoa"
+def test_gan_dung_lay_ung_vien_giong_nhat():
+    ds = ds_mau([("Trường THPT Nguyễn Trung", "Cấp 3"), ("Trường THPT Nguyễn Trung Trực", "Cấp 3")])
+    d = chay(ds, [("THPT Nguyễn Trung Trực A", 11)])
+    assert d["truong_chuan"].iloc[0] == "Trường THPT Nguyễn Trung Trực"
+    assert d["truong_khop"].iloc[0] == "khop_gan_dung" and 0.9 <= d["truong_do_giong"].iloc[0] < 1
+
+
+def test_khop_doan_tu_060_den_duoi_090():
+    ds = ds_mau([("Trường THPT Nguyễn Trung Trực", "Cấp 3")])
+    d = chay(ds, [("THPT Nguyễn Trung", 11), ("THPT Nguyễn Trãi", 11)])  # giống 0.83 và 0.64
+    assert d["truong_khop"].tolist() == ["khop_doan", "khop_doan"]
+    assert (d["truong_chuan"] == "Trường THPT Nguyễn Trung Trực").all()
+    assert d["truong_do_giong"].between(0.6, 0.9, inclusive="left").all()
 
 
 def test_gan_dung_chi_trong_cung_cap():
     ds = ds_mau([("Trường THCS Nguyễn Trung Trực", "Cấp 2")])  # chỉ có THCS
     d = chay(ds, [("THPT Nguyễn Trung Trực A", 11)])  # học sinh lớp 11 (THPT) -> không so với THCS
-    assert d["truong_khop"].iloc[0] == "chua_chuan_hoa"
+    assert d["truong_khop"].iloc[0] == "chua_chuan_hoa" and d["truong_do_giong"].iloc[0] == 0.0
 
 
-def test_duoi_nguong_khong_thay():
+def test_duoi_nguong_060_giu_chu_nguoi_go():
     ds = ds_mau([("Trường THPT Nguyễn Trung Trực", "Cấp 3")])
-    d = chay(ds, [("THPT Nguyễn Trãi", 11)])
-    assert d["truong_khop"].iloc[0] == "chua_chuan_hoa"
+    d = chay(ds, [("thpt  trần   phú", 11)])  # giống 0.40
+    assert d["truong_khop"].iloc[0] == "chua_chuan_hoa" and d["truong_chuan"].iloc[0] == "Thpt Trần Phú"
+    assert d["truong_do_giong"].iloc[0] < 0.6 and d["truong_ds_ten"].iloc[0] == ""
 
 
 def test_chua_chuan_hoa_chi_gon_khoang_trang_va_viet_hoa():

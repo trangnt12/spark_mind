@@ -115,8 +115,9 @@ def doc_ds_truong() -> pd.DataFrame:
     return pd.DataFrame()
 
 
-NGUONG_GAN_DUNG = 0.90  # độ giống tối thiểu để tự thay tên gần đúng
-TRANG_THAI_DS = ("thu_cong", "khop_1", "khop_cung_ten", "khop_gan_dung")  # đã ra tên chuẩn từ danh sách/duyệt tay
+NGUONG_GAN_DUNG = 0.90  # từ ngưỡng này: tự thay tên (khop_gan_dung)
+NGUONG_DOAN = 0.60      # từ ngưỡng này đến dưới 0.90: vẫn gán tên nhưng đánh dấu khop_doan
+TRANG_THAI_DS = ("thu_cong", "khop_1", "khop_cung_ten", "khop_gan_dung", "khop_doan")  # đã gán tên từ danh sách/duyệt tay
 
 
 def chuan_chu(text) -> str:
@@ -148,22 +149,23 @@ def _quyet_dinh(cands: list) -> tuple:
     return "khop_nhieu", "", ""
 
 
-def _gan_dung(core: str, cap: str, theo_cap: dict):
-    """So gần đúng CHỈ trong trường cùng cấp học. Trả trường nếu có đúng một tên giống >= ngưỡng."""
+def _gan_dung(core: str, cap: str, theo_cap: dict) -> tuple:
+    """So gần đúng CHỈ trong trường cùng cấp học. Trả (trường giống nhất, độ giống 0-1).
+    Nếu nhiều trường giống ngang nhau thì lấy trường đứng trước trong danh sách."""
     if not core or cap not in theo_cap:
-        return None
+        return None, 0.0
     sm = difflib.SequenceMatcher(None)
     sm.set_seq2(core)
-    tot = {}
+    tot, diem = None, 0.0
     for khoa, m in theo_cap[cap]:
         sm.set_seq1(khoa)
-        if sm.real_quick_ratio() >= NGUONG_GAN_DUNG and sm.quick_ratio() >= NGUONG_GAN_DUNG                 and sm.ratio() >= NGUONG_GAN_DUNG:
-            tot.setdefault(bo_dau(m[1]), m)
-    return next(iter(tot.values())) if len(tot) == 1 else None
+        if sm.real_quick_ratio() > diem and sm.quick_ratio() > diem and sm.ratio() > diem:
+            tot, diem = m, sm.ratio()
+    return tot, diem
 
 
 def _tim_ds(r, idx: tuple) -> tuple:
-    """Tìm trường cho một dòng: trả (trạng thái, tên, id). Không chắc thì trả khong_thay / khop_nhieu."""
+    """Tìm trường cho một dòng: trả (trạng thái, tên, id, độ giống). Khớp chắc thì độ giống = 1."""
     theo_key, vt, theo_cap = idx
     core = r["truong_khoa"].split("|", 1)[1] if "|" in r["truong_khoa"] else ""
     cap_lop = r["cap_hoc"]                       # cấp học tính từ lớp: chuẩn để so khớp
@@ -174,32 +176,35 @@ def _tim_ds(r, idx: tuple) -> tuple:
         cands = theo_key.get(f"{cap_lop}|{core}") or lien_cap
     if not cands and cap_lop == "Đại học":
         cands = vt.get(core)
-    if cands:
-        return _quyet_dinh(cands)
-    m = _gan_dung(core, cap_lop, theo_cap)
-    return ("khop_gan_dung", m[1], m[0]) if m else ("khong_thay", "", "")
+    tt, ten, ma = _quyet_dinh(cands) if cands else ("khop_nhieu", "", "")
+    if tt != "khop_nhieu":
+        return tt, ten, ma, 1.0
+    m, diem = _gan_dung(core, cap_lop, theo_cap)  # không khớp / trùng khác tên: so gần đúng cùng cấp
+    if m is None or diem < NGUONG_DOAN:
+        return "chua_chuan_hoa", "", "", diem
+    return ("khop_gan_dung" if diem >= NGUONG_GAN_DUNG else "khop_doan"), m[1], m[0], diem
 
 
 def khop_truong(df: pd.DataFrame, ds: pd.DataFrame | None = None) -> pd.DataFrame:
-    """Chuẩn hóa tên trường. Kết quả truong_khop (không duyệt tay):
+    """Chuẩn hóa tên trường (không duyệt tay). Kết quả truong_khop:
     thu_cong (có trong overrides), khop_1, khop_cung_ten (nhiều trường cùng cấp, cùng tên),
-    khop_gan_dung (đúng một ứng viên giống >= 0.90, cùng cấp), chua_chuan_hoa (còn lại: giữ chữ người gõ,
-    chỉ chuẩn hóa khoảng trắng và viết hoa). truong_chuan luôn có tên dùng để báo cáo."""
+    khop_gan_dung (giống nhất >= 0.90), khop_doan (0.60 đến dưới 0.90, vẫn gán tên),
+    chua_chuan_hoa (dưới 0.60: giữ chữ người gõ, chỉ chuẩn hóa khoảng trắng và viết hoa).
+    truong_chuan luôn có tên dùng để báo cáo; truong_do_giong là độ giống 0-1."""
     ds = doc_ds_truong() if ds is None else ds
     idx = _chi_muc(ds)
 
     def tim(r):
         tc = r.get("truong_chuan")
         if isinstance(tc, str) and tc:  # ô trống (NaN) không tính là đã duyệt
-            return "thu_cong", tc, ""
-        tt, ten, ma = _tim_ds(r, idx)
-        if tt in ("khong_thay", "khop_nhieu"):
-            return "chua_chuan_hoa", chuan_chu(r.get("A3")), ""
-        return tt, ten, ma
+            return "thu_cong", tc, "", 1.0
+        tt, ten, ma, diem = _tim_ds(r, idx)
+        return (tt, chuan_chu(r.get("A3")), "", diem) if tt == "chua_chuan_hoa" else (tt, ten, ma, diem)
 
     df["truong_mau_thuan_cap"] = (df["truong_cap"].isin(["THCS", "THPT", "Đại học"])
                                   & (df["truong_cap"] != df["cap_hoc"]))
     kq = df.apply(tim, axis=1, result_type="expand")
-    df["truong_khop"], df["truong_chuan"], df["truong_ds_id"] = kq[0], kq[1], kq[2]
+    df["truong_khop"], df["truong_chuan"], df["truong_ds_id"], df["truong_do_giong"] = kq[0], kq[1], kq[2], kq[3]
+    df["truong_do_giong"] = df["truong_do_giong"].astype(float).round(4)
     df["truong_ds_ten"] = df["truong_chuan"].where(df["truong_khop"].isin(TRANG_THAI_DS), "")
     return df

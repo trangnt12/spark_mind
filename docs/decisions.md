@@ -27,7 +27,7 @@ Sơ đồ cơ sở dữ liệu: `docs/erd.dbml`. Luồng dữ liệu: `docs/data
 
 ## Tên trường
 - Cấp học lấy từ lớp (A1): lớp 6–9 THCS, 10–12 THPT, năm đại học là Đại học. Không dựa vào tên trường để đoán cấp.
-- Khớp tên trường với `content/schools.csv` (3748 trường, không có tỉnh), KHÔNG duyệt tay, báo cáo chỉ cần tên chuẩn (`truong_chuan`). Trạng thái `truong_khop`: `khop_1`, `khop_cung_ten` (nhiều trường cùng cấp và cùng tên), `khop_gan_dung` (đúng một ứng viên giống >= 0.90, chỉ so trong cùng cấp học), `chua_chuan_hoa` (còn lại: giữ chữ người gõ, chỉ chuẩn hóa khoảng trắng và viết hoa), `thu_cong` (nếu có `content/school_overrides.csv`, không bắt buộc). Báo cáo thống kê theo cấp học, không theo từng trường.
+- Khớp tên trường với `content/schools.csv` (3748 trường, không có tỉnh), KHÔNG duyệt tay, báo cáo chỉ cần tên chuẩn (`truong_chuan`). Trạng thái `truong_khop`: `khop_1`, `khop_cung_ten` (nhiều trường cùng cấp và cùng tên), `khop_gan_dung` (trường cùng cấp giống nhất, độ giống >= 0.90), `khop_doan` (0.60 đến dưới 0.90, vẫn gán tên; cột `truong_do_giong`), `chua_chuan_hoa` (dưới 0.60: giữ chữ người gõ, chỉ chuẩn hóa khoảng trắng và viết hoa), `thu_cong` (nếu có `content/school_overrides.csv`, không bắt buộc). Báo cáo thống kê theo cấp học, không theo từng trường.
 - Trường Bắc Bình chiếm khoảng 9% mẫu: ghi vào hạn chế của đề tài.
 
 ## Công nghệ
