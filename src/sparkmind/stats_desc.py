@@ -79,24 +79,62 @@ def so_sanh_nhom(df: pd.DataFrame, cot: str, y: str = "diem_sang_tao") -> dict:
     return ra
 
 
+def holm(p) -> np.ndarray:
+    """Hiệu chỉnh Holm-Bonferroni cho một nhóm p-value (nhóm = các phép thử trong cùng một bảng)."""
+    p = np.asarray(p, dtype=float)
+    thu_tu = np.argsort(p)
+    m = len(p)
+    dieu_chinh = np.minimum(1.0, (m - np.arange(m)) * p[thu_tu])
+    dieu_chinh = np.maximum.accumulate(dieu_chinh)   # giữ thứ tự không giảm
+    ra = np.empty(m)
+    ra[thu_tu] = dieu_chinh
+    return ra
+
+
 def bang_so_sanh(df: pd.DataFrame) -> pd.DataFrame:
-    """T4: so sánh điểm sáng tạo theo cấp học, giới tính, tần suất dùng AI."""
-    ra = [so_sanh_nhom(df, c) for c in ("cap_hoc", "A2", "B2")]
-    t = pd.DataFrame(ra)
-    cot = ["bien_nhom", "so_nhom", "n", "phep_thu", "thong_ke", "p", "ten_hieu_ung", "hieu_ung",
+    """T4: so sánh điểm sáng tạo theo cấp học, giới tính, tần suất dùng AI (có p_holm)."""
+    t = pd.DataFrame([so_sanh_nhom(df, c) for c in ("cap_hoc", "A2", "B2")])
+    t["p_holm"] = holm(t["p"])
+    cot = ["bien_nhom", "so_nhom", "n", "phep_thu", "thong_ke", "p", "p_holm", "ten_hieu_ung", "hieu_ung",
            "mo_ta_nhom", "nhom_bi_bo"]
-    return t[cot].round({"thong_ke": 3, "p": 6, "hieu_ung": 3})
+    return t[cot].round({"thong_ke": 3, "p": 6, "p_holm": 6, "hieu_ung": 3})
 
 
 def bang_tuong_quan(df: pd.DataFrame) -> pd.DataFrame:
-    """T5: Spearman từng cặp biến (dạng dài: hệ số, p, số quan sát)."""
+    """T5: Spearman từng cặp biến (dạng dài: hệ số, p, p_holm, số quan sát)."""
     ra = []
     for i, a in enumerate(BIEN_TUONG_QUAN):
         for b in BIEN_TUONG_QUAN[i + 1:]:
             x = df[[a, b]].dropna()
             rho, p = stats.spearmanr(x[a], x[b])
-            ra.append({"bien_1": a, "bien_2": b, "rho": round(rho, 3), "p": round(p, 6), "n": len(x)})
-    return pd.DataFrame(ra)
+            ra.append({"bien_1": a, "bien_2": b, "rho": rho, "p": p, "n": len(x)})
+    t = pd.DataFrame(ra)
+    t.insert(4, "p_holm", holm(t["p"]))   # Holm trên cả bảng (55 cặp)
+    return t.round({"rho": 3, "p": 6, "p_holm": 6})
+
+
+MIN_N_DOT = 10   # đợt dưới 10 người: không tính rho, chỉ ghi chú
+CAP_BIEN_DOT = [("diem_hanh_vi", "Điểm hành vi (B4 tổng)"), ("B4_3", "B4_3 (câu đảo chiều)")]
+
+
+def bang_tuong_quan_theo_dot(df: pd.DataFrame) -> pd.DataFrame:
+    """T5b: Spearman (điểm hành vi, B4_3) với điểm sáng tạo, tách theo đợt thu (cột dot)."""
+    ra = []
+    for dot, g in df.groupby("dot"):
+        for cot, ten in CAP_BIEN_DOT:
+            x = g[[cot, "diem_sang_tao"]].dropna()
+            d = {"dot": dot, "bien": ten, "n": len(x), "rho": np.nan, "p": np.nan, "ghi_chu": ""}
+            if len(x) >= MIN_N_DOT:
+                d["rho"], d["p"] = stats.spearmanr(x[cot], x["diem_sang_tao"])
+            else:
+                d["ghi_chu"] = f"n<{MIN_N_DOT}, không tính"
+            ra.append(d)
+    t = pd.DataFrame(ra)
+    t["p_holm"] = np.nan
+    co = t["p"].notna()
+    t.loc[co, "p_holm"] = holm(t.loc[co, "p"])
+    t = t[["dot", "bien", "n", "rho", "p", "p_holm", "ghi_chu"]]
+    return t.round({"rho": 3, "p": 6, "p_holm": 6})
 
 
 def ma_tran_rho(t5: pd.DataFrame) -> pd.DataFrame:

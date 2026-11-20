@@ -35,3 +35,8 @@ def test_tuong_quan_dem_so_quan_sat():
     df.loc[0, "B2_so"] = np.nan
     t = bang_tuong_quan(df)
     assert t[(t.bien_1 == "B2_so") & (t.bien_2 == "B5_so")]["n"].iloc[0] == 9
+
+
+def test_holm_ket_qua_biet_truoc():
+    from sparkmind.stats_desc import holm
+    assert np.allclose(holm([0.01, 0.04, 0.03]), [0.03, 0.06, 0.06])

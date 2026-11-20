@@ -30,3 +30,23 @@ def ve_heatmap(ma_tran: pd.DataFrame, tieu_de: str, duong_dan):
     fig.colorbar(im, ax=ax, label="Hệ số Spearman")
     ax.set_title(tieu_de)
     fig.tight_layout(); fig.savefig(duong_dan, dpi=150); plt.close(fig)
+
+
+def ve_rho_theo_dot(t5b: pd.DataFrame, tieu_de: str, duong_dan):
+    """Hình cột: rho theo đợt thu, mỗi biến một màu, ghi n trên đầu cột. Đợt không tính rho bị bỏ."""
+    t = t5b.dropna(subset=["rho"])
+    dots = list(dict.fromkeys(t["dot"]))
+    bien = list(dict.fromkeys(t["bien"]))
+    fig, ax = plt.subplots(figsize=(7, 4))
+    rong = 0.8 / len(bien)
+    for k, b in enumerate(bien):
+        d = t[t["bien"] == b].set_index("dot").reindex(dots)
+        x = np.arange(len(dots)) + k * rong
+        ax.bar(x, d["rho"], rong, label=b, color=["#4C78A8", "#F58518"][k % 2])
+        for xi, r, n in zip(x, d["rho"], d["n"]):
+            ax.text(xi, r + (0.02 if r >= 0 else -0.06), f"n={int(n)}", ha="center", fontsize=7)
+    ax.axhline(0, color="black", linewidth=0.8)
+    ax.set_xticks(np.arange(len(dots)) + rong * (len(bien) - 1) / 2, dots)
+    ax.set(title=tieu_de, ylabel="Hệ số Spearman với điểm sáng tạo")
+    ax.legend(fontsize=8)
+    fig.tight_layout(); fig.savefig(duong_dan, dpi=150); plt.close(fig)
