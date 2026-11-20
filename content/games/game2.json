@@ -1,0 +1,36 @@
+{
+  "_ghi_chu": "NHÁP 20/11. Game 2 'Soi lỗi AI'. Tự động: mỗi lựa chọn đúng +1, chọn nhầm -1, điểm mỗi đề tối thiểu 0, tối đa 4. Điểm game 2 = tổng các đề.",
+  "ten": "Soi lỗi AI",
+  "thoi_gian_giay_moi_de": 150,
+  "huong_dan": "AI vừa đưa ra một đề xuất. Hãy đọc kỹ rồi chọn những nhận xét NÓI ĐÚNG về chỗ chưa ổn của đề xuất. Chọn nhầm sẽ bị trừ điểm.",
+  "de": [
+    {
+      "id": "g2_thuvien",
+      "de_xuat_cua_ai": "Để tăng số học sinh đến thư viện, nhà trường nên mở cửa đến 22h mỗi ngày. Theo thống kê, 90% học sinh sẽ học nhiều hơn nếu thư viện mở muộn. Chỉ cần thêm một thủ thư ca tối là đủ. Giải pháp này đã thành công ở mọi trường học nên chắc chắn hiệu quả tại trường mình. Ngoài ra, nên bỏ hẳn các hoạt động câu lạc bộ ở thư viện để giữ yên tĩnh.",
+      "nhan_xet": [
+        {"text": "Đề xuất có nhắc đến thư viện.", "la_loi": false, "giai_thich": "Đây không phải lỗi."},
+        {"text": "Số liệu 90% không nêu nguồn nên chưa đáng tin.", "la_loi": true, "giai_thich": "Con số không có nguồn cần được kiểm chứng."},
+        {"text": "Mục tiêu tăng số học sinh đến thư viện được nêu rõ.", "la_loi": false, "giai_thich": "Đây là điểm ổn, không phải lỗi."},
+        {"text": "Không nhắc tới chi phí và an toàn khi học sinh về muộn.", "la_loi": true, "giai_thich": "Thiếu cân nhắc điều kiện thực tế."},
+        {"text": "Đoạn văn chia thành nhiều câu ngắn.", "la_loi": false, "giai_thich": "Cách viết không phải vấn đề."},
+        {"text": "Cụm từ \"mọi trường học\" là khái quát quá mức.", "la_loi": true, "giai_thich": "Một vài trường thành công không chứng minh mọi trường đều thành công."},
+        {"text": "Văn bản dùng tiếng Việt có dấu đầy đủ.", "la_loi": false, "giai_thich": "Đây không phải lỗi."},
+        {"text": "Bỏ hẳn câu lạc bộ mà không cân nhắc tác động ngược.", "la_loi": true, "giai_thich": "Có thể làm mất hoạt động đang thu hút học sinh."}
+      ]
+    },
+    {
+      "id": "g2_nhua",
+      "de_xuat_cua_ai": "Để giảm rác nhựa ở căng tin, trường nên cấm hoàn toàn bán nước đóng chai từ tuần sau. Một khảo sát 12 sinh viên cho thấy tất cả đều ủng hộ, nên cả trường chắc chắn ủng hộ. Chỉ cần đặt 2 máy lọc nước là mọi người sẽ tự mang bình. Chi phí vận hành không đáng kể. Ngoài ra, nên phạt 100.000 đồng mỗi lần bị phát hiện mang chai nhựa vào lớp.",
+      "nhan_xet": [
+        {"text": "Đề xuất nêu mục tiêu giảm rác nhựa.", "la_loi": false, "giai_thich": "Đây là điểm ổn, không phải lỗi."},
+        {"text": "Kết luận cả trường ủng hộ chỉ dựa trên khảo sát 12 người.", "la_loi": true, "giai_thich": "Mẫu quá nhỏ để suy ra cho cả trường."},
+        {"text": "Đoạn văn có đúng năm câu.", "la_loi": false, "giai_thich": "Số câu không phải vấn đề."},
+        {"text": "Nói chi phí vận hành \"không đáng kể\" mà không đưa con số.", "la_loi": true, "giai_thich": "Khẳng định chưa có bằng chứng."},
+        {"text": "Có nhắc đến việc đặt máy lọc nước.", "la_loi": false, "giai_thich": "Đây không phải lỗi."},
+        {"text": "Cấm hoàn toàn chỉ sau một tuần, không có thời gian chuyển tiếp.", "la_loi": true, "giai_thich": "Thiếu bước chuyển tiếp và lựa chọn thay thế cho người quên mang bình."},
+        {"text": "Văn bản được viết bằng tiếng Việt.", "la_loi": false, "giai_thich": "Đây không phải lỗi."},
+        {"text": "Mức phạt 100.000 đồng cho mỗi lần là nặng so với thu nhập của học sinh, sinh viên.", "la_loi": true, "giai_thich": "Biện pháp phạt chưa cân nhắc tính phù hợp."}
+      ]
+    }
+  ]
+}

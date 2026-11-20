@@ -1,0 +1,398 @@
+{
+  "_ghi_chu": "Form v2 (chữ đã đổi ngày 20/11/2026), khớp docs/survey_v2.md. Khóa nội bộ (id) giữ nguyên: A1-A4, B1-B7, B4_1..B4_7, C1..C5 và C6. Web lưu theo mã (ma) của lựa chọn, không lưu theo chữ, nên đổi chữ hiển thị không ảnh hưởng điểm.",
+  "tieu_de": "Khảo sát hành vi sử dụng AI và tư duy sáng tạo của học sinh, sinh viên",
+  "mo_ta": "Khảo sát này nhằm tìm hiểu thực trạng sử dụng các công cụ trí tuệ nhân tạo tạo sinh (như ChatGPT, Gemini, Copilot, Claude,...) và mối liên hệ giữa việc sử dụng các công cụ này với năng lực tư duy sáng tạo của học sinh, sinh viên.",
+  "thang_dong_y": {
+    "1": "Hoàn toàn không đồng ý",
+    "2": "Không đồng ý",
+    "3": "Phân vân / Trung lập",
+    "4": "Đồng ý",
+    "5": "Hoàn toàn đồng ý"
+  },
+  "phan_a_thong_tin": [
+    {
+      "id": "A1",
+      "text": "Hiện tại, bạn đang học lớp mấy hoặc là sinh viên năm thứ mấy?",
+      "loai": "chon_mot",
+      "options": [
+        {
+          "ma": 1,
+          "text": "Lớp 6"
+        },
+        {
+          "ma": 2,
+          "text": "Lớp 7"
+        },
+        {
+          "ma": 3,
+          "text": "Lớp 8"
+        },
+        {
+          "ma": 4,
+          "text": "Lớp 9"
+        },
+        {
+          "ma": 5,
+          "text": "Lớp 10"
+        },
+        {
+          "ma": 6,
+          "text": "Lớp 11"
+        },
+        {
+          "ma": 7,
+          "text": "Lớp 12"
+        },
+        {
+          "ma": 8,
+          "text": "Sinh viên năm nhất"
+        },
+        {
+          "ma": 9,
+          "text": "Sinh viên năm hai"
+        },
+        {
+          "ma": 10,
+          "text": "Sinh viên năm ba"
+        },
+        {
+          "ma": 11,
+          "text": "Sinh viên năm tư"
+        },
+        {
+          "ma": 12,
+          "text": "Sinh viên năm 5 trở lên / Khác"
+        }
+      ]
+    },
+    {
+      "id": "A2",
+      "text": "Giới tính của bạn là gì?",
+      "loai": "chon_mot",
+      "options": [
+        {
+          "ma": 1,
+          "text": "Nam"
+        },
+        {
+          "ma": 2,
+          "text": "Nữ"
+        },
+        {
+          "ma": 3,
+          "text": "Khác"
+        }
+      ]
+    },
+    {
+      "id": "A3",
+      "text": "Bạn hiện đang theo học tại trường nào?",
+      "loai": "chu_tu_do",
+      "huong_dan": "Vui lòng nhập tên trường"
+    },
+    {
+      "id": "A4",
+      "text": "Hiện tại, bạn có sử dụng các công cụ AI hội thoại như ChatGPT, Gemini, Copilot, Claude,... không?",
+      "loai": "chon_mot",
+      "options": [
+        {
+          "ma": 1,
+          "text": "Có, thường xuyên"
+        },
+        {
+          "ma": 2,
+          "text": "Có, thỉnh thoảng"
+        },
+        {
+          "ma": 3,
+          "text": "Đã từng sử dụng nhưng hiện tại không còn sử dụng"
+        },
+        {
+          "ma": 4,
+          "text": "Chưa bao giờ sử dụng"
+        }
+      ],
+      "ghi_chu": "Chọn 'Chưa bao giờ' thì chuyển thẳng đến phần C, không vào bộ dữ liệu mô hình"
+    }
+  ],
+  "phan_b_hanh_vi": [
+    {
+      "id": "B1",
+      "text": "Bạn thường sử dụng những công cụ AI nào?",
+      "loai": "chon_nhieu",
+      "options": [
+        {
+          "ma": 1,
+          "text": "ChatGPT"
+        },
+        {
+          "ma": 2,
+          "text": "Gemini"
+        },
+        {
+          "ma": 3,
+          "text": "Copilot"
+        },
+        {
+          "ma": 4,
+          "text": "Claude"
+        },
+        {
+          "ma": 5,
+          "text": "Mục khác"
+        }
+      ]
+    },
+    {
+      "id": "B2",
+      "text": "Bạn sử dụng AI với tần suất như thế nào?",
+      "loai": "chon_mot",
+      "options": [
+        {
+          "ma": 1,
+          "text": "Hầu như mỗi ngày"
+        },
+        {
+          "ma": 2,
+          "text": "Vài lần mỗi tuần"
+        },
+        {
+          "ma": 3,
+          "text": "Vài lần mỗi tháng"
+        },
+        {
+          "ma": 4,
+          "text": "Rất hiếm khi"
+        }
+      ],
+      "ma_diem": {
+        "Rất hiếm khi": 1,
+        "Vài lần mỗi tháng": 2,
+        "Vài lần mỗi tuần": 3,
+        "Hầu như mỗi ngày": 4
+      }
+    },
+    {
+      "id": "B3",
+      "text": "Bạn thường sử dụng AI vào những mục đích nào?",
+      "loai": "chon_nhieu",
+      "options": [
+        {
+          "ma": 1,
+          "text": "Giải bài tập hoặc tìm đáp án"
+        },
+        {
+          "ma": 2,
+          "text": "Giải thích các khái niệm khó hiểu"
+        },
+        {
+          "ma": 3,
+          "text": "Viết bài luận hoặc bài văn"
+        },
+        {
+          "ma": 4,
+          "text": "Tóm tắt tài liệu"
+        },
+        {
+          "ma": 5,
+          "text": "Lên ý tưởng cho dự án, bài thuyết trình,..."
+        },
+        {
+          "ma": 6,
+          "text": "Dịch thuật"
+        },
+        {
+          "ma": 7,
+          "text": "Trò chuyện, giải trí"
+        },
+        {
+          "ma": 8,
+          "text": "Mục khác"
+        }
+      ]
+    },
+    {
+      "id": "B4",
+      "text": "Bạn hãy cho biết mức độ đồng ý của mình với các phát biểu sau:",
+      "loai": "luoi_1_5",
+      "cac_dong": [
+        {
+          "id": "B4_1",
+          "nhan": "B4.1",
+          "text": "Tôi thường điều chỉnh câu hỏi (prompt) nhiều lần để nhận được câu trả lời tốt hơn."
+        },
+        {
+          "id": "B4_2",
+          "nhan": "B4.2",
+          "text": "Tôi thường hỏi AI \"tại sao\" hoặc yêu cầu giải thích chi tiết hơn, thay vì chỉ nhận đáp án."
+        },
+        {
+          "id": "B4_3",
+          "nhan": "B4.3",
+          "text": "Tôi thường sử dụng ngay câu trả lời của AI mà không kiểm tra lại.",
+          "dao_chieu": true
+        },
+        {
+          "id": "B4_4",
+          "nhan": "B4.4",
+          "text": "Tôi thường phản biện, chỉnh sửa hoặc kết hợp câu trả lời của AI với ý kiến riêng của mình."
+        },
+        {
+          "id": "B4_5",
+          "nhan": "B4.5",
+          "text": "Nếu không có AI, tôi vẫn có thể hoàn thành bài tập/công việc tốt như bình thường."
+        },
+        {
+          "id": "B4_6",
+          "nhan": "B4.6",
+          "text": "Tôi cảm thấy mình phụ thuộc vào AI khi cần suy nghĩ hoặc giải quyết vấn đề.",
+          "dao_chieu": true
+        },
+        {
+          "id": "B4_7",
+          "nhan": "B4.7",
+          "text": "Tôi thường sử dụng AI để tìm kiếm những ý tưởng mới lạ, thay vì chỉ tìm đáp án đúng."
+        }
+      ]
+    },
+    {
+      "id": "B5",
+      "text": "Trung bình, mỗi lần sử dụng AI, bạn thường dành bao nhiêu thời gian?",
+      "loai": "chon_mot",
+      "options": [
+        {
+          "ma": 1,
+          "text": "Dưới 5 phút"
+        },
+        {
+          "ma": 2,
+          "text": "Từ 5 đến 15 phút"
+        },
+        {
+          "ma": 3,
+          "text": "Từ 15 đến 30 phút"
+        },
+        {
+          "ma": 4,
+          "text": "Trên 30 phút"
+        }
+      ]
+    },
+    {
+      "id": "B6",
+      "text": "Bạn thường đặt câu hỏi (prompt) cho AI theo những cách nào?",
+      "loai": "chon_nhieu",
+      "huong_dan": "Chọn các phương án phù hợp",
+      "options": [
+        {
+          "ma": 1,
+          "text": "Nhập câu hỏi/đề bài ngắn gọn (ví dụ: \"Giải bài toán này...\", \"Viết bài luận về...\")"
+        },
+        {
+          "ma": 2,
+          "text": "Cung cấp ngữ cảnh hoặc vai trò cụ thể (ví dụ: \"Đóng vai chuyên gia...\", \"Tôi là học sinh...\")"
+        },
+        {
+          "ma": 3,
+          "text": "Nêu rõ yêu cầu về định dạng (ví dụ: \"Trả lời dưới dạng bảng\", \"Viết trong 300 từ\")"
+        },
+        {
+          "ma": 4,
+          "text": "Đưa ra ví dụ mẫu trước khi đặt câu hỏi (Few-shot prompting)"
+        },
+        {
+          "ma": 5,
+          "text": "Mục khác"
+        }
+      ]
+    },
+    {
+      "id": "B7",
+      "text": "Sau khi nhận được câu trả lời từ AI, bạn thường làm gì nhất?",
+      "loai": "chon_mot",
+      "options": [
+        {
+          "ma": 1,
+          "text": "Sao chép nguyên văn câu trả lời để sử dụng ngay"
+        },
+        {
+          "ma": 2,
+          "text": "Đọc lướt, chọn lọc ý chính rồi tự viết lại bằng văn phong của mình"
+        },
+        {
+          "ma": 3,
+          "text": "Đối chiếu thông tin AI cung cấp với các nguồn khác (Google, sách,...)"
+        },
+        {
+          "ma": 4,
+          "text": "Tiếp tục nhập yêu cầu để AI chỉnh sửa hoặc mở rộng câu trả lời"
+        }
+      ]
+    }
+  ],
+  "phan_c_tu_danh_gia": [
+    {
+      "id": "C1",
+      "nhan": "C1.1",
+      "text": "Tôi thường nghĩ ra được nhiều ý tưởng khác nhau cho cùng một vấn đề."
+    },
+    {
+      "id": "C2",
+      "nhan": "C1.2",
+      "text": "Tôi thường đưa ra được những ý tưởng mới lạ, ít người nghĩ tới."
+    },
+    {
+      "id": "C3",
+      "nhan": "C1.3",
+      "text": "Tôi có thể nhìn nhận một vấn đề từ nhiều góc độ khác nhau."
+    },
+    {
+      "id": "C4",
+      "nhan": "C1.4",
+      "text": "Tôi tự tin vào khả năng sáng tạo của bản thân."
+    },
+    {
+      "id": "C5",
+      "nhan": "C1.5",
+      "text": "Tôi thường phát triển ý tưởng ban đầu thành một giải pháp cụ thể và hoàn chỉnh hơn."
+    },
+    {
+      "id": "C6",
+      "nhan": "C2",
+      "text": "Trong 12 tháng qua, bạn đã từng tham gia hoạt động hoặc cuộc thi nào đòi hỏi sự sáng tạo (như nghiên cứu khoa học, thi vẽ/viết/lập trình, thực hiện dự án,...) chưa?",
+      "loai": "chon_mot",
+      "options": [
+        {
+          "ma": 1,
+          "text": "Đã từng tham gia và đạt giải thưởng hoặc hoàn thành sản phẩm."
+        },
+        {
+          "ma": 2,
+          "text": "Đã tham gia/thực hiện nhưng chưa có kết quả nổi bật."
+        },
+        {
+          "ma": 3,
+          "text": "Chưa từng tham gia."
+        }
+      ],
+      "ghi_chu": "Không dùng trong điểm sáng tạo, chỉ để mô tả. Trên form v2 nhãn là C2, khóa nội bộ vẫn là C6."
+    }
+  ],
+  "cau_kiem_tra_chu_y": [
+    {
+      "id": "KT1",
+      "vi_tri": "giữa lưới B4",
+      "text": "Để cho thấy bạn đang đọc kỹ, hãy chọn mức 2 (Không đồng ý) ở dòng này",
+      "dap_an_dung": 2
+    },
+    {
+      "id": "KT2",
+      "vi_tri": "giữa nhóm C1–C5",
+      "text": "Để cho thấy bạn đang đọc kỹ, hãy chọn mức 4 (Đồng ý) ở dòng này",
+      "dap_an_dung": 4
+    },
+    {
+      "_ghi_chu": "Trả lời sai KT1 hoặc KT2 thì gắn cờ, KHÔNG xóa. Làm 27/11."
+    }
+  ]
+}

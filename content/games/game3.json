@@ -1,0 +1,19 @@
+{
+  "_ghi_chu": "NHÁP 20/11. Game 3 'Nâng cấp ý tưởng AI'. AI chấm 3 tiêu chí 1-5: them_y_moi, khac_goc, kha_thi (khóa JSON đã chốt). Người chấm 1 và 2 chấm lại 100-150 bài theo cùng rubric.",
+  "ten": "Nâng cấp ý tưởng của AI",
+  "thoi_gian_giay": 240,
+  "huong_dan": "AI vừa đưa ra một ý tưởng. Hãy viết phiên bản TỐT HƠN của riêng bạn: thêm ý mới, khác rõ so với bản gốc và có thể làm được. Viết 3 đến 6 câu.",
+  "y_tuong": [
+    {"id": "g3_nuoc", "y_tuong_ai": "Làm một ứng dụng nhắc học sinh uống đủ 2 lít nước mỗi ngày bằng thông báo trên điện thoại."}
+  ],
+  "so_ky_tu_toi_thieu": 80,
+  "so_ky_tu_toi_da": 1200,
+  "bai_mau": "Thay vì thông báo chung, gắn nhắc uống nước vào giờ ra chơi ở trường: mỗi bàn có một chai nước dán mã QR, quét để cộng điểm cho cả tổ. Rủi ro là học sinh quét cho có, nên điểm chỉ tính khi cả tổ cùng quét trong một giờ ra chơi. Khác bản gốc: nhắc theo nhóm, diễn ra ở trường, không phụ thuộc điện thoại.",
+  "rubric": {
+    "them_y_moi": {"1": "Chỉ lặp lại ý gốc", "3": "Thêm một chi tiết nhỏ", "5": "Thêm ít nhất hai yếu tố mới, rõ ràng, có chủ đích"},
+    "khac_goc": {"1": "Gần như giống ý gốc", "3": "Đổi một phần cách làm", "5": "Cách tiếp cận khác hẳn ý gốc"},
+    "kha_thi": {"1": "Không thể làm được hoặc không nói cách làm", "3": "Làm được nhưng thiếu chi tiết hoặc chưa nêu rủi ro", "5": "Có cách thực hiện cụ thể, nêu rủi ro và cách xử lý"}
+  },
+  "dinh_dang_ai_tra_ve": {"them_y_moi": "1-5", "khac_goc": "1-5", "kha_thi": "1-5"},
+  "luu_y": "Ba tiêu chí chấm độc lập. Bài dưới 80 ký tự hoặc chép lại ý gốc được gắn cờ, không tự động điểm 0."
+}

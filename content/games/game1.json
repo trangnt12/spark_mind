@@ -1,0 +1,16 @@
+{
+  "_ghi_chu": "NHÁP 20/11. Game 1 'Đồ vật bí ẩn' (kiểu AUT). Chấm: so_y, so_y_hop_le (AI lọc ý vô nghĩa/trùng), diem_doc_dao (tự động theo tần suất trong toàn bộ người chơi). Rubric chi tiết viết 24/11.",
+  "ten": "Đồ vật bí ẩn",
+  "thoi_gian_giay": 180,
+  "huong_dan": "Bạn sẽ thấy một đồ vật quen thuộc. Hãy nghĩ ra càng nhiều cách dùng KHÁC với cách dùng thông thường của nó càng tốt. Mỗi ý một dòng, viết ngắn gọn. Không cần ý nào cũng nghiêm túc, miễn là có thể thực hiện được.",
+  "vi_du": {"do_vat": "Cái cốc", "cach_dung_thuong": "Đựng nước uống", "vi_du_khac": ["Úp xuống làm chân đỡ cho cây nhỏ", "Dùng đo lượng gạo"]},
+  "do_vat": [
+    {"id": "g1_gach", "ten": "Viên gạch", "cach_dung_thuong": "Xây tường"},
+    {"id": "g1_chai", "ten": "Chai nhựa rỗng", "cach_dung_thuong": "Đựng nước"},
+    {"id": "g1_ghe", "ten": "Chiếc ghế nhựa", "cach_dung_thuong": "Ngồi"}
+  ],
+  "cach_giao_do_vat": "Chọn theo mã tham gia (băm mã chia 3) để mỗi đồ vật có khoảng 100 người chơi. Cần cùng một đồ vật mới tính được độ độc đáo theo tần suất.",
+  "toi_thieu_y": 1,
+  "gioi_han_ky_tu_moi_y": 120,
+  "chong_gian_lan": {"chan_dan": true, "dem_roi_tab": true, "dem_gio": true}
+}
