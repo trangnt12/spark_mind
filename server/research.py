@@ -79,9 +79,12 @@ def kiem_tra_lua_chon(id_cau: str, gia_tri) -> None:
 
 
 def lay_ip(request: Request) -> str:
-    """IP người dùng (Render đặt IP thật ở x-forwarded-for). Chỉ dùng để băm/giới hạn, không lưu thô."""
-    xff = request.headers.get("x-forwarded-for", "")
-    return xff.split(",")[0].strip() if xff else (request.client.host if request.client else "")
+    """IP người dùng = request.client.host. Không tự đọc x-forwarded-for (người dùng giả được).
+
+    Sau proxy của Render, uvicorn chạy với --proxy-headers --forwarded-allow-ips="*" sẽ tự thay
+    client.host bằng IP thật. Chỉ dùng để băm/giới hạn tốc độ, không lưu thô.
+    """
+    return request.client.host if request.client else ""
 
 
 def chay(ham, *args):

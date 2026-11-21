@@ -50,7 +50,7 @@ Dùng gói miễn phí (512MB RAM), nên chỉ cài thư viện server cần (`r
 | Mục | Giá trị |
 |---|---|
 | Build Command | `pip install -r requirements-server.txt` |
-| Start Command | `uvicorn server.main:app --host 0.0.0.0 --port $PORT` |
+| Start Command | `uvicorn server.main:app --host 0.0.0.0 --port $PORT --proxy-headers --forwarded-allow-ips="*"` |
 
 Biến môi trường (đặt ở tab Environment của Render, **không** commit):
 

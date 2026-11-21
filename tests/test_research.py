@@ -26,7 +26,7 @@ def client(monkeypatch):
     kho.tao_chi_muc(db)
     research.gioi_han_ma.xoa()
     main.app.dependency_overrides[research.lay_db_nghien_cuu] = lambda: db
-    yield TestClient(main.app), db
+    yield TestClient(main.app, client=("1.2.3.4", 50000)), db  # giả lập IP người dùng
     main.app.dependency_overrides.clear()
 
 
@@ -35,8 +35,7 @@ def ma_moi(db, nguon="volunteer"):
 
 
 def bat_dau(c, ma, **sua):
-    return c.post("/api/research/start", json={"code": ma, **BAT_DAU, **sua},
-                  headers={"x-forwarded-for": "1.2.3.4"})
+    return c.post("/api/research/start", json={"code": ma, **BAT_DAU, **sua})
 
 
 def test_chi_muc_theo_erd(client):
@@ -162,3 +161,22 @@ def test_bo_dem_toc_do_het_han_sau_mot_phut():
     g = GioiHanTocDo(toi_da=2, giay=60)
     assert g.cho_phep("ip", 0) and g.cho_phep("ip", 1) and not g.cho_phep("ip", 2)
     assert g.cho_phep("ip", 61)
+
+
+def goi_kiem_tra(c, so_lan, **kw):
+    """Gọi /code/check nhiều lần, trả về danh sách mã trạng thái."""
+    return [c.post("/api/research/code/check", json={"code": "ABCD2345"}, **kw).status_code
+            for _ in range(so_lan)]
+
+
+def test_hai_ip_khac_nhau_khong_anh_huong_nhau(client):
+    c1, _ = client
+    c2 = TestClient(main.app, client=("5.6.7.8", 50000))
+    assert goi_kiem_tra(c1, 11)[-1] == 429       # IP thứ nhất bị chặn ở lần 11
+    assert goi_kiem_tra(c2, 10) == [200] * 10    # IP thứ hai vẫn dùng bình thường
+
+
+def test_header_x_forwarded_for_gia_bi_bo_qua(client):
+    c, _ = client
+    ma_tra = [goi_kiem_tra(c, 1, headers={"x-forwarded-for": f"9.9.9.{i}"})[0] for i in range(11)]
+    assert ma_tra[-1] == 429  # đổi header mỗi lần vẫn không né được giới hạn

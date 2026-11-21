@@ -1,7 +1,7 @@
 """Server SparkMind (bản tối thiểu): /health và nhận form từ Google Form.
 
 Chạy thử trên máy:  uvicorn server.main:app --reload
-Chạy trên Render:   uvicorn server.main:app --host 0.0.0.0 --port $PORT
+Chạy trên Render:   uvicorn server.main:app --host 0.0.0.0 --port $PORT --proxy-headers --forwarded-allow-ips="*"
 """
 import hmac
 import logging
