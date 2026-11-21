@@ -26,3 +26,6 @@ content/school_review.csv
 # Các file khác
 CLAUDE.md
 note_private.md
+
+# Mã tham gia là bí mật, không đưa lên GitHub
+outputs/codes_*.csv
