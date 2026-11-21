@@ -1,6 +1,7 @@
 """Bảo mật cho chế độ nghiên cứu: băm IP (không lưu IP thô) và giới hạn tốc độ theo IP."""
 import hashlib
 import hmac
+import math
 import time
 from collections import defaultdict, deque
 
@@ -36,6 +37,26 @@ class GioiHanTocDo:
             return False
         hang.append(t)
         return True
+
+    def _don_hang(self, khoa: str, t: float) -> deque:
+        """Bỏ các lần đã quá cửa sổ thời gian rồi trả hàng đợi của khóa."""
+        hang = self._lan[khoa]
+        while hang and t - hang[0] >= self.giay:
+            hang.popleft()
+        return hang
+
+    def giay_phai_cho(self, khoa: str, bay_gio: float | None = None) -> int:
+        """Số giây còn phải đợi nếu khóa đang bị chặn; 0 nếu chưa bị chặn. KHÔNG tính thêm lượt."""
+        t = time.monotonic() if bay_gio is None else bay_gio
+        hang = self._don_hang(khoa, t)
+        if len(hang) < self.toi_da:
+            return 0
+        return max(1, math.ceil(self.giay - (t - hang[0])))
+
+    def ghi_nhan(self, khoa: str, bay_gio: float | None = None) -> None:
+        """Ghi một lần (ví dụ một lần nhập mã sai) cho khóa."""
+        t = time.monotonic() if bay_gio is None else bay_gio
+        self._don_hang(khoa, t).append(t)
 
     def xoa(self) -> None:
         """Xóa hết bộ đếm (dùng khi thử)."""

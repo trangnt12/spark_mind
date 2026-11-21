@@ -157,6 +157,20 @@ def test_gioi_han_toc_do_ma(client):
     assert ma_tra[:10] == [200] * 10 and ma_tra[10] == 429
 
 
+def test_ma_dung_khong_bi_tinh_vao_gioi_han(client):
+    c, db = client
+    ma = ma_moi(db)
+    ma_tra = [c.post("/api/research/code/check", json={"code": ma}).status_code for _ in range(30)]
+    assert ma_tra == [200] * 30
+
+
+def test_ma_sai_lan_11_bi_429_kem_thoi_gian_cho(client):
+    c, _ = client
+    ma_tra = [c.post("/api/research/code/check", json={"code": "SAISAI88"}) for _ in range(11)]
+    assert [r.status_code for r in ma_tra[:10]] == [200] * 10
+    assert ma_tra[10].status_code == 429 and 1 <= int(ma_tra[10].headers["Retry-After"]) <= 60
+
+
 def test_bo_dem_toc_do_het_han_sau_mot_phut():
     g = GioiHanTocDo(toi_da=2, giay=60)
     assert g.cho_phep("ip", 0) and g.cho_phep("ip", 1) and not g.cho_phep("ip", 2)

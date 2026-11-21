@@ -8,7 +8,7 @@ from sparkmind import config, research_store as kho
 from sparkmind.security import GioiHanTocDo, bam_ip
 
 router = APIRouter(prefix="/api/research")
-gioi_han_ma = GioiHanTocDo(toi_da=10, giay=60)  # 10 lần mỗi phút cho mỗi IP
+gioi_han_ma = GioiHanTocDo(toi_da=10, giay=60)  # tối đa 10 lần nhập SAI mỗi phút cho mỗi IP
 
 
 def lay_db_nghien_cuu():
@@ -97,9 +97,15 @@ def chay(ham, *args):
 
 @router.post("/code/check")
 def kiem_tra_ma(body: MaBody, request: Request, db=Depends(lay_db_nghien_cuu)):
-    if not gioi_han_ma.cho_phep(lay_ip(request)):
-        raise HTTPException(status_code=429, detail="Thử quá nhiều lần, vui lòng đợi một phút.")
-    return kho.kiem_tra_ma(db, body.code)
+    ip = lay_ip(request)
+    cho = gioi_han_ma.giay_phai_cho(ip)  # chỉ đếm mã SAI, nên chỉ kiểm tra chứ không tính lượt
+    if cho:
+        raise HTTPException(status_code=429, headers={"Retry-After": str(cho)},
+                            detail=f"Nhập sai mã quá nhiều lần, vui lòng đợi {cho} giây.")
+    kq = kho.kiem_tra_ma(db, body.code)
+    if not kq["valid"] and not kq["can_resume"]:
+        gioi_han_ma.ghi_nhan(ip)  # mã không tồn tại (hoặc đã dùng xong) mới tính một lần sai
+    return kq
 
 
 @router.post("/start")
