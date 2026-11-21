@@ -1,4 +1,4 @@
-# Lịch làm việc 20/11 – 6/12/2026
+# Lịch làm việc 20/11/2026 – 11/1/2027
 Nguồn: bảng `notebook_hang_ngay` của Trang. Mốc đã chốt: code hai hướng xong 4/12 (dự phòng 5–6/12), thu hướng 2 từ 7/12 đến khoảng 20/12, báo cáo cuối tháng 12. Việc đã xong: cài đặt, notebook 01, nạp MongoDB, endpoint nhận Google Form (19/11).
 
 | Ngày | Việc | Kết quả |
