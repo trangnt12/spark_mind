@@ -14,7 +14,7 @@ Table schools {
 
 Table survey_raw {
   id varchar [pk, note: 'hash of the content, same form never duplicates']
-  source varchar [note: 'google_form | web']
+  source varchar [note: 'google_form | web | excel_import']
   submitted_at datetime
   a1_grade varchar
   a2_gender varchar

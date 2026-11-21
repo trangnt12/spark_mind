@@ -21,7 +21,8 @@ def main() -> None:
     p.add_argument("--dry-run", action="store_true")
     a = p.parse_args()
 
-    df = doc_excel(a.file)
+    # form nhập từ Excel có nhãn riêng, tách khỏi form tự đổ qua Apps Script ("google_form")
+    df = doc_excel(a.file, nguon="excel_import")
     print(f"Đọc được {len(df)} form, {df['_id'].nunique()} mã khác nhau.")
     if df["_id"].duplicated().any():
         print("CẢNH BÁO: có form trùng hệt nhau, chỉ giữ một bản mỗi form.")
