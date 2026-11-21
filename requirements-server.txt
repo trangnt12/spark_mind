@@ -1,0 +1,9 @@
+# Thư viện tối thiểu để chạy server trên Render (gói miễn phí 512MB RAM).
+# Không có jupyter, shap, matplotlib, scikit-learn, scipy, openpyxl:
+# server chỉ import fastapi, pymongo, pandas, numpy, python-dotenv (đã kiểm tra).
+fastapi
+uvicorn
+pymongo[srv]
+pandas
+numpy
+python-dotenv

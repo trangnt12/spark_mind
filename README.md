@@ -42,3 +42,23 @@ python -m pytest tests -q                    # kiểm tra
 ```
 
 Luồng dữ liệu đầy đủ xem `docs/data_flow.md`.
+
+## Triển khai Render
+
+Dùng gói miễn phí (512MB RAM), nên chỉ cài thư viện server cần (`requirements-server.txt`, không có jupyter/shap/matplotlib/scikit-learn).
+
+| Mục | Giá trị |
+|---|---|
+| Build Command | `pip install -r requirements-server.txt` |
+| Start Command | `uvicorn server.main:app --host 0.0.0.0 --port $PORT` |
+
+Biến môi trường (đặt ở tab Environment của Render, **không** commit):
+
+| Biến | Ý nghĩa |
+|---|---|
+| `MONGODB_URI` | Chuỗi kết nối MongoDB Atlas |
+| `MONGODB_DB` | Tên database (`spark_mind`) |
+| `INGEST_SECRET` | Khóa bí mật Apps Script gửi kèm (header `X-API-Key`) |
+| `PYTHON_VERSION` | `3.12.10` |
+
+Kiểm tra sau khi deploy: mở `https://<tên-app>.onrender.com/health`, kết quả đúng là `{"status":"ok"}`. Gói miễn phí ngủ sau ~15 phút không có truy cập; cron-job.org ping `/health` để giữ server thức.
