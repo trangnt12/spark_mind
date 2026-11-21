@@ -81,6 +81,7 @@ Table participants {
   consent_at datetime
   guardian_consent boolean [note: 'required if under 18']
   ip_hash varchar [note: 'HMAC with secret key, for flagging only']
+  session_token varchar [unique, note: 'random token (secrets.token_urlsafe), sent to the browser; never exported']
   user_agent varchar
   started_at datetime
   completed_at datetime
@@ -88,6 +89,7 @@ Table participants {
     code_id [unique]
     email
     ip_hash
+    session_token [unique]
   }
 }
 

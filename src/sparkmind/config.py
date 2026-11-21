@@ -14,6 +14,8 @@ MONGODB_URI = os.environ.get("MONGODB_URI", "")
 MONGODB_DB = os.environ.get("MONGODB_DB", "spark_mind")
 INGEST_SECRET = os.environ.get("INGEST_SECRET", "")  # khóa bí mật để Apps Script gửi form vào server
 
+IP_HASH_SECRET = os.environ.get("IP_HASH_SECRET", "")  # khóa HMAC để băm IP, không bao giờ lưu IP thô
+
 RAW_EXCEL = ROOT / "data" / "raw" / "data_raw.xlsx"
 PROCESSED = ROOT / "data" / "processed"
 

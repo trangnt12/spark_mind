@@ -1,0 +1,130 @@
+"""Các endpoint của chế độ nghiên cứu (hướng 2): kiểm tra mã, bắt đầu, nộp form B và C1–C5."""
+import json
+from functools import lru_cache
+
+from fastapi import APIRouter, Depends, HTTPException, Request
+from pydantic import BaseModel, Field, field_validator
+from sparkmind import config, research_store as kho
+from sparkmind.security import GioiHanTocDo, bam_ip
+
+router = APIRouter(prefix="/api/research")
+gioi_han_ma = GioiHanTocDo(toi_da=10, giay=60)  # 10 lần mỗi phút cho mỗi IP
+
+
+def lay_db_nghien_cuu():
+    """Lấy kết nối dùng chung (import muộn để main.py ghi đè được khi thử)."""
+    from server.main import lay_db_dung_chung
+    return lay_db_dung_chung()
+
+
+class MaBody(BaseModel):
+    code: str = Field(min_length=1, max_length=32)
+
+
+class BatDauBody(MaBody):
+    email: str = Field(min_length=3, max_length=254, pattern=r"^\S+@\S+\.\S+$")
+    grade: int = Field(ge=1, le=12)      # mã A1 trong content/form_b.json (1–7 là lớp 6–12)
+    gender: int = Field(ge=1, le=3)      # mã A2
+    school_name: str = Field(min_length=1, max_length=200)
+    consent: bool
+    guardian_consent: bool = False
+
+    @field_validator("email", mode="before")
+    @classmethod
+    def _chuan_hoa_email(cls, v):
+        """Chuẩn hóa (chữ thường, bỏ khoảng trắng) TRƯỚC khi kiểm tra dạng email."""
+        return kho.chuan_hoa_email(v) if isinstance(v, str) else v
+
+
+class HanhViBody(BaseModel):
+    session_token: str = Field(min_length=1, max_length=100)
+    B2: int
+    B4_1: int = Field(ge=1, le=5)
+    B4_2: int = Field(ge=1, le=5)
+    B4_3: int = Field(ge=1, le=5)
+    B4_4: int = Field(ge=1, le=5)
+    B4_5: int = Field(ge=1, le=5)
+    B4_6: int = Field(ge=1, le=5)
+    B4_7: int = Field(ge=1, le=5)
+    B5: int
+    B6: list[int] = Field(min_length=1, max_length=10)  # chọn nhiều
+    B7: int
+    duration_sec: int = Field(ge=0, le=86400)
+
+
+class TuDanhGiaBody(BaseModel):
+    session_token: str = Field(min_length=1, max_length=100)
+    C1: int = Field(ge=1, le=5)
+    C2: int = Field(ge=1, le=5)
+    C3: int = Field(ge=1, le=5)
+    C4: int = Field(ge=1, le=5)
+    C5: int = Field(ge=1, le=5)
+    C6: int
+
+
+@lru_cache
+def lua_chon_hop_le() -> dict:
+    """Các mã lựa chọn hợp lệ của từng câu, đọc từ content/form_b.json (không viết cứng)."""
+    with open(config.ROOT / "content" / "form_b.json", encoding="utf-8") as f:
+        form = json.load(f)
+    cau = form["phan_b_hanh_vi"] + form["phan_c_tu_danh_gia"]
+    return {c["id"]: {o["ma"] for o in c["options"]} for c in cau if "options" in c}
+
+
+def kiem_tra_lua_chon(id_cau: str, gia_tri) -> None:
+    """Báo lỗi 422 nếu mã lựa chọn không có trong form."""
+    ds = gia_tri if isinstance(gia_tri, list) else [gia_tri]
+    if not set(ds) <= lua_chon_hop_le()[id_cau]:
+        raise HTTPException(status_code=422, detail=f"Giá trị không hợp lệ ở câu {id_cau}")
+
+
+def lay_ip(request: Request) -> str:
+    """IP người dùng (Render đặt IP thật ở x-forwarded-for). Chỉ dùng để băm/giới hạn, không lưu thô."""
+    xff = request.headers.get("x-forwarded-for", "")
+    return xff.split(",")[0].strip() if xff else (request.client.host if request.client else "")
+
+
+def chay(ham, *args):
+    """Gọi hàm của kho dữ liệu, đổi lỗi nghiệp vụ thành lỗi HTTP."""
+    try:
+        return ham(*args)
+    except kho.LoiNghiepVu as loi:
+        raise HTTPException(status_code=loi.ma_http, detail=loi.noi_dung)
+
+
+@router.post("/code/check")
+def kiem_tra_ma(body: MaBody, request: Request, db=Depends(lay_db_nghien_cuu)):
+    if not gioi_han_ma.cho_phep(lay_ip(request)):
+        raise HTTPException(status_code=429, detail="Thử quá nhiều lần, vui lòng đợi một phút.")
+    return kho.kiem_tra_ma(db, body.code)
+
+
+@router.post("/start")
+def bat_dau(body: BatDauBody, request: Request, db=Depends(lay_db_nghien_cuu)):
+    try:
+        ip_hash = bam_ip(lay_ip(request))
+    except RuntimeError:
+        raise HTTPException(status_code=500, detail="Server chưa cấu hình xong.")
+    token = chay(kho.bat_dau, db, body.model_dump(), ip_hash, request.headers.get("user-agent", ""))
+    return {"session_token": token}
+
+
+@router.post("/behavior")
+def nop_hanh_vi(body: HanhViBody, db=Depends(lay_db_nghien_cuu)):
+    for id_cau, gia_tri in (("B2", body.B2), ("B5", body.B5), ("B6", body.B6), ("B7", body.B7)):
+        kiem_tra_lua_chon(id_cau, gia_tri)
+    tra_loi = {"b2_frequency": str(body.B2), "b5_duration": str(body.B5),
+               "b6_prompting": ",".join(str(x) for x in sorted(set(body.B6))),
+               "b7_after_answer": str(body.B7), "duration_sec": body.duration_sec}
+    tra_loi.update({f"b4_{i}": getattr(body, f"B4_{i}") for i in range(1, 8)})
+    chay(kho.luu_hanh_vi, db, body.session_token, tra_loi)
+    return {"ok": True}
+
+
+@router.post("/self-assessment")
+def nop_tu_danh_gia(body: TuDanhGiaBody, db=Depends(lay_db_nghien_cuu)):
+    kiem_tra_lua_chon("C6", body.C6)
+    tra_loi = {f"c{i}": getattr(body, f"C{i}") for i in range(1, 6)}
+    tra_loi["c6"] = str(body.C6)
+    chay(kho.luu_tu_danh_gia, db, body.session_token, tra_loi)
+    return {"ok": True}  # không trả điểm để người chơi không bị ảnh hưởng ở phần game
