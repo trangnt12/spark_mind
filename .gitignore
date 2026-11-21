@@ -23,5 +23,6 @@ outputs/tables/*
 # Bảng duyệt tên trường sinh từ dữ liệu người trả lời
 content/school_review.csv
 
-# Các file mô tả của AI
+# Các file khác
 CLAUDE.md
+note_private.md
