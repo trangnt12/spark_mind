@@ -102,6 +102,19 @@
       "hoan_thanh": "🎉"
     },
     "nut_quay_lai": "Quay lại",
-    "nut_luu": "Lưu và tiếp tục"
+    "nut_luu": "Lưu và tiếp tục",
+    "bo_cuc": {
+      "_ghi_chu": "Cách xếp đáp án từng câu: hang (thẻ nhỏ xếp ngang), luoi (lưới nhiều cột tự co), cot (mỗi dòng một đáp án), cot2 (2 cột khi màn rộng). Câu không ghi ở đây thì tự chọn theo độ dài đáp án.",
+      "A1": "luoi",
+      "A2": "hang",
+      "A4": "cot",
+      "B1": "hang",
+      "B2": "luoi",
+      "B3": "cot2",
+      "B5": "luoi",
+      "B6": "cot",
+      "B7": "cot",
+      "C6": "cot"
+    }
   }
 }

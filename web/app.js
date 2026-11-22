@@ -154,9 +154,16 @@ function cuonDenLoi() {
 }
 
 /** Hộp báo lỗi đỏ; gọi lại với chuỗi rỗng để xóa. */
-function baoLoi(hop, chu) {
-  hop.textContent = chu;
-  hop.classList.toggle("an", !chu);
+let toastLoi = null, henGioLoi = 0;
+
+function baoLoi(hop, chu) {      // `hop` giữ lại cho các nơi gọi cũ; lỗi giờ hiện dạng toast, không chiếm chỗ ở chân trang
+  clearTimeout(henGioLoi);
+  if (toastLoi) { toastLoi.remove(); toastLoi = null; }
+  if (!chu) return;
+  const t = h("div", { class: "toast-loi", role: "alert", onclick: () => baoLoi(null, "") }, bieuTuong("bd-canh-bao"), chu);
+  document.body.append(t);
+  toastLoi = t;
+  henGioLoi = setTimeout(() => baoLoi(null, ""), 6000);
 }
 
 /** Đổi chữ lỗi từ máy chủ thành chữ trong research_ui.json. */
@@ -203,12 +210,20 @@ function oLuaChon(cau, o, nhieu) {
 }
 
 /** Câu chọn một hoặc chọn nhiều, theo mô tả trong form_b.json. */
+/** Cách xếp đáp án của câu: lấy từ research_ui.json (giao_dien.bo_cuc); không có thì chọn theo độ dài đáp án dài nhất. */
+function boCucCau(cau) {
+  const ghi = tt.ui.giao_dien.bo_cuc[cau.id];
+  if (ghi) return ghi;
+  const dai = Math.max(...cau.options.map((o) => o.text.length));
+  return dai <= 12 ? "hang" : dai <= 32 ? "luoi" : "cot";
+}
+
 function cauChon(cau, onChange) {
   const nhieu = cau.loai === "chon_nhieu";
   const khung = h("div", { class: "truong", id: "cau-" + cau.id },
     h("p", { class: "cau-hoi" }, tenCau(cau)),
     cau.huong_dan ? h("p", { class: "ghi-chu" }, cau.huong_dan) : "",
-    h("div", { class: "ds-lua-chon" }, cau.options.map((o) => oLuaChon(cau, o, nhieu))));
+    h("div", { class: "ds-lua-chon bo-cuc-" + boCucCau(cau) }, cau.options.map((o) => oLuaChon(cau, o, nhieu))));
   if (onChange) khung.addEventListener("change", onChange);
   return khung;
 }
