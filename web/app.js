@@ -82,7 +82,7 @@ function tieuDe(khoa, chu) {
 
 /** Nút "Quay lại" (nút phụ): về màn trước để đổi câu trả lời, câu đã chọn vẫn được giữ. */
 function nutQuayLai(veMan) {
-  return h("button", { type: "button", class: "phu", onclick: veMan }, tt.ui.giao_dien.nut_quay_lai);
+  return h("button", { type: "button", class: "phu quay-lai", onclick: veMan }, tt.ui.giao_dien.nut_quay_lai);
 }
 
 /** Thanh nút dính đáy màn hình: chứa hộp lỗi chung (nếu có) và nút chính. */
