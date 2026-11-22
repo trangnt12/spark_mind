@@ -44,3 +44,4 @@ button:disabled { opacity: .6; cursor: default; }
 .ds-truong small { color: var(--xam); }
 input[type=search] { width: 100%; min-height: 52px; font-size: 18px; padding: 10px 12px; border: 1.5px solid var(--vien); border-radius: 10px; }
 .ds-truong .dong-khac { font-weight: 600; color: var(--xanh); background: var(--xanh-nhat); position: sticky; bottom: 0; }
+button.nho { min-height: 40px; font-size: 15px; width: auto; padding: 0 14px; margin-top: 6px; }

@@ -28,9 +28,9 @@
     "tim_truong": "Gõ để tìm tên trường rồi chọn trong danh sách",
     "khong_thay": "Không tìm thấy trường nào.",
     "nhan_truong_khac": "Nhập tên trường của bạn",
-    "da_chon": "Đã chọn:",
-    "truong_khac": "Khác (trường không có trong danh sách, tôi sẽ tự nhập)",
-    "chon_lop_truoc": "Hãy chọn lớp hoặc năm học ở trên trước"
+    "truong_khac": "Khác",
+    "chon_lop_truoc": "Hãy chọn lớp hoặc năm học ở trên trước",
+    "quay_lai_ds": "Chọn lại từ danh sách"
   },
   "form_b": {
     "tieu_de": "Cách bạn dùng AI",
