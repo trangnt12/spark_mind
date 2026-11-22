@@ -5,7 +5,7 @@
 "use strict";
 
 const KHOA_TOKEN = "sparkmind_session_token";
-const TONG_BUOC = 5;
+const TONG_BUOC = 6;
 const LOP_CAN_NGUOI_LON = 7;   // mã A1 từ 1 đến 7 là lớp 6–12 (dưới 18 tuổi)
 const CHUA_TUNG_DUNG = 4;      // mã A4 "Chưa bao giờ sử dụng"
 
@@ -341,7 +341,7 @@ async function guiTuDanhGia(kq, hopLoi) {
   if (kq.loi) { baoLoi(hopLoi, kq.loi); return 200; }
   const r = await goiApi("/api/research/self-assessment", kq.body);
   if (r.status !== 200 && r.status !== 409) { loiPhien(hopLoi, r.status); return r.status; }
-  manChuaXong();
+  manGioiThieu();
   return 200;
 }
 
@@ -354,11 +354,11 @@ function manC() {
       cauChon(cauC.find((c) => c.id === "C6")), loi, nut));
 }
 
-// ---------- Màn 5: tạm thời (game 2 và 3 làm sau) ----------
+// ---------- Màn 5: giới thiệu và game 1 (file game1.js). Màn 6: tạm thời (game 2 và 3 làm sau) ----------
 
 function manChuaXong() {
   const u = tt.ui.chua_xong;
-  hienThi(5, h("h1", {}, u.tieu_de), h("p", { class: "mo-ta" }, u.mo_ta));
+  hienThi(6, h("h1", {}, u.tieu_de), h("p", { class: "mo-ta" }, u.mo_ta));
 }
 
 // ---------- Khởi động ----------
