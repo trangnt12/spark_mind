@@ -125,6 +125,17 @@ def test_nop_hanh_vi_va_tu_danh_gia(client):
     assert db["self_assessment"].find_one()["creativity_score"] == 75.0  # (20 - 5) / 20 * 100
 
 
+def test_luu_chu_muc_khac(client):
+    """Chữ gõ ở "Mục khác:" chỉ được lưu khi đã chọn mục đó; bỏ khoảng trắng đầu/cuối."""
+    c, db = client
+    token = bat_dau(c, ma_moi(db)).json()["session_token"]
+    body = {"session_token": token, **HANH_VI, "B3": [1, 8], "B1_other": "Grok", "B3_other": "  Làm thơ ",  # B1 chưa chọn mục khác
+            "B6_other": "không dùng"}
+    assert c.post("/api/research/behavior", json=body).status_code == 200
+    d = db["behavior_answers"].find_one()
+    assert (d["b1_other"], d["b3_other"], d["b6_other"]) == (None, "Làm thơ", None) and d["b3"] == "1,8"
+
+
 def test_nop_trung(client):
     c, db = client
     token = bat_dau(c, ma_moi(db)).json()["session_token"]

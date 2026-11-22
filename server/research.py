@@ -54,6 +54,10 @@ class HanhViBody(BaseModel):
     B5: int | None = None
     B6: list[int] | None = Field(default=None, min_length=1, max_length=10)  # chọn nhiều
     B7: int | None = None
+    # chữ người dùng gõ ở lựa chọn "Mục khác:" của B1, B3, B6 (chỉ lưu khi họ đã chọn "Mục khác:")
+    B1_other: str | None = Field(default=None, max_length=200)
+    B3_other: str | None = Field(default=None, max_length=200)
+    B6_other: str | None = Field(default=None, max_length=200)
     duration_sec: int = Field(ge=0, le=86400)
 
 
@@ -74,6 +78,23 @@ def lua_chon_hop_le() -> dict:
         form = json.load(f)
     cau = form["phan_a_thong_tin"] + form["phan_b_hanh_vi"] + form["phan_c_tu_danh_gia"]
     return {c["id"]: {o["ma"] for o in c["options"]} for c in cau if "options" in c}
+
+
+@lru_cache
+def ma_muc_khac() -> dict:
+    """Mã của lựa chọn "Mục khác:" ở từng câu (có "khac": true trong form_b.json), ví dụ {"B1": 5, ...}."""
+    with open(config.ROOT / "content" / "form_b.json", encoding="utf-8") as f:
+        form = json.load(f)
+    return {c["id"]: o["ma"] for c in form["phan_b_hanh_vi"] for o in c.get("options", []) if o.get("khac")}
+
+
+def chu_muc_khac(body) -> dict:
+    """{"b1_other": ..., "b3_other": ..., "b6_other": ...}: chữ đã bỏ khoảng trắng đầu/cuối; None nếu không chọn "Mục khác:"."""
+    kq = {}
+    for id_cau, ma in ma_muc_khac().items():
+        chu = (getattr(body, f"{id_cau}_other") or "").strip()
+        kq[f"{id_cau.lower()}_other"] = chu if chu and ma in (getattr(body, id_cau) or []) else None
+    return kq
 
 
 def kiem_tra_lua_chon(id_cau: str, gia_tri) -> None:
@@ -149,6 +170,7 @@ def nop_hanh_vi(body: HanhViBody, db=Depends(lay_db_nghien_cuu)):
                "b6_prompting": _dang_chuoi(body.B6), "b7_after_answer": _dang_chuoi(body.B7),
                "duration_sec": body.duration_sec}
     tra_loi.update({f"b4_{i}": getattr(body, f"B4_{i}") for i in range(1, 8)})
+    tra_loi.update(chu_muc_khac(body))
     chay(kho.luu_hanh_vi, db, body.session_token, tra_loi)
     return {"ok": True}
 

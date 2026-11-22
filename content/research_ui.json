@@ -21,10 +21,8 @@
     "nut": "Đồng ý và tiếp tục"
   },
   "thong_tin": {
-    "tieu_de": "Vài thông tin về bạn",
     "nhan_email": "Email của bạn",
     "ghi_chu_email": "Chỉ dùng để liên hệ và đếm số bài của mỗi người, không công bố.",
-    "nhan_truong": "Bạn đang theo học tại trường nào?",
     "tim_truong": "Gõ để tìm tên trường rồi chọn trong danh sách",
     "khong_thay": "Không tìm thấy trường nào.",
     "nhan_truong_khac": "Nhập tên trường của bạn",
@@ -33,11 +31,9 @@
     "quay_lai_ds": "Chọn lại từ danh sách"
   },
   "form_b": {
-    "tieu_de": "Cách bạn dùng AI",
     "nut": "Tiếp tục"
   },
   "form_c": {
-    "tieu_de": "Cách bạn nhìn nhận bản thân",
     "nut": "Tiếp tục"
   },
   "game_gioi_thieu": {
@@ -73,7 +69,6 @@
     "tien_do": "Bước {b} trên {t}",
     "nut_thu_lai": "Thử lại",
     "dang_gui": "Đang gửi...",
-    "chon_nhieu": "Chọn một hoặc nhiều đáp án",
     "email_sai": "Email chưa đúng dạng, ví dụ ten@gmail.com.",
     "phien_het_han": "Phiên làm bài không còn hợp lệ. Bạn nhập lại mã để tiếp tục.",
     "loi_khac": "Có lỗi xảy ra, bạn thử lại sau.",

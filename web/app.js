@@ -67,6 +67,22 @@ function chuLoi(status) {
 
 // ---------- Ô câu hỏi (chọn một, chọn nhiều, lưới 1–5) ----------
 
+/** Tên câu hỏi y nguyên trong form_b.json: số thứ tự + dấu cách + chữ, câu bắt buộc thêm dấu * đỏ. */
+function tenCau(cau) {
+  return [cau.nhan + " " + cau.text, cau.bat_buoc ? h("span", { class: "sao" }, " *") : ""];
+}
+
+/** Ô gõ chữ của lựa chọn "Mục khác:". Gõ chữ thì tự tích ô chọn; chữ gõ nhớ ở tt.tl[<id>_other]. */
+function oGoKhac(cau, o, nhap) {
+  const go = h("input", { type: "text", class: "o-khac", maxlength: 200, autocomplete: "off", "aria-label": o.text });
+  go.value = tt.tl[cau.id + "_other"] || "";
+  go.addEventListener("input", () => {
+    tt.tl[cau.id + "_other"] = go.value;
+    if (go.value && !nhap.checked) { nhap.checked = true; nhap.dispatchEvent(new Event("change", { bubbles: true })); }
+  });
+  return go;
+}
+
 /** Một lựa chọn (radio hoặc checkbox) nhớ vào tt.tl. */
 function oLuaChon(cau, o, nhieu) {
   const nhap = h("input", { type: nhieu ? "checkbox" : "radio", name: cau.id, value: o.ma });
@@ -76,27 +92,27 @@ function oLuaChon(cau, o, nhieu) {
     if (!nhieu) tt.tl[cau.id] = o.ma;
     else tt.tl[cau.id] = [...goc.querySelectorAll(`input[name="${cau.id}"]:checked`)].map((x) => +x.value);
   });
-  return h("label", { class: "lua-chon" }, nhap, h("span", {}, o.text));
+  return h("label", { class: "lua-chon" }, nhap, h("span", {}, o.text), o.khac ? oGoKhac(cau, o, nhap) : "");
 }
 
 /** Câu chọn một hoặc chọn nhiều, theo mô tả trong form_b.json. */
 function cauChon(cau, onChange) {
   const nhieu = cau.loai === "chon_nhieu";
   const khung = h("div", { class: "truong", id: "cau-" + cau.id },
-    h("p", { class: "cau-hoi" }, cau.text),
-    nhieu ? h("p", { class: "ghi-chu" }, cau.huong_dan || tt.ui.chung.chon_nhieu) : "",
+    h("p", { class: "cau-hoi" }, tenCau(cau)),
+    cau.huong_dan ? h("p", { class: "ghi-chu" }, cau.huong_dan) : "",
     cau.options.map((o) => oLuaChon(cau, o, nhieu)));
   if (onChange) khung.addEventListener("change", onChange);
   return khung;
 }
 
 /** Lưới thang 1–5: mỗi dòng một phát biểu, 5 nút lớn. Có chú giải thang ở trên. */
-function luoi(cacDong, tieuDe) {
+function luoi(cacDong, cauLuoi) {
   const thang = tt.fb.thang_dong_y;
-  const chuGiai = h("ul", { class: "chu-giai" }, Object.entries(thang).map(([m, chu]) => h("li", {}, `${m} = ${chu}`)));
-  const hang = cacDong.map((d) => h("div", { class: "hang-luoi" }, h("p", {}, d.text),
+  const chuGiai = h("ul", { class: "chu-giai" }, Object.values(thang).map((chu) => h("li", {}, chu)));
+  const hang = cacDong.map((d) => h("div", { class: "hang-luoi" }, h("p", {}, d.nhan + " " + d.text),
     h("div", { class: "thang" }, Object.keys(thang).map((m) => oThang(d.id, +m)))));
-  return h("div", { class: "truong" }, h("p", { class: "cau-hoi" }, tieuDe || ""), chuGiai, hang);
+  return h("div", { class: "truong" }, h("p", { class: "cau-hoi" }, tenCau(cauLuoi)), chuGiai, hang);
 }
 
 /** Một nút số trong lưới (radio dạng nút). */
@@ -223,7 +239,7 @@ function veDanhSach(ds, tuKhoa, chon) {
 
 /** Ô chọn trường: bấm vào để tìm và chọn; chọn xong tên hiện ngay trong ô. Chọn "Khác" thì ô thành ô nhập tay.
  *  Tên lưu vào tt.tl.A3 (chỉ trong bộ nhớ). */
-function oChonTruong(nhan) {
+function oChonTruong(cau) {
   const u = tt.ui.thong_tin;
   const o = h("input", { type: "text", id: "o-truong", autocomplete: "off", value: tt.tl.A3 || "" });
   const ds = h("ul", { class: "ds-truong an" });
@@ -243,7 +259,8 @@ function oChonTruong(nhan) {
   });
   o.addEventListener("blur", () => { ds.classList.add("an"); if (!tt.tl.truongKhac) o.value = tt.tl.A3 || ""; });
   lai.addEventListener("click", () => { tt.tl.A3 = ""; o.value = ""; vao(false); o.focus(); });
-  const khung = h("div", { class: "truong" }, h("label", { class: "cau-hoi", for: "o-truong" }, nhan),
+  const khung = h("div", { class: "truong" }, h("label", { class: "cau-hoi", for: "o-truong" }, tenCau(cau)),
+    cau.huong_dan ? h("p", { class: "ghi-chu" }, cau.huong_dan) : "",
     h("div", { class: "hop-tim" }, o, ds), lai);
   /** Gọi khi người dùng đổi lớp: xóa trường đã chọn (có thể sai cấp) và quay về chọn trong danh sách. */
   khung.capNhat = () => { tt.tl.A3 = ""; o.value = ""; vao(false); };
@@ -255,12 +272,13 @@ function manThongTin() {
   const u = tt.ui, a = Object.fromEntries(tt.fb.phan_a_thong_tin.map((c) => [c.id, c]));
   const loi = h("div", { class: "loi an", role: "alert" });
   const hopNguoiLon = h("div", { id: "hop-nguoi-lon" }, oTich("nguoiLon", u.dong_y.o_nguoi_lon));
-  const truong = oChonTruong(a.A3.text);
+  const truong = oChonTruong(a.A3);
   const capNhatNguoiLon = () => { hopNguoiLon.classList.toggle("an", !(tt.tl.A1 <= LOP_CAN_NGUOI_LON)); truong.capNhat(); };
   const nut = nutGui(u.dong_y.nut, () => guiBatDau(thuThongTin(), loi), loi);
   hienThi(2, h("h1", {}, u.dong_y.tieu_de),
     h("div", { class: "the" }, u.dong_y.doan.map((d) => h("p", { class: "mo-ta" }, d))),
-    h("div", { class: "the" }, h("h2", {}, u.thong_tin.tieu_de),
+    h("div", { class: "the" }, h("h2", {}, tt.fb.tieu_de), h("p", { class: "mo-ta" }, tt.fb.mo_ta),
+      h("h2", {}, tt.fb.tieu_de_phan.A),
       oChu("o-email", u.thong_tin.nhan_email, u.thong_tin.ghi_chu_email, "email", "email"),
       cauChon(a.A1, capNhatNguoiLon), cauChon(a.A2),
       truong),
@@ -286,8 +304,8 @@ async function guiBatDau(kq, hopLoi) {
 function phanB(cauB) {
   const theo = (id) => cauB.find((c) => c.id === id);
   const b4 = theo("B4");
-  return h("div", { id: "phan-b" }, ["B1", "B2", "B3"].map((id) => cauChon(theo(id))),
-    luoi(b4.cac_dong, b4.text), ["B5", "B6", "B7"].map((id) => cauChon(theo(id))));
+  return h("div", { id: "phan-b" }, h("h2", {}, tt.fb.tieu_de_phan.B), ["B1", "B2", "B3"].map((id) => cauChon(theo(id))),
+    luoi(b4.cac_dong, b4), ["B5", "B6", "B7"].map((id) => cauChon(theo(id))));
 }
 
 /** Thu câu trả lời form B thành body gửi /behavior. Trả về { body } hoặc { loi }. */
@@ -297,6 +315,7 @@ function thuHanhVi() {
   if (thieuCau(["A4"]) || (!boQuaB && thieuCau(ids))) return { loi: tt.ui.loi.thieu_cau };
   const body = { session_token: tt.token, A4: t.A4, duration_sec: Math.round((Date.now() - tt.batDauB) / 1000) };
   if (!boQuaB) ids.forEach((id) => { body[id] = t[id]; });
+  if (!boQuaB) ["B1", "B3", "B6"].forEach((id) => { body[id + "_other"] = (t[id + "_other"] || "").trim(); });  // chữ ở "Mục khác:"
   return { body };
 }
 
@@ -323,7 +342,7 @@ function manB() {
   const capNhat = () => hopB.classList.toggle("an", tt.tl.A4 === CHUA_TUNG_DUNG);
   if (!tt.batDauB) tt.batDauB = Date.now();   // bắt đầu tính giờ làm bài
   const nut = nutGui(u.nut, () => guiHanhVi(thuHanhVi(), loi), loi);
-  hienThi(3, h("h1", {}, u.tieu_de), h("div", { class: "the" }, cauChon(a4, capNhat), hopB, loi, nut));
+  hienThi(3, h("div", { class: "the" }, cauChon(a4, capNhat), hopB, loi, nut));
   capNhat();
 }
 
@@ -349,8 +368,8 @@ function manC() {
   const u = tt.ui.form_c, cauC = tt.fb.phan_c_tu_danh_gia;
   const loi = h("div", { class: "loi an", role: "alert" });
   const nut = nutGui(u.nut, () => guiTuDanhGia(thuTuDanhGia(), loi), loi);
-  hienThi(4, h("h1", {}, u.tieu_de),
-    h("div", { class: "the" }, luoi(cauC.filter((c) => c.id !== "C6"), ""),
+  hienThi(4, h("div", { class: "the" }, h("h2", {}, tt.fb.tieu_de_phan.C),
+    luoi(cauC.filter((c) => c.id !== "C6"), tt.fb.c_luoi),
       cauChon(cauC.find((c) => c.id === "C6")), loi, nut));
 }
 

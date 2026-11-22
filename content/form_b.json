@@ -1,13 +1,13 @@
 {
-  "_ghi_chu": "Form v2 (chữ đã đổi ngày 20/11/2026), khớp docs/survey_v2.md. Khóa nội bộ (id) giữ nguyên: A1-A4, B1-B7, B4_1..B4_7, C1..C5 và C6. Web lưu theo mã (ma) của lựa chọn, không lưu theo chữ, nên đổi chữ hiển thị không ảnh hưởng điểm.",
+  "_ghi_chu": "Form v2, khớp TỪNG KÝ TỰ với docs/survey_v2.md (tests/test_form_text.py kiểm tra). Khóa nội bộ (id) giữ nguyên: A1-A4, B1-B7, B4_1..B4_7, C1..C5 và C6. Web lưu theo mã (ma), không lưu theo chữ. Chữ hiển thị = nhan + dấu cách + text. 'bat_buoc' hiện thành dấu * đỏ. 'khac': true là lựa chọn 'Mục khác:' có ô gõ chữ tự do.",
   "tieu_de": "Khảo sát hành vi sử dụng AI và tư duy sáng tạo của học sinh, sinh viên",
   "mo_ta": "Khảo sát này nhằm tìm hiểu thực trạng sử dụng các công cụ trí tuệ nhân tạo tạo sinh (như ChatGPT, Gemini, Copilot, Claude,...) và mối liên hệ giữa việc sử dụng các công cụ này với năng lực tư duy sáng tạo của học sinh, sinh viên.",
   "thang_dong_y": {
-    "1": "Hoàn toàn không đồng ý",
-    "2": "Không đồng ý",
-    "3": "Phân vân / Trung lập",
-    "4": "Đồng ý",
-    "5": "Hoàn toàn đồng ý"
+    "1": "1 - Hoàn toàn không đồng ý",
+    "2": "2 - Không đồng ý",
+    "3": "3 - Phân vân / Trung lập",
+    "4": "4 - Đồng ý",
+    "5": "5 - Hoàn toàn đồng ý"
   },
   "phan_a_thong_tin": [
     {
@@ -75,7 +75,9 @@
           "text": "Sinh viên năm 5 trở lên / Khác",
           "cap": "Đại học"
         }
-      ]
+      ],
+      "nhan": "A1.",
+      "bat_buoc": true
     },
     {
       "id": "A2",
@@ -94,13 +96,17 @@
           "ma": 3,
           "text": "Khác"
         }
-      ]
+      ],
+      "nhan": "A2.",
+      "bat_buoc": true
     },
     {
       "id": "A3",
       "text": "Bạn hiện đang theo học tại trường nào?",
       "loai": "chu_tu_do",
-      "huong_dan": "Vui lòng nhập tên trường"
+      "huong_dan": "Vui lòng nhập tên trường",
+      "nhan": "A3.",
+      "bat_buoc": true
     },
     {
       "id": "A4",
@@ -124,7 +130,9 @@
           "text": "Chưa bao giờ sử dụng"
         }
       ],
-      "ghi_chu": "Chọn 'Chưa bao giờ' thì chuyển thẳng đến phần C, không vào bộ dữ liệu mô hình"
+      "nhan": "A4.",
+      "bat_buoc": true,
+      "_ghi_chu": "Chọn 'Chưa bao giờ' thì chuyển thẳng đến phần C, không vào bộ dữ liệu mô hình"
     }
   ],
   "phan_b_hanh_vi": [
@@ -151,9 +159,12 @@
         },
         {
           "ma": 5,
-          "text": "Mục khác"
+          "text": "Mục khác:",
+          "khac": true
         }
-      ]
+      ],
+      "nhan": "B1.",
+      "bat_buoc": true
     },
     {
       "id": "B2",
@@ -182,7 +193,9 @@
         "Vài lần mỗi tháng": 2,
         "Vài lần mỗi tuần": 3,
         "Hầu như mỗi ngày": 4
-      }
+      },
+      "nhan": "B2.",
+      "bat_buoc": true
     },
     {
       "id": "B3",
@@ -219,9 +232,12 @@
         },
         {
           "ma": 8,
-          "text": "Mục khác"
+          "text": "Mục khác:",
+          "khac": true
         }
-      ]
+      ],
+      "nhan": "B3.",
+      "bat_buoc": true
     },
     {
       "id": "B4",
@@ -265,7 +281,9 @@
           "nhan": "B4.7",
           "text": "Tôi thường sử dụng AI để tìm kiếm những ý tưởng mới lạ, thay vì chỉ tìm đáp án đúng."
         }
-      ]
+      ],
+      "nhan": "B4.",
+      "bat_buoc": true
     },
     {
       "id": "B5",
@@ -288,7 +306,9 @@
           "ma": 4,
           "text": "Trên 30 phút"
         }
-      ]
+      ],
+      "nhan": "B5.",
+      "bat_buoc": true
     },
     {
       "id": "B6",
@@ -314,9 +334,12 @@
         },
         {
           "ma": 5,
-          "text": "Mục khác"
+          "text": "Mục khác:",
+          "khac": true
         }
-      ]
+      ],
+      "nhan": "B6.",
+      "bat_buoc": true
     },
     {
       "id": "B7",
@@ -339,38 +362,40 @@
           "ma": 4,
           "text": "Tiếp tục nhập yêu cầu để AI chỉnh sửa hoặc mở rộng câu trả lời"
         }
-      ]
+      ],
+      "nhan": "B7.",
+      "bat_buoc": true
     }
   ],
   "phan_c_tu_danh_gia": [
     {
       "id": "C1",
-      "nhan": "C1.1",
+      "nhan": "C1.1.",
       "text": "Tôi thường nghĩ ra được nhiều ý tưởng khác nhau cho cùng một vấn đề."
     },
     {
       "id": "C2",
-      "nhan": "C1.2",
+      "nhan": "C1.2.",
       "text": "Tôi thường đưa ra được những ý tưởng mới lạ, ít người nghĩ tới."
     },
     {
       "id": "C3",
-      "nhan": "C1.3",
+      "nhan": "C1.3.",
       "text": "Tôi có thể nhìn nhận một vấn đề từ nhiều góc độ khác nhau."
     },
     {
       "id": "C4",
-      "nhan": "C1.4",
+      "nhan": "C1.4.",
       "text": "Tôi tự tin vào khả năng sáng tạo của bản thân."
     },
     {
       "id": "C5",
-      "nhan": "C1.5",
+      "nhan": "C1.5.",
       "text": "Tôi thường phát triển ý tưởng ban đầu thành một giải pháp cụ thể và hoàn chỉnh hơn."
     },
     {
       "id": "C6",
-      "nhan": "C2",
+      "nhan": "C2.",
       "text": "Trong 12 tháng qua, bạn đã từng tham gia hoạt động hoặc cuộc thi nào đòi hỏi sự sáng tạo (như nghiên cứu khoa học, thi vẽ/viết/lập trình, thực hiện dự án,...) chưa?",
       "loai": "chon_mot",
       "options": [
@@ -387,7 +412,8 @@
           "text": "Chưa từng tham gia."
         }
       ],
-      "ghi_chu": "Không dùng trong điểm sáng tạo, chỉ để mô tả. Trên form v2 nhãn là C2, khóa nội bộ vẫn là C6."
+      "bat_buoc": true,
+      "_ghi_chu": "Không dùng trong điểm sáng tạo, chỉ để mô tả. Trên form v2 nhãn là C2, khóa nội bộ vẫn là C6."
     }
   ],
   "cau_kiem_tra_chu_y": [
@@ -406,5 +432,17 @@
     {
       "_ghi_chu": "Trả lời sai KT1 hoặc KT2 thì gắn cờ, KHÔNG xóa. Làm 27/11."
     }
-  ]
+  ],
+  "tieu_de_phan": {
+    "A": "PHẦN A - THÔNG TIN CHUNG",
+    "B": "PHẦN B - HÀNH VI SỬ DỤNG CÁC CÔNG CỤ AI",
+    "C": "PHẦN C - KHẢ NĂNG TƯ DUY SÁNG TẠO"
+  },
+  "c_luoi": {
+    "id": "C_LUOI",
+    "nhan": "C1.",
+    "bat_buoc": true,
+    "loai": "luoi_1_5",
+    "text": "Bạn hãy cho biết mức độ đồng ý của mình với các phát biểu sau:"
+  }
 }

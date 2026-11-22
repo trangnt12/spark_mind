@@ -99,9 +99,13 @@ Table behavior_answers {
   participant_id objectid [unique, not null]
   a4 varchar [note: 'uses_ai: 1-4; 4 = Chưa bao giờ sử dụng thì B1-B7 có thể trống']
   b1 varchar [note: 'chọn nhiều, dạng "1,3"']
+  b1_other varchar [note: 'chữ gõ ở "Mục khác:" của B1; trống nếu không chọn']
   b2_frequency varchar
+  b3 varchar [note: 'chọn nhiều, dạng "1,3"']
+  b3_other varchar [note: 'chữ gõ ở "Mục khác:" của B3; trống nếu không chọn']
   b5_duration varchar
-  b6_prompting varchar
+  b6_prompting varchar [note: 'chọn nhiều, dạng "1,3"']
+  b6_other varchar [note: 'chữ gõ ở "Mục khác:" của B6; trống nếu không chọn']
   b7_after_answer varchar
   b4_1 int
   b4_2 int
