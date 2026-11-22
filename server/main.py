@@ -13,6 +13,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
 from fastapi import Depends, FastAPI, Header, HTTPException  # noqa: E402
+from fastapi.staticfiles import StaticFiles  # noqa: E402
 from sparkmind import config  # noqa: E402
 from sparkmind.db import lay_db  # noqa: E402
 from sparkmind.ingest import nhan_form  # noqa: E402
@@ -61,3 +62,7 @@ def ingest_google_form(answers: dict, db=Depends(lay_db_dung_chung)):
         return nhan_form(db, answers, nguon="google_form")
     except ValueError as loi:
         raise HTTPException(status_code=422, detail=str(loi))
+
+
+# Giao diện web nghiên cứu: HTML/CSS/JS thuần trong web/, phục vụ tại /play (đặt cuối để không che API)
+app.mount("/play", StaticFiles(directory=config.ROOT / "web", html=True), name="play")
