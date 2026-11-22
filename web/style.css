@@ -43,3 +43,4 @@ button:disabled { opacity: .6; cursor: default; }
 .ds-truong li { padding: 12px; min-height: 48px; border-bottom: 1px solid #eceef3; cursor: pointer; }
 .ds-truong small { color: var(--xam); }
 input[type=search] { width: 100%; min-height: 52px; font-size: 18px; padding: 10px 12px; border: 1.5px solid var(--vien); border-radius: 10px; }
+.ds-truong .dong-khac { font-weight: 600; color: var(--xanh); background: var(--xanh-nhat); position: sticky; bottom: 0; }

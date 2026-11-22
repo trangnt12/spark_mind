@@ -1,9 +1,12 @@
 
 
-def test_viet_tat_haui_ra_ten_day_du():
-    """HAUI (viết tắt trong cột viet_tat) phải đổi thành tên đầy đủ, ở mọi cấp học và cả khi nằm trong câu dài."""
+def test_viet_tat_phai_khop_cap():
+    """HAUI là Đại học Công nghiệp Hà Nội với sinh viên; học sinh THPT ghi HAUI thì KHÔNG được gán trường đại học."""
     import pandas as pd
     from sparkmind.school_matching import them_cot_truong
-    d = pd.DataFrame({"A3": ["HAUI", "dh công nghiệp hà nội - HaUI"], "cap_hoc": ["Không rõ", "Đại học"]})
+    d = pd.DataFrame({"A3": ["HAUI", "dh công nghiệp hà nội - HaUI", "HAUI"],
+                      "cap_hoc": ["Đại học", "Đại học", "THPT"]})
     kq = them_cot_truong(d)
-    assert set(kq["truong_chuan"]) == {"Trường Đại học Công nghiệp Hà Nội"}
+    dh = "Trường Đại học Công nghiệp Hà Nội"
+    assert list(kq["truong_chuan"][:2]) == [dh, dh]
+    assert kq["truong_chuan"][2] != dh

@@ -164,15 +164,20 @@ def _gan_dung(core: str, cap: str, theo_cap: dict) -> tuple:
     return tot, diem
 
 
+def _dung_cap(m: tuple, cap_lop: str) -> bool:
+    """Trường (id, tên, cấp) có hợp với cấp học của người trả lời không? Liên cấp hợp với THCS và THPT."""
+    return m[2] == cap_lop or (m[2] == "Liên cấp" and cap_lop in ("THCS", "THPT"))
+
+
 def _theo_viet_tat(r, core: str, cap_lop: str, vt: dict) -> list:
-    """Tìm trường theo chữ viết tắt trong danh sách (cột viet_tat), ví dụ HAUI -> Đại học Công nghiệp Hà Nội.
-    1) Cả ô chỉ là một viết tắt: nhận ở mọi cấp (người dùng có thể chọn nhầm lớp).
-    2) Viết tắt nằm lẫn trong câu dài ("ĐH Công nghiệp HN - HaUI"): chỉ nhận khi là sinh viên và chỉ ra đúng một trường."""
-    if vt.get(core):
-        return vt[core]
-    if cap_lop not in ("Đại học", "Không rõ"):
-        return []
-    thu = [vt[t] for t in str(bo_dau(r.get("A3", ""))).split() if len(t) >= 3 and len(vt.get(t, [])) == 1]
+    """Tìm trường theo chữ viết tắt (cột viet_tat), ví dụ HAUI -> Đại học Công nghiệp Hà Nội.
+    PHẢI khớp cấp: học sinh THPT ghi HAUI thì không thể là trường đại học. Khi cấp là "Không rõ" (A1 = Khác) thì không lọc.
+    1) Cả ô chỉ là một viết tắt. 2) Viết tắt nằm lẫn trong câu dài ("ĐH Công nghiệp HN - HaUI"): chỉ nhận khi ra đúng một trường."""
+    loc = lambda ds: [m for m in ds if cap_lop == "Không rõ" or _dung_cap(m, cap_lop)]
+    if loc(vt.get(core, [])):
+        return loc(vt[core])
+    thu = [loc(vt[t]) for t in str(bo_dau(r.get("A3", ""))).split() if len(t) >= 3 and t in vt]
+    thu = [x for x in thu if len(x) == 1]
     return thu[0] if len(thu) == 1 else []
 
 

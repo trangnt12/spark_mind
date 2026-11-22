@@ -189,54 +189,80 @@ function oChu(id, nhan, ghiChu, loai, khoa) {
     ghiChu ? h("p", { class: "ghi-chu" }, ghiChu) : "", o);
 }
 
-// ---------- Ô chọn trường (có tìm kiếm, chọn một trong bảng schools) ----------
+// ---------- Ô chọn trường (có tìm kiếm, chỉ hiện trường đúng cấp với lớp đã chọn) ----------
 
 /** Bỏ dấu và chuyển chữ thường để tìm không phân biệt dấu. */
 function boDau(chu) {
   return chu.normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/đ/g, "d").toLowerCase();
 }
 
-/** Vẽ tối đa 50 trường khớp từ khóa vào danh sách; bấm một dòng là chọn. */
+/** Cấp học của người dùng (THCS / THPT / Đại học) theo lớp A1; "cap" nằm trong form_b.json. */
+function capHienTai() {
+  const o = tt.fb.phan_a_thong_tin.find((c) => c.id === "A1").options.find((x) => x.ma === tt.tl.A1);
+  return o ? o.cap : "";
+}
+
+/** Trường có đúng cấp không? Trường liên cấp hợp với cả THCS và THPT. */
+function dungCap(t, cap) {
+  return t.cap === cap || (t.cap === "Liên cấp" && (cap === "THCS" || cap === "THPT"));
+}
+
+/** Vẽ tối đa 50 trường đúng cấp và khớp từ khóa; cuối danh sách luôn có dòng "Khác". */
 function veDanhSach(ds, tuKhoa, chon) {
-  const k = boDau(tuKhoa.trim());
-  const kq = tt.truong.filter((t) => boDau(t.ten + " " + t.vt).includes(k)).slice(0, 50);
-  ds.replaceChildren(...(kq.length ? kq.map((t) => {
-    const dong = h("li", { class: "dong-truong" }, t.ten, h("small", {}, " · " + (t.vt ? t.vt + " · " : "") + t.cap));
-    dong.addEventListener("mousedown", (e) => { e.preventDefault(); chon(t); });
-    return dong;
-  }) : [h("li", { class: "ghi-chu" }, tt.ui.thong_tin.khong_thay)]));
+  const k = boDau(tuKhoa.trim()), cap = capHienTai();
+  const kq = tt.truong.filter((t) => dungCap(t, cap) && boDau(t.ten + " " + t.vt).includes(k)).slice(0, 50);
+  const dong = kq.map((t) => {
+    const li = h("li", { class: "dong-truong" }, t.ten, h("small", {}, " · " + (t.vt ? t.vt + " · " : "") + t.cap));
+    li.addEventListener("mousedown", (e) => { e.preventDefault(); chon(t); });
+    return li;
+  });
+  const khac = h("li", { class: "dong-khac" }, tt.ui.thong_tin.truong_khac);
+  khac.addEventListener("mousedown", (e) => { e.preventDefault(); chon(null); });
+  ds.replaceChildren(...dong, khac);
   ds.classList.remove("an");
 }
 
-/** Ô tìm + danh sách chọn một trường; lưu tên vào tt.tl.A3 (chỉ trong bộ nhớ). */
+/** Ô tìm + danh sách chọn một trường (hoặc "Khác" để tự nhập). Tên lưu vào tt.tl.A3 (chỉ trong bộ nhớ). */
 function oChonTruong(nhan) {
   const u = tt.ui.thong_tin;
-  const o = h("input", { type: "search", id: "o-truong", autocomplete: "off", placeholder: u.tim_truong });
+  const o = h("input", { type: "search", id: "o-truong", autocomplete: "off" });
   const ds = h("ul", { class: "ds-truong an" });
   const da = h("p", { class: "ghi-chu" }, tt.tl.A3 && !tt.tl.truongKhac ? `${u.da_chon} ${tt.tl.A3}` : "");
-  const chon = (t) => { tt.tl.A3 = t.ten; o.value = ""; da.textContent = `${u.da_chon} ${t.ten}`; ds.classList.add("an"); };
-  o.addEventListener("input", () => veDanhSach(ds, o.value, chon));
-  o.addEventListener("focus", () => veDanhSach(ds, o.value, chon));
-  o.addEventListener("blur", () => ds.classList.add("an"));
   const hopKhac = h("div", { class: tt.tl.truongKhac ? "" : "an" }, oChu("o-truong-khac", u.nhan_truong_khac, "", "text", "A3khac"));
-  const khac = oTich("truongKhac", u.khong_co_truong);
-  khac.addEventListener("change", () => { hopKhac.classList.toggle("an", !tt.tl.truongKhac); o.disabled = !!tt.tl.truongKhac; tt.tl.A3 = tt.tl.truongKhac ? "" : tt.tl.A3; });
-  return h("div", { class: "truong" }, h("label", { class: "cau-hoi", for: "o-truong" }, nhan),
-    h("div", { class: "hop-tim" }, o, ds), da, khac, hopKhac);
+  const chon = (t) => {
+    tt.tl.truongKhac = !t; tt.tl.A3 = t ? t.ten : ""; o.value = ""; ds.classList.add("an");
+    da.textContent = t ? `${u.da_chon} ${t.ten}` : "";
+    hopKhac.classList.toggle("an", !!t);
+  };
+  const veLai = () => veDanhSach(ds, o.value, chon);
+  o.addEventListener("input", veLai);
+  o.addEventListener("focus", veLai);
+  o.addEventListener("blur", () => ds.classList.add("an"));
+  const khung = h("div", { class: "truong" }, h("label", { class: "cau-hoi", for: "o-truong" }, nhan),
+    h("div", { class: "hop-tim" }, o, ds), da, hopKhac);
+  /** Gọi khi người dùng đổi lớp: xóa trường đã chọn (có thể sai cấp) và bật/tắt ô tìm. */
+  khung.capNhat = () => {
+    if (!tt.tl.truongKhac) { tt.tl.A3 = ""; da.textContent = ""; }
+    o.disabled = !capHienTai();
+    o.placeholder = capHienTai() ? u.tim_truong : u.chon_lop_truoc;
+  };
+  khung.capNhat();
+  return khung;
 }
 
 function manThongTin() {
   const u = tt.ui, a = Object.fromEntries(tt.fb.phan_a_thong_tin.map((c) => [c.id, c]));
   const loi = h("div", { class: "loi an", role: "alert" });
   const hopNguoiLon = h("div", { id: "hop-nguoi-lon" }, oTich("nguoiLon", u.dong_y.o_nguoi_lon));
-  const capNhatNguoiLon = () => hopNguoiLon.classList.toggle("an", !(tt.tl.A1 <= LOP_CAN_NGUOI_LON));
+  const truong = oChonTruong(a.A3.text);
+  const capNhatNguoiLon = () => { hopNguoiLon.classList.toggle("an", !(tt.tl.A1 <= LOP_CAN_NGUOI_LON)); truong.capNhat(); };
   const nut = nutGui(u.dong_y.nut, () => guiBatDau(thuThongTin(), loi), loi);
   hienThi(2, h("h1", {}, u.dong_y.tieu_de),
     h("div", { class: "the" }, u.dong_y.doan.map((d) => h("p", { class: "mo-ta" }, d))),
     h("div", { class: "the" }, h("h2", {}, u.thong_tin.tieu_de),
       oChu("o-email", u.thong_tin.nhan_email, u.thong_tin.ghi_chu_email, "email", "email"),
       cauChon(a.A1, capNhatNguoiLon), cauChon(a.A2),
-      oChonTruong(a.A3.text)),
+      truong),
     h("div", { class: "the" }, oTich("dongY", u.dong_y.o_dong_y), hopNguoiLon, loi, nut));
   capNhatNguoiLon();
 }

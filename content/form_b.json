@@ -17,51 +17,63 @@
       "options": [
         {
           "ma": 1,
-          "text": "Lớp 6"
+          "text": "Lớp 6",
+          "cap": "THCS"
         },
         {
           "ma": 2,
-          "text": "Lớp 7"
+          "text": "Lớp 7",
+          "cap": "THCS"
         },
         {
           "ma": 3,
-          "text": "Lớp 8"
+          "text": "Lớp 8",
+          "cap": "THCS"
         },
         {
           "ma": 4,
-          "text": "Lớp 9"
+          "text": "Lớp 9",
+          "cap": "THCS"
         },
         {
           "ma": 5,
-          "text": "Lớp 10"
+          "text": "Lớp 10",
+          "cap": "THPT"
         },
         {
           "ma": 6,
-          "text": "Lớp 11"
+          "text": "Lớp 11",
+          "cap": "THPT"
         },
         {
           "ma": 7,
-          "text": "Lớp 12"
+          "text": "Lớp 12",
+          "cap": "THPT"
         },
         {
           "ma": 8,
-          "text": "Sinh viên năm nhất"
+          "text": "Sinh viên năm nhất",
+          "cap": "Đại học"
         },
         {
           "ma": 9,
-          "text": "Sinh viên năm hai"
+          "text": "Sinh viên năm hai",
+          "cap": "Đại học"
         },
         {
           "ma": 10,
-          "text": "Sinh viên năm ba"
+          "text": "Sinh viên năm ba",
+          "cap": "Đại học"
         },
         {
           "ma": 11,
-          "text": "Sinh viên năm tư"
+          "text": "Sinh viên năm tư",
+          "cap": "Đại học"
         },
         {
           "ma": 12,
-          "text": "Sinh viên năm 5 trở lên / Khác"
+          "text": "Sinh viên năm 5 trở lên / Khác",
+          "cap": "Đại học"
         }
       ]
     },
