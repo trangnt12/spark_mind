@@ -112,7 +112,8 @@ function luoi(cacDong, cauLuoi) {
   const chuGiai = h("ul", { class: "chu-giai" }, Object.values(thang).map((chu) => h("li", {}, chu)));
   const hang = cacDong.map((d) => h("div", { class: "hang-luoi" }, h("p", {}, d.nhan + " " + d.text),
     h("div", { class: "thang" }, Object.keys(thang).map((m) => oThang(d.id, +m)))));
-  return h("div", { class: "truong" }, h("p", { class: "cau-hoi" }, tenCau(cauLuoi)), chuGiai, hang);
+  return h("div", { class: "truong" }, h("p", { class: "cau-hoi" }, tenCau(cauLuoi)),
+    h("p", { class: "ghi-chu" }, tt.fb.nhan_thang), chuGiai, hang);
 }
 
 /** Một nút số trong lưới (radio dạng nút). */

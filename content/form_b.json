@@ -2,6 +2,7 @@
   "_ghi_chu": "Form v2, khớp TỪNG KÝ TỰ với docs/survey_v2.md (tests/test_form_text.py kiểm tra). Khóa nội bộ (id) giữ nguyên: A1-A4, B1-B7, B4_1..B4_7, C1..C5 và C6. Web lưu theo mã (ma), không lưu theo chữ. Chữ hiển thị = nhan + dấu cách + text. 'bat_buoc' hiện thành dấu * đỏ. 'khac': true là lựa chọn 'Mục khác:' có ô gõ chữ tự do.",
   "tieu_de": "Khảo sát hành vi sử dụng AI và tư duy sáng tạo của học sinh, sinh viên",
   "mo_ta": "Khảo sát này nhằm tìm hiểu thực trạng sử dụng các công cụ trí tuệ nhân tạo tạo sinh (như ChatGPT, Gemini, Copilot, Claude,...) và mối liên hệ giữa việc sử dụng các công cụ này với năng lực tư duy sáng tạo của học sinh, sinh viên.",
+  "nhan_thang": "Thang điểm:",
   "thang_dong_y": {
     "1": "1 - Hoàn toàn không đồng ý",
     "2": "2 - Không đồng ý",

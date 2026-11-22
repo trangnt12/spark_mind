@@ -31,7 +31,7 @@ def _cau_moi(dong: str) -> dict:
     ngoac = m.group(3)
     goi_y = ngoac[: -len(" - Bắt buộc")] if ngoac.endswith(" - Bắt buộc") else None
     return {"nhan": m.group(1), "text": m.group(2), "bat_buoc": ngoac.endswith("Bắt buộc"),
-            "huong_dan": goi_y, "loai": None, "options": [], "thang": [], "dong": []}
+            "huong_dan": goi_y, "loai": None, "options": [], "nhan_thang": None, "thang": [], "dong": []}
 
 
 def _them_dong(cau: dict, dong: str, che_do_dong: bool) -> bool:
@@ -44,6 +44,7 @@ def _them_dong(cau: dict, dong: str, che_do_dong: bool) -> bool:
     elif dong.startswith("- *(") and dong.endswith(")*"):
         cau["huong_dan"] = dong[4:-2]
     elif dong.startswith("- **Thang điểm:** "):
+        cau["nhan_thang"] = "Thang điểm:"
         cau["thang"] = [x.strip("`") for x in dong[len("- **Thang điểm:** "):].split(" | ")]
     elif re.fullmatch(r"- \*\*\d+ phát biểu:\*\*", dong):
         return True
@@ -76,11 +77,12 @@ def doc_khao_sat() -> dict:
 
 # ---------- Đọc form_b.json về cùng dạng ----------
 
-def _cau_form(c: dict, thang: list[str]) -> dict:
+def _cau_form(c: dict, thang: list[str], nhan_thang: str) -> dict:
     """Một câu của form_b.json về cùng dạng với câu của survey_v2.md."""
     return {"nhan": c["nhan"], "text": c["text"], "bat_buoc": c.get("bat_buoc", False),
             "huong_dan": c.get("huong_dan"), "loai": c["loai"],
             "options": [(o["text"], o.get("khac", False)) for o in c.get("options", [])],
+            "nhan_thang": nhan_thang if c["loai"] == "luoi_1_5" else None,
             "thang": thang if c["loai"] == "luoi_1_5" else [],
             "dong": [(r["nhan"], r["text"]) for r in c.get("cac_dong", [])]}
 
@@ -93,7 +95,7 @@ def doc_form() -> dict:
     cau_c = [luoi_c] + [c for c in cau_c if c["id"] == "C6"]
     cacphan = [f["phan_a_thong_tin"], f["phan_b_hanh_vi"], cau_c]
     return {"tieu_de": f["tieu_de"], "mo_ta": f["mo_ta"],
-            "phan": [{"tieu_de": f["tieu_de_phan"][k], "cau": [_cau_form(c, thang) for c in ds]}
+            "phan": [{"tieu_de": f["tieu_de_phan"][k], "cau": [_cau_form(c, thang, f["nhan_thang"]) for c in ds]}
                      for k, ds in zip("ABC", cacphan)]}
 
 
@@ -112,7 +114,7 @@ def _so_danh_sach(vi_tri: str, ten: str, file: list, form: list) -> list[str]:
 
 def _so_cau(file: dict, form: dict) -> list[str]:
     loi = []
-    for khoa in ("nhan", "text", "bat_buoc", "huong_dan", "loai"):
+    for khoa in ("nhan", "text", "bat_buoc", "huong_dan", "loai", "nhan_thang"):
         if file[khoa] != form[khoa]:
             loi.append(f"{file['nhan']}: '{khoa}' lệch\n    survey_v2.md: {file[khoa]!r}\n    form_b.json : {form[khoa]!r}")
     for ten, khoa in (("đáp án", "options"), ("nhãn thang", "thang"), ("dòng", "dong")):
@@ -175,7 +177,7 @@ def moi_chu_khao_sat() -> set[str]:
         for c in p["cau"]:
             chu |= {c["text"], c["nhan"] + " " + c["text"], *c["thang"], *(t for t, _ in c["options"])}
             chu |= {t for _, t in c["dong"]} | {n + " " + t for n, t in c["dong"]}
-            chu |= {c["huong_dan"]} - {None}
+            chu |= {c["huong_dan"], c["nhan_thang"]} - {None}
     return chu
 
 
