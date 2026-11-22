@@ -267,9 +267,9 @@ function manMa() {
     manThongTin();
     return 200;
   }, loi);
-  hienThi(1, h("div", { class: "hero" }, bieuTuong("bd-logo", "logo logo-lon"), tieuDe("chao", u.tieu_de)),
-    cacDoan(u.mo_ta),
-    h("div", { class: "the" }, h("label", { class: "cau-hoi", for: "o-ma" }, u.nhan_o_ma), o, loi), khungNut(nut));
+  hienThi(1, h("div", { class: "hero" }, bieuTuong("bd-logo", "logo logo-lon"), h("h1", {}, u.tieu_de)),
+    h("div", { class: "the the-chao" }, cacDoan(u.mo_ta), h("hr"),
+      h("label", { class: "cau-hoi", for: "o-ma" }, u.nhan_o_ma), o, loi), khungNut(nut));
 }
 
 /** Máy đã có session_token đang dở thì hỏi có làm tiếp không. */
