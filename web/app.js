@@ -446,6 +446,39 @@ function oChonTruong(cau) {
   return khung;
 }
 
+/** Ô chọn lớp / năm học (câu A1): bấm để xem danh sách hoặc gõ để tìm (không phân biệt dấu). Mã đã chọn lưu ở tt.tl.A1. */
+function oChonLop(cau, khiDoi) {
+  const o = h("input", { type: "text", id: "o-lop", class: "o-chon", autocomplete: "off", role: "combobox",
+                         placeholder: tt.ui.giao_dien.chon_lop });
+  const ds = h("ul", { class: "ds-truong an", role: "listbox" });
+  const hienChon = () => { const x = cau.options.find((p) => p.ma === tt.tl.A1); o.value = x ? x.text : ""; };
+  const chon = (x) => {
+    tt.tl.A1 = x.ma; hienChon(); ds.classList.add("an"); o.blur();
+    boDauLoi({ target: o });
+    if (khiDoi) khiDoi();
+  };
+  const ve = (tuKhoa) => {                       // vẽ các lớp khớp từ khóa
+    const k = boDau(tuKhoa.trim());
+    const dong = cau.options.filter((x) => boDau(x.text).includes(k)).map((x) => {
+      const li = h("li", { class: "dong-truong", role: "option", "aria-selected": String(x.ma === tt.tl.A1) }, x.text);
+      li.addEventListener("mousedown", (e) => { e.preventDefault(); chon(x); });
+      return li;
+    });
+    ds.replaceChildren(...dong);
+    ds.classList.toggle("an", dong.length === 0);
+  };
+  o.addEventListener("focus", () => { o.select(); ve(""); });
+  o.addEventListener("input", () => ve(o.value));
+  o.addEventListener("blur", () => { ds.classList.add("an"); hienChon(); });
+  o.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") { e.preventDefault(); const dau = ds.querySelector("li"); if (dau) dau.dispatchEvent(new Event("mousedown", { cancelable: true })); }
+    if (e.key === "Escape") o.blur();
+  });
+  hienChon();
+  return h("div", { class: "truong", id: "cau-A1" }, h("label", { class: "cau-hoi", for: "o-lop" }, tenCau(cau)),
+    cau.huong_dan ? h("p", { class: "ghi-chu" }, cau.huong_dan) : "", h("div", { class: "hop-tim" }, o, ds));
+}
+
 function manThongTin(sua = false) {
   const u = tt.ui, a = Object.fromEntries(tt.fb.phan_a_thong_tin.map((c) => [c.id, c]));
   const loi = h("div", { class: "loi an", role: "alert" });
@@ -457,7 +490,7 @@ function manThongTin(sua = false) {
     hienNguoiLon();
     if (capHienTai() !== capCu) { capCu = capHienTai(); truong.capNhat(); }
   };
-  const phanA = [cauChon(a.A1, capNhatNguoiLon), cauChon(a.A2), truong];
+  const phanA = [oChonLop(a.A1, capNhatNguoiLon), cauChon(a.A2), truong];
   if (sua) return manSuaThongTin(phanA, hopNguoiLon, loi, hienNguoiLon);
   const nut = nutGui(u.dong_y.nut, () => guiBatDau(thuThongTin(), loi), loi);
   hienThi(2, tieuDe("dong_y", u.dong_y.tieu_de),
