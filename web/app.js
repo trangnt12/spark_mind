@@ -344,7 +344,7 @@ function manTiepTuc() {
   const u = tt.ui.tiep_tuc;
   const tiep = h("button", { type: "button", onclick: () => { tt.token = localStorage.getItem(KHOA_TOKEN); manB(); } }, u.nut_tiep);
   const moi = h("button", { type: "button", class: "phu", onclick: () => { localStorage.removeItem(KHOA_TOKEN); manMa(); } }, u.nut_moi);
-  hienThi(1, tieuDe("tiep_tuc", u.tieu_de), cacDoan(u.mo_ta), khungNut(tiep, moi));
+  hienThi(1, tieuDe("tiep_tuc", u.tieu_de), h("div", { class: "the" }, cacDoan(u.mo_ta)), khungNut(tiep, moi));
   danhDauGioiThieu();
 }
 
@@ -604,7 +604,7 @@ function manC() {
 
 function manChuaXong() {
   const u = tt.ui.chua_xong;
-  hienThi(6, tieuDe("chua_xong", u.tieu_de), cacDoan(u.mo_ta));
+  hienThi(6, tieuDe("chua_xong", u.tieu_de), h("div", { class: "the" }, cacDoan(u.mo_ta)));
   danhDauGioiThieu();
 }
 
