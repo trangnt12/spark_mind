@@ -2,19 +2,19 @@
   "ten_he_thong": "SparkMind",
   "chao": {
     "tieu_de": "Chào bạn, cảm ơn bạn đã tham gia!",
-    "mo_ta": "Đây là nghiên cứu cho đề án thạc sĩ về cách học sinh, sinh viên dùng AI và tư duy sáng tạo. Bạn sẽ trả lời một khảo sát ngắn và chơi 3 trò chơi nhỏ, tổng cộng khoảng 20–25 phút. Bạn cần mã tham gia do người nghiên cứu gửi.",
+    "mo_ta": "🎓 Đây là nghiên cứu cho đề án thạc sĩ về cách học sinh, sinh viên dùng AI và tư duy sáng tạo.\n📝 Bạn sẽ trả lời một khảo sát ngắn và chơi 3 trò chơi nhỏ, tổng cộng khoảng 20–25 phút.\n🔑 Bạn cần mã tham gia do người nghiên cứu gửi.",
     "nhan_o_ma": "Nhập mã tham gia của bạn",
     "nut": "Tiếp tục"
   },
   "dong_y": {
     "tieu_de": "Thông tin và đồng ý tham gia nghiên cứu",
     "doan": [
-      "Mục đích: tìm hiểu mối liên hệ giữa cách sử dụng các công cụ AI (như ChatGPT, Gemini, Copilot, Claude) và khả năng tư duy sáng tạo của học sinh, sinh viên Việt Nam. Đây là một phần của đề án thạc sĩ ngành Hệ thống thông tin, người thực hiện: Nguyễn Thị Trang, người hướng dẫn: TS. Nguyễn Mạnh Cường.",
-      "Bạn sẽ làm gì: trả lời khảo sát về cách dùng AI, tự đánh giá khả năng sáng tạo của mình và chơi 3 trò chơi ngắn. Thời gian khoảng 20–25 phút.",
-      "Thông tin được thu thập: email, lớp hoặc năm học, giới tính, tên trường, câu trả lời, bài làm trong các trò chơi, thời gian làm bài, và dấu vân tay mã hóa của địa chỉ mạng (không lưu địa chỉ gốc) dùng để phát hiện nộp bài trùng lặp.",
-      "Thông tin được dùng như thế nào: chỉ cho nghiên cứu này. Kết quả được báo cáo dưới dạng tổng hợp. Email không được công bố hay chia sẻ. Bài làm trong các trò chơi có thể được một dịch vụ AI và hai người chấm đọc để chấm điểm, không kèm email hay tên của bạn.",
-      "Đây không phải bài kiểm tra: kết quả không dùng để đánh giá hay xếp loại bạn, và không phải là đánh giá chính thức về năng lực.",
-      "Tham gia là tự nguyện. Bạn có thể dừng bất cứ lúc nào bằng cách đóng trang. Nếu muốn xóa dữ liệu của mình, hãy liên hệ nguyenthitrang.ttd@gmail.com kèm email bạn đã dùng để tham gia."
+      "🎯 Mục đích: tìm hiểu mối liên hệ giữa cách sử dụng các công cụ AI (như ChatGPT, Gemini, Copilot, Claude) và khả năng tư duy sáng tạo của học sinh, sinh viên Việt Nam. Đây là một phần của đề án thạc sĩ ngành Hệ thống thông tin, người thực hiện: Nguyễn Thị Trang, người hướng dẫn: TS. Nguyễn Mạnh Cường.",
+      "🧩 Bạn sẽ làm gì: trả lời khảo sát về cách dùng AI, tự đánh giá khả năng sáng tạo của mình và chơi 3 trò chơi ngắn. Thời gian khoảng 20–25 phút.",
+      "📋 Thông tin được thu thập: email, lớp hoặc năm học, giới tính, tên trường, câu trả lời, bài làm trong các trò chơi, thời gian làm bài, và dấu vân tay mã hóa của địa chỉ mạng (không lưu địa chỉ gốc) dùng để phát hiện nộp bài trùng lặp.",
+      "🔒 Thông tin được dùng như thế nào: chỉ cho nghiên cứu này. Kết quả được báo cáo dưới dạng tổng hợp. Email không được công bố hay chia sẻ. Bài làm trong các trò chơi có thể được một dịch vụ AI và hai người chấm đọc để chấm điểm, không kèm email hay tên của bạn.",
+      "💚 Đây không phải bài kiểm tra: kết quả không dùng để đánh giá hay xếp loại bạn, và không phải là đánh giá chính thức về năng lực.",
+      "🙌 Tham gia là tự nguyện. Bạn có thể dừng bất cứ lúc nào bằng cách đóng trang. Nếu muốn xóa dữ liệu của mình, hãy liên hệ nguyenthitrang.ttd@gmail.com kèm email bạn đã dùng để tham gia."
     ],
     "o_dong_y": "Tôi đã đọc và đồng ý tham gia nghiên cứu này.",
     "o_nguoi_lon": "Tôi dưới 18 tuổi và xác nhận phụ huynh hoặc giáo viên phụ trách của tôi đã biết và đồng ý cho tôi tham gia.",
@@ -38,7 +38,7 @@
   },
   "game_gioi_thieu": {
     "tieu_de_chung": "Phần chơi: 3 trò chơi ngắn",
-    "mo_ta": "Bạn sẽ chơi 3 trò chơi, mỗi trò vài phút. Không có đáp án đúng hay sai tuyệt đối ở trò 1 và 3, bạn cứ làm theo cách của mình. Vui lòng tự làm, không dùng AI hoặc dán nội dung từ nơi khác. Bạn cần làm đủ cả 3 trò.",
+    "mo_ta": "🎮 Bạn sẽ chơi 3 trò chơi, mỗi trò vài phút.\n🌈 Không có đáp án đúng hay sai tuyệt đối ở trò 1 và 3, bạn cứ làm theo cách của mình.\n✋ Vui lòng tự làm, không dùng AI hoặc dán nội dung từ nơi khác.\n⭐ Bạn cần làm đủ cả 3 trò.",
     "nut_bat_dau": "Bắt đầu"
   },
   "game1": {
@@ -64,7 +64,7 @@
   },
   "chua_xong": {
     "tieu_de": "Bạn đã hoàn thành phần này",
-    "mo_ta": "Các trò chơi còn lại sẽ có trong thời gian tới. Bạn lưu lại mã tham gia để quay lại làm tiếp."
+    "mo_ta": "🕹️ Các trò chơi còn lại sẽ có trong thời gian tới.\n🔑 Bạn lưu lại mã tham gia để quay lại làm tiếp."
   },
   "chung": {
     "tien_do": "Bước {b} trên {t}",
@@ -77,7 +77,7 @@
   },
   "tiep_tuc": {
     "tieu_de": "Tiếp tục bài đang làm?",
-    "mo_ta": "Máy này có một bài làm dở. Bạn muốn làm tiếp hay bắt đầu lại bằng một mã khác?",
+    "mo_ta": "📌 Máy này có một bài làm dở.\n🤔 Bạn muốn làm tiếp hay bắt đầu lại bằng một mã khác?",
     "nut_tiep": "Tiếp tục bài đang làm",
     "nut_moi": "Dùng mã khác"
   },

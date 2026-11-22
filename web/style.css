@@ -17,12 +17,13 @@
   --trang: #fff;
   --bo: 18px;
   --cao-dau: 64px;
+  --rong: 1200px;
   --bong-the: 0 2px 0 #D3E9D6, 0 8px 20px rgba(31, 122, 46, .08);
 }
 * { box-sizing: border-box; }
 html { -webkit-text-size-adjust: 100%; }
 body {
-  margin: 0; font: 500 17px/1.55 "Nunito", system-ui, "Segoe UI", Roboto, sans-serif; color: var(--chu);
+  margin: 0; font: 500 17px/1.75 "Nunito", system-ui, "Segoe UI", Roboto, sans-serif; color: var(--chu);
   background: var(--nen) radial-gradient(circle at 100% 0, #E3F6E6 0, transparent 320px) no-repeat;
 }
 svg { display: block; }
@@ -32,16 +33,16 @@ header {
   position: sticky; top: 0; z-index: 10; height: var(--cao-dau); padding: 8px 16px; background: var(--trang);
   box-shadow: 0 2px 0 #D3E9D6;
 }
-.dau { max-width: 560px; margin: 0 auto; height: 32px; display: flex; align-items: center; justify-content: space-between; }
+.dau { max-width: var(--rong); margin: 0 auto; height: 32px; display: flex; align-items: center; justify-content: space-between; }
 .ten-hieu { display: flex; align-items: center; gap: 8px; }
 .logo { width: 30px; height: 30px; }
 .ten { font-weight: 800; font-size: 19px; color: var(--xanh-dam); }
 .nhan-tien-do { font-size: 14px; font-weight: 700; color: var(--chu-phu); }
-.tien-do { max-width: 560px; height: 10px; margin: 6px auto 0; background: var(--xanh-nhat); border-radius: 99px; overflow: hidden; }
+.tien-do { max-width: var(--rong); height: 10px; margin: 6px auto 0; background: var(--xanh-nhat); border-radius: 99px; overflow: hidden; }
 .thanh { height: 100%; width: 0; background: var(--xanh); border-radius: 99px; transition: width .4s ease; box-shadow: inset 0 -3px 0 rgba(0, 0, 0, .12); }
 
 /* ---------- Bố cục ---------- */
-main { max-width: 560px; margin: 0 auto; padding: 20px 16px 24px; outline: none; }
+main { max-width: var(--rong); margin: 0 auto; padding: 20px 16px 24px; outline: none; }
 main.vao { animation: truot-vao .25s ease-out; }
 @keyframes truot-vao { from { opacity: 0; transform: translateX(28px); } to { opacity: 1; transform: none; } }
 h1 { font-size: 26px; line-height: 1.25; font-weight: 800; margin: 4px 0 12px; }
@@ -50,15 +51,15 @@ h2 { font-size: 20px; line-height: 1.3; font-weight: 800; margin: 0 0 12px; colo
 .hero .logo-lon { width: 76px; height: 76px; margin-bottom: 8px; animation: nhun 2.4s ease-in-out infinite; }
 @keyframes nhun { 0%, 100% { transform: translateY(0) rotate(-3deg); } 50% { transform: translateY(-6px) rotate(3deg); } }
 .the { background: var(--trang); border-radius: var(--bo); padding: 18px 16px; margin-bottom: 16px; box-shadow: var(--bong-the); }
-.mo-ta, .ghi-chu { color: var(--chu-phu); font-size: 16px; margin: 0 0 10px; }
-.cau-hoi { margin: 0 0 8px; font-weight: 800; font-size: 17px; }
-.truong { margin-bottom: 22px; border-radius: 14px; }
+.mo-ta, .ghi-chu { color: var(--chu-phu); font-size: 16px; margin: 0 0 12px; max-width: 78ch; }
+.cau-hoi { display: block; line-height: 1.5; margin: 0 0 14px; font-weight: 800; font-size: 17px; }
+.truong { margin-bottom: 28px; border-radius: 14px; }
 .truong:last-child { margin-bottom: 0; }
 .sao { color: var(--loi-chu); }
 
 /* ---------- Ô nhập chữ ---------- */
 input[type=text], input[type=email] {
-  width: 100%; min-height: 52px; font: inherit; font-size: 17px; padding: 10px 14px; color: var(--chu);
+  width: 100%; min-height: 56px; font: inherit; font-size: 17px; padding: 10px 14px; color: var(--chu);
   border: 2px solid var(--vien); border-radius: 14px; background: var(--trang);
 }
 input[type=text]:focus, input[type=email]:focus { outline: 3px solid var(--vang); outline-offset: 1px; border-color: var(--xanh-dam); }
@@ -212,10 +213,28 @@ button.nho.phu { margin-top: 8px; }
 .dong-y button.xoa-y { flex: none; width: 48px; height: 48px; min-height: 48px; padding: 0; border-radius: 50%; color: var(--loi-chu); box-shadow: 0 3px 0 var(--vien); }
 .dong-y button.xoa-y svg { width: 22px; height: 22px; }
 
-/* ---------- Máy tính: giữ cột giữa, thoáng hơn ---------- */
+/* ô "Mục khác": khi được focus có viền rõ */
+.lua-chon input[type=text].o-khac:focus { border: 2px solid var(--xanh-dam); border-radius: 10px; padding: 4px 10px; background: var(--trang); outline: 3px solid var(--vang); outline-offset: 1px; }
+
+/* ---------- Tablet và máy tính: trang rộng tới 1200px ---------- */
 @media (min-width: 600px) {
   main { padding-top: 32px; }
-  .thanh-nut { margin-left: 0; margin-right: 0; padding-left: 0; padding-right: 0; }
+  h1 { font-size: 30px; }
+  .thanh-nut { margin-left: 0; margin-right: 0; padding-left: 0; padding-right: 0; align-items: center; }
+  .thanh-nut > * { width: 100%; max-width: 460px; }
+  .the { padding: 24px 28px; }
+  .thanh-nut .loi { max-width: 640px; }
+}
+/* Các lựa chọn xếp 2 cột trên tablet, 3 cột trên màn rộng */
+@media (min-width: 720px) {
+  .ds-lua-chon { display: grid; grid-template-columns: repeat(2, 1fr); gap: 4px 14px; }
+  .ds-lua-chon .lua-chon { margin: 4px 0; }
+  .chu-giai { display: flex; flex-wrap: wrap; gap: 4px 18px; }
+  .hang-luoi { display: grid; grid-template-columns: 1fr minmax(300px, 380px); align-items: center; gap: 16px; }
+  .hang-luoi > p { margin: 0; }
+}
+@media (min-width: 1000px) {
+  .ds-lua-chon { grid-template-columns: repeat(3, 1fr); }
 }
 
 /* ---------- Người dùng bật "giảm chuyển động": tắt mọi hiệu ứng ---------- */

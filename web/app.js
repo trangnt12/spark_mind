@@ -57,7 +57,7 @@ function bieuTuong(ten, lop = "") {
 
 /** Đổi sang một màn hình: cập nhật thanh tiến độ, chạy hiệu ứng trượt vào (250ms) rồi vẽ nội dung. */
 function hienThi(buoc, ...nodes) {
-  goc.replaceChildren(...nodes);
+  goc.replaceChildren(...nodes.flat());   // nodes có thể chứa mảng (vd. các đoạn mô tả)
   goc.classList.remove("vao");
   void goc.offsetWidth;                       // buộc trình duyệt chạy lại hiệu ứng
   goc.classList.add("vao");
@@ -68,6 +68,11 @@ function hienThi(buoc, ...nodes) {
     tt.ui.chung.tien_do.replace("{b}", buoc).replace("{t}", TONG_BUOC);
   window.scrollTo(0, 0);
   goc.focus({ preventScroll: true });         // để người dùng bàn phím / đọc màn hình bắt đầu từ đầu màn mới
+}
+
+/** Chữ mô tả có nhiều dòng (ngăn bằng \n) thì tách thành các đoạn ngắn dễ đọc. */
+function cacDoan(chu) {
+  return chu.split("\n").map((d) => h("p", { class: "mo-ta" }, d));
 }
 
 /** Tiêu đề màn hình có emoji trang trí phía trên (emoji lấy từ research_ui.json). */
@@ -175,13 +180,16 @@ function oGoKhac(cau, o, nhap) {
 /** Một lựa chọn (radio hoặc checkbox) nhớ vào tt.tl. */
 function oLuaChon(cau, o, nhieu) {
   const nhap = h("input", { type: nhieu ? "checkbox" : "radio", name: cau.id, value: o.ma });
+  const go = o.khac ? oGoKhac(cau, o, nhap) : null;
   const cu = tt.tl[cau.id];
   nhap.checked = nhieu ? (cu || []).includes(o.ma) : cu === o.ma;
   nhap.addEventListener("change", () => {
     if (!nhieu) tt.tl[cau.id] = o.ma;
     else tt.tl[cau.id] = [...goc.querySelectorAll(`input[name="${cau.id}"]:checked`)].map((x) => +x.value);
+    // Chọn "Mục khác" thì đưa con trỏ vào ô gõ chữ (hoãn 0ms để không bị cú bấm nhãn giành lại focus)
+    if (go && nhap.checked) setTimeout(() => go.focus(), 0);
   });
-  return h("label", { class: "lua-chon" }, nhap, h("span", {}, o.text), o.khac ? oGoKhac(cau, o, nhap) : "");
+  return h("label", { class: "lua-chon" }, nhap, h("span", {}, o.text), go || "");
 }
 
 /** Câu chọn một hoặc chọn nhiều, theo mô tả trong form_b.json. */
@@ -190,7 +198,7 @@ function cauChon(cau, onChange) {
   const khung = h("div", { class: "truong", id: "cau-" + cau.id },
     h("p", { class: "cau-hoi" }, tenCau(cau)),
     cau.huong_dan ? h("p", { class: "ghi-chu" }, cau.huong_dan) : "",
-    cau.options.map((o) => oLuaChon(cau, o, nhieu)));
+    h("div", { class: "ds-lua-chon" }, cau.options.map((o) => oLuaChon(cau, o, nhieu))));
   if (onChange) khung.addEventListener("change", onChange);
   return khung;
 }
@@ -260,7 +268,7 @@ function manMa() {
     return 200;
   }, loi);
   hienThi(1, h("div", { class: "hero" }, bieuTuong("bd-logo", "logo logo-lon"), tieuDe("chao", u.tieu_de)),
-    h("p", { class: "mo-ta" }, u.mo_ta),
+    cacDoan(u.mo_ta),
     h("div", { class: "the" }, h("label", { class: "cau-hoi", for: "o-ma" }, u.nhan_o_ma), o, loi), khungNut(nut));
 }
 
@@ -269,7 +277,7 @@ function manTiepTuc() {
   const u = tt.ui.tiep_tuc;
   const tiep = h("button", { type: "button", onclick: () => { tt.token = localStorage.getItem(KHOA_TOKEN); manB(); } }, u.nut_tiep);
   const moi = h("button", { type: "button", class: "phu", onclick: () => { localStorage.removeItem(KHOA_TOKEN); manMa(); } }, u.nut_moi);
-  hienThi(1, tieuDe("tiep_tuc", u.tieu_de), h("p", { class: "mo-ta" }, u.mo_ta), khungNut(tiep, moi));
+  hienThi(1, tieuDe("tiep_tuc", u.tieu_de), cacDoan(u.mo_ta), khungNut(tiep, moi));
 }
 
 // ---------- Màn 2: thông tin và đồng ý ----------
@@ -495,7 +503,7 @@ function manC() {
 
 function manChuaXong() {
   const u = tt.ui.chua_xong;
-  hienThi(6, tieuDe("chua_xong", u.tieu_de), h("p", { class: "mo-ta" }, u.mo_ta));
+  hienThi(6, tieuDe("chua_xong", u.tieu_de), cacDoan(u.mo_ta));
 }
 
 // ---------- Khởi động ----------

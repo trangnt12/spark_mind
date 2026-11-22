@@ -9,7 +9,7 @@ const g1 = { cacY: [], paste: 0, roiTab: 0, conLai: 0, hanChot: 0, nhip: null, d
 
 function manGioiThieu() {
   const u = tt.ui.game_gioi_thieu;
-  hienThi(5, tieuDe("game", u.tieu_de_chung), h("p", { class: "mo-ta" }, u.mo_ta),
+  hienThi(5, tieuDe("game", u.tieu_de_chung), cacDoan(u.mo_ta),
     khungNut(h("button", { type: "button", onclick: manGame1 }, u.nut_bat_dau)));
 }
 
