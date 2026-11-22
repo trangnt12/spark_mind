@@ -43,16 +43,16 @@ header {
 .thanh { height: 100%; width: 0; background: var(--xanh); border-radius: 99px; transition: width .4s ease; box-shadow: inset 0 -3px 0 rgba(0, 0, 0, .12); }
 
 /* ---------- Bố cục ---------- */
-main { flex: 1; width: 100%; max-width: var(--rong); margin: 0 auto; padding: 16px 12px 28px; outline: none; }
+main { flex: 1; width: 100%; max-width: var(--rong); margin: 0 auto; padding: 20px 14px 36px; outline: none; }
 main.vao { animation: truot-vao .25s ease-out; }
 @keyframes truot-vao { from { opacity: 0; transform: translateX(28px); } to { opacity: 1; transform: none; } }
 h1 { font-size: 26px; line-height: 1.25; font-weight: 800; margin: 4px 0 12px; }
 h2 { font-size: 20px; line-height: 1.3; font-weight: 800; margin: 0 0 12px; color: var(--xanh-dam); }
 @keyframes nhun { 0%, 100% { transform: translateY(0) rotate(-3deg); } 50% { transform: translateY(-6px) rotate(3deg); } }
-.the { background: var(--trang); border-radius: var(--bo); padding: 16px 14px; margin-bottom: 14px; box-shadow: var(--bong-the); }
+.the { background: var(--trang); border-radius: var(--bo); padding: 20px 18px; margin-bottom: 20px; box-shadow: var(--bong-the); }
 .mo-ta, .ghi-chu { color: var(--chu-phu); font-size: 16px; margin: 0 0 12px; max-width: 78ch; }
 .cau-hoi { display: block; line-height: 1.5; margin: 0 0 14px; font-weight: 800; font-size: 17px; }
-.truong { margin-bottom: 24px; border-radius: 14px; }
+.truong { margin-bottom: 28px; border-radius: 14px; }
 .truong:last-child { margin-bottom: 0; }
 .sao { color: var(--loi-chu); }
 
@@ -181,7 +181,7 @@ footer {
 .ds-truong .dong-khac { font-weight: 800; color: var(--xanh-dam); background: var(--xanh-nhat); position: sticky; bottom: 0; }
 button.nho.phu { margin-top: 8px; }
 .the-chao .mo-ta { color: var(--chu); margin-bottom: 8px; }
-.the-chao hr { border: 0; border-top: 2px dashed #D3E9D6; margin: 14px 0 16px; }
+.the-chao hr { border: 0; border-top: 2px dashed #D3E9D6; margin: 20px 0 22px; }
 
 /* ---------- Thông báo hoàn thành một phần: dấu tick nảy và pháo giấy nhẹ ---------- */
 .khen {
@@ -248,7 +248,8 @@ button.nho.phu { margin-top: 8px; }
   .thanh-nut { justify-content: center; }
   .thanh-nut > * { max-width: 460px; }
   .thanh-nut .loi { max-width: none; }
-  .the { padding: 22px 24px; }
+  .the { padding: 26px 28px; }
+  .banner + .the { padding-top: 52px; }
 }
 @media (min-width: 720px) {
   .chu-giai { display: flex; flex-wrap: wrap; gap: 4px 18px; }
@@ -309,9 +310,10 @@ body.man-gioi-thieu::after { width: 300px; height: 300px; right: -120px; top: 22
 .hat i:nth-child(3n) { border-radius: 0 100% 0 100%; background: rgba(190, 240, 196, .7); }
 @keyframes bay-len { 0% { transform: translateY(0) rotate(0); opacity: 0; } 15% { opacity: 1; } 100% { transform: translateY(-260px) rotate(200deg); opacity: 0; } }
 /* Thẻ nội dung đè lên mép dưới banner */
-.banner + .the { position: relative; margin-top: -30px; }
+.banner + .the { position: relative; margin-top: -30px; padding-top: 48px; }
+.banner { margin-bottom: 0; }
 /* Dòng mô tả: emoji trong bong bóng tròn bên trái */
-.dong-mo-ta { display: flex; align-items: center; gap: 12px; }
+.dong-mo-ta { display: flex; align-items: center; gap: 14px; margin: 0 0 16px; }
 .bong { flex: none; display: grid; place-items: center; width: 42px; height: 42px; border-radius: 50%; background: var(--xanh-nhat); font-size: 22px; box-shadow: 0 3px 0 #BFE3C5; }
 body.man-gioi-thieu .dong-mo-ta .bong { animation: nay-bong .5s cubic-bezier(.2, 1.6, .4, 1) both; animation-delay: inherit; }
 @keyframes nay-bong { from { transform: scale(0) rotate(-40deg); } }
