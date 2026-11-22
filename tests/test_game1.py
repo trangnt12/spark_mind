@@ -115,3 +115,22 @@ def test_content_khong_co_ghi_chu(client):
         r = c.get(duong)
         assert r.status_code == 200 and "_ghi_chu" not in r.text
     assert "phan_b_hanh_vi" in c.get("/api/content/form-b").json()
+
+
+def test_anh_do_vat_va_emoji_thay_the():
+    """Mỗi đồ vật có đường dẫn ảnh, chữ thay thế và emoji; thiếu file ảnh thì giao diện dùng emoji."""
+    import json
+    goc = Path(__file__).resolve().parents[1]
+    nd = json.loads((goc / "content/games/game1.json").read_text(encoding="utf-8"))
+    for dv in nd["do_vat"]:
+        assert dv["anh"].startswith("assets/game1/") and dv["mo_ta_anh"] and dv["emoji"]
+    js = (goc / "web/game1.js").read_text(encoding="utf-8")
+    assert 'addEventListener("error", emoji)' in js and "dv.emoji" in js   # ảnh lỗi/thiếu -> emoji
+
+
+def test_start_tra_ve_truong_anh_du_file_ảnh_co_hay_khong(client, monkeypatch):
+    """Máy chủ trả anh/emoji cho trình duyệt; việc file ảnh có tồn tại hay không không làm lỗi game."""
+    c, db = client
+    t = nguoi_moi(c, db)
+    dv = c.post(f"{B}/start", json={"session_token": t}).json()["do_vat"]
+    assert dv["emoji"] and dv["mo_ta_anh"] and dv["anh"].endswith(".png")

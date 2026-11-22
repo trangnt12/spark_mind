@@ -57,3 +57,8 @@ button.nho { min-height: 40px; font-size: 15px; width: auto; padding: 0 14px; ma
 .sao { color: var(--do); }
 .lua-chon input.o-khac { flex: 1; min-width: 0; width: auto; height: auto; min-height: 40px; margin: 0; padding: 4px 8px;
   font-size: 17px; border: 0; border-bottom: 1.5px solid var(--vien); border-radius: 0; background: transparent; }
+
+/* Ảnh đồ vật game 1: vừa màn hình điện thoại, giữ tỷ lệ; khung cao cố định để emoji thay thế không làm vỡ bố cục */
+.anh-do-vat { display: flex; align-items: center; justify-content: center; height: 200px; margin-bottom: 12px; background: #f3f4f6; border-radius: 8px; overflow: hidden; }
+.anh-do-vat img { max-width: 100%; max-height: 100%; object-fit: contain; }
+.anh-emoji { font-size: 96px; line-height: 1; }

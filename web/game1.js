@@ -100,11 +100,22 @@ async function nopGame1(hopLoi) {
 
 // ---------- Vẽ màn game 1 ----------
 
+/** Ảnh đồ vật. Ảnh thiếu hoặc lỗi thì đổi thành emoji thay thế (khung giữ nguyên, giao diện không vỡ). */
+function veAnh(dv) {
+  const khung = h("div", { class: "anh-do-vat" });
+  const emoji = () => khung.replaceChildren(h("span", { class: "anh-emoji", role: "img", "aria-label": dv.mo_ta_anh || dv.ten }, dv.emoji || "❓"));
+  if (!dv.anh) { emoji(); return khung; }
+  const img = h("img", { src: dv.anh, alt: dv.mo_ta_anh || dv.ten, decoding: "async", fetchpriority: "high" });
+  img.addEventListener("error", emoji);
+  khung.append(img);
+  return khung;
+}
+
 /** Khung hiển thị đồ vật, cách dùng thông thường, ví dụ và hướng dẫn. */
 function veDeBai(u, dv, nd) {
   const vd = nd.vi_du;
   return h("div", { class: "the" },
-    h("p", { class: "ghi-chu" }, u.nhan_do_vat), h("h2", {}, dv.ten),
+    h("p", { class: "ghi-chu" }, u.nhan_do_vat), veAnh(dv), h("h2", {}, dv.ten),
     h("p", {}, h("b", {}, u.nhan_thong_thuong + " "), dv.cach_dung_thuong),
     h("p", { class: "mo-ta" }, nd.huong_dan),
     h("p", { class: "ghi-chu" }, `${vd.do_vat} (${vd.cach_dung_thuong}): ` + vd.vi_du_khac.join("; ")));
