@@ -57,3 +57,6 @@ Chi tiết từng chữ đổi: `docs/form_changes_log.md`. Nguyên tắc: code 
 - **Dữ liệu hướng 2:** lưu riêng (`participants`, `behavior_answers`, `self_assessment`...), không vào `survey_form1`.
 - **Form v2 (đổi chữ 20/11):** 460 form cũ được đánh dấu `nguon="excel_import"`.
 
+
+## Nút Quay lại (22/11/2026)
+- Người chơi được quay lại sửa phần A, B, C trước khi vào game 1 (trong game thì không). Sửa ghi đè câu trả lời cũ (vẫn một tài liệu mỗi người), ghi `edited_at` và `edit_count` (hoặc `info_edited_at` ở participants). Email và đồng ý ban đầu không sửa được. Không có `edit` thì nộp lại vẫn trả 409.

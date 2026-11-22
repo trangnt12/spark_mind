@@ -205,3 +205,32 @@ def test_header_x_forwarded_for_gia_bi_bo_qua(client):
     c, _ = client
     ma_tra = [goi_kiem_tra(c, 1, headers={"x-forwarded-for": f"9.9.9.{i}"})[0] for i in range(11)]
     assert ma_tra[-1] == 429  # đổi header mỗi lần vẫn không né được giới hạn
+
+
+def test_sua_phan_da_nop_khi_quay_lai(client):
+    """Nút Quay lại: gửi lại với edit=true thì ghi đè (vẫn một tài liệu), không có edit thì vẫn 409."""
+    c, db = client
+    token = bat_dau(c, ma_moi(db)).json()["session_token"]
+    hv, tdg = {"session_token": token, **HANH_VI}, {"session_token": token, **TU_DANH_GIA}
+    assert c.post("/api/research/behavior", json=hv).status_code == 200
+    assert c.post("/api/research/self-assessment", json=tdg).status_code == 200
+    assert c.post("/api/research/behavior", json=hv).status_code == 409
+    assert c.post("/api/research/behavior", json={**hv, "B7": 3, "edit": True}).status_code == 200
+    assert c.post("/api/research/self-assessment", json={**tdg, "C1": 1, "C2": 1, "C3": 1, "C4": 1, "C5": 1, "edit": True}).status_code == 200
+    assert db["behavior_answers"].count_documents({}) == 1 and db["self_assessment"].count_documents({}) == 1
+    assert db["behavior_answers"].find_one()["b7_after_answer"] == "3"
+    assert db["behavior_answers"].find_one()["edit_count"] == 1
+    assert db["self_assessment"].find_one()["creativity_score"] == 0.0
+
+
+def test_sua_thong_tin_phan_a(client):
+    c, db = client
+    token = bat_dau(c, ma_moi(db)).json()["session_token"]
+    sua = {"session_token": token, "grade": 9, "gender": 2, "school_name": " Trường mới ", "guardian_consent": False}
+    r = c.post("/api/research/info/update", json=sua)
+    assert r.status_code == 200
+    nguoi = db["participants"].find_one()
+    assert (nguoi["grade"], nguoi["gender"], nguoi["school_name"]) == ("9", "2", "Trường mới")
+    assert nguoi["email"] and nguoi["consent"] is True               # email, đồng ý ban đầu giữ nguyên
+    assert c.post("/api/research/info/update", json={**sua, "grade": 3}).status_code == 422   # dưới 18 thiếu xác nhận
+    assert c.post("/api/research/info/update", json={**sua, "session_token": "sai"}).status_code == 401

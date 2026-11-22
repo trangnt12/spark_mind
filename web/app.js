@@ -10,7 +10,7 @@ const LOP_CAN_NGUOI_LON = 7;   // mã A1 từ 1 đến 7 là lớp 6–12 (dư�
 const CHUA_TUNG_DUNG = 4;      // mã A4 "Chưa bao giờ sử dụng"
 
 // Trạng thái trong bộ nhớ: nội dung, mã, token, câu trả lời, giờ bắt đầu phần B
-const tt = { ui: null, fb: null, ma: "", token: "", tl: {}, batDauB: 0, truong: [] };
+const tt = { ui: null, fb: null, ma: "", token: "", tl: {}, batDauB: 0, truong: [], daNop: { B: false, C: false } };
 const goc = document.getElementById("man-hinh");
 
 // ---------- Hàm nhỏ dùng chung ----------
@@ -78,6 +78,11 @@ function cacDoan(chu) {
 /** Tiêu đề màn hình có emoji trang trí phía trên (emoji lấy từ research_ui.json). */
 function tieuDe(khoa, chu) {
   return h("h1", {}, h("span", { class: "emo", "aria-hidden": "true" }, tt.ui.giao_dien.emoji[khoa] || ""), chu);
+}
+
+/** Nút "Quay lại" (nút phụ): về màn trước để đổi câu trả lời, câu đã chọn vẫn được giữ. */
+function nutQuayLai(veMan) {
+  return h("button", { type: "button", class: "phu", onclick: veMan }, tt.ui.giao_dien.nut_quay_lai);
 }
 
 /** Thanh nút dính đáy màn hình: chứa hộp lỗi chung (nếu có) và nút chính. */
@@ -378,22 +383,52 @@ function oChonTruong(cau) {
   return khung;
 }
 
-function manThongTin() {
+function manThongTin(sua = false) {
   const u = tt.ui, a = Object.fromEntries(tt.fb.phan_a_thong_tin.map((c) => [c.id, c]));
   const loi = h("div", { class: "loi an", role: "alert" });
   const hopNguoiLon = h("div", { id: "hop-nguoi-lon" }, oTich("nguoiLon", u.dong_y.o_nguoi_lon));
   const truong = oChonTruong(a.A3);
-  const capNhatNguoiLon = () => { hopNguoiLon.classList.toggle("an", !(tt.tl.A1 <= LOP_CAN_NGUOI_LON)); truong.capNhat(); };
+  const hienNguoiLon = () => hopNguoiLon.classList.toggle("an", !(tt.tl.A1 <= LOP_CAN_NGUOI_LON));
+  let capCu = capHienTai();
+  const capNhatNguoiLon = () => {               // đổi lớp: chỉ xóa trường đã chọn khi đổi sang cấp học khác
+    hienNguoiLon();
+    if (capHienTai() !== capCu) { capCu = capHienTai(); truong.capNhat(); }
+  };
+  const phanA = [cauChon(a.A1, capNhatNguoiLon), cauChon(a.A2), truong];
+  if (sua) return manSuaThongTin(phanA, hopNguoiLon, loi, hienNguoiLon);
   const nut = nutGui(u.dong_y.nut, () => guiBatDau(thuThongTin(), loi), loi);
   hienThi(2, tieuDe("dong_y", u.dong_y.tieu_de),
     h("div", { class: "the" }, u.dong_y.doan.map((d) => h("p", { class: "mo-ta" }, d))),
     h("div", { class: "the" }, h("h2", {}, tt.fb.tieu_de), h("p", { class: "mo-ta" }, tt.fb.mo_ta),
       h("h2", {}, tt.fb.tieu_de_phan.A),
-      oChu("o-email", u.thong_tin.nhan_email, u.thong_tin.ghi_chu_email, "email", "email"),
-      cauChon(a.A1, capNhatNguoiLon), cauChon(a.A2),
-      truong),
+      oChu("o-email", u.thong_tin.nhan_email, u.thong_tin.ghi_chu_email, "email", "email"), phanA),
     h("div", { class: "the" }, oTich("dongY", u.dong_y.o_dong_y), hopNguoiLon), khungNut(loi, nut));
-  capNhatNguoiLon();
+  hienNguoiLon();
+}
+
+/** Màn sửa phần A (sau khi bấm Quay lại từ form B): chỉ lớp, giới tính, trường; không hỏi lại email và đồng ý. */
+function manSuaThongTin(phanA, hopNguoiLon, loi, hienNguoiLon) {
+  const nut = nutGui(tt.ui.giao_dien.nut_luu, () => guiSuaThongTin(thuSuaThongTin(), loi), loi);
+  hienThi(2, h("div", { class: "the" }, h("h2", {}, tt.fb.tieu_de_phan.A), phanA, hopNguoiLon),
+    khungNut(loi, nut, nutQuayLai(manB)));
+  hienNguoiLon();
+}
+
+/** Thu phần A khi sửa. Trả về { body } hoặc { loi }. */
+function thuSuaThongTin() {
+  const t = tt.tl, canNguoiLon = t.A1 <= LOP_CAN_NGUOI_LON;
+  if (thieuCau(["A1", "A2", "A3"])) return { loi: tt.ui.loi.thieu_cau };
+  if (canNguoiLon && !t.nguoiLon) { loiTai("nguoiLon", tt.ui.loi.thieu_nguoi_lon); cuonDenLoi(); return { loi: tt.ui.loi.thieu_nguoi_lon }; }
+  return { body: { session_token: tt.token, grade: t.A1, gender: t.A2, school_name: t.A3,
+                   guardian_consent: !!(canNguoiLon && t.nguoiLon) } };
+}
+
+async function guiSuaThongTin(kq, hopLoi) {
+  if (kq.loi) { baoLoi(hopLoi, kq.loi); return 200; }
+  const r = await goiApi("/api/research/info/update", kq.body);
+  if (r.status !== 200) { loiPhien(hopLoi, r.status); return r.status; }
+  manB();
+  return 200;
 }
 
 /** Gọi /start. Thành công thì lưu session_token (chỉ token) và sang form B. */
@@ -445,11 +480,12 @@ function thuHanhVi() {
 
 async function guiHanhVi(kq, hopLoi) {
   if (kq.loi) { baoLoi(hopLoi, kq.loi); return 200; }
-  const r = await goiApi("/api/research/behavior", kq.body);
+  const r = await goiApi("/api/research/behavior", { ...kq.body, edit: tt.daNop.B });   // đã nộp rồi thì lần này là sửa
   if (r.status === 409) { manC(); return 409; }          // đã nộp phần này rồi: đi tiếp
   if (r.status !== 200) { loiPhien(hopLoi, r.status); return r.status; }
   manC();
-  chucMung();
+  if (!tt.daNop.B) chucMung();                           // chỉ khen lần hoàn thành đầu, không khen lúc sửa
+  tt.daNop.B = true;
   return 200;
 }
 
@@ -467,7 +503,7 @@ function manB() {
   const capNhat = () => hopB.classList.toggle("an", tt.tl.A4 === CHUA_TUNG_DUNG);
   if (!tt.batDauB) tt.batDauB = Date.now();   // bắt đầu tính giờ làm bài
   const nut = nutGui(u.nut, () => guiHanhVi(thuHanhVi(), loi), loi);
-  hienThi(3, h("div", { class: "the" }, cauChon(a4, capNhat), hopB), khungNut(loi, nut));
+  hienThi(3, h("div", { class: "the" }, cauChon(a4, capNhat), hopB), khungNut(loi, nut, nutQuayLai(() => manThongTin(true))));
   capNhat();
 }
 
@@ -483,10 +519,11 @@ function thuTuDanhGia() {
 
 async function guiTuDanhGia(kq, hopLoi) {
   if (kq.loi) { baoLoi(hopLoi, kq.loi); return 200; }
-  const r = await goiApi("/api/research/self-assessment", kq.body);
+  const r = await goiApi("/api/research/self-assessment", { ...kq.body, edit: tt.daNop.C });
   if (r.status !== 200 && r.status !== 409) { loiPhien(hopLoi, r.status); return r.status; }
   manGioiThieu();
-  chucMung();
+  if (!tt.daNop.C) chucMung();
+  tt.daNop.C = true;
   return 200;
 }
 
@@ -496,7 +533,7 @@ function manC() {
   const nut = nutGui(u.nut, () => guiTuDanhGia(thuTuDanhGia(), loi), loi);
   hienThi(4, h("div", { class: "the" }, h("h2", {}, tt.fb.tieu_de_phan.C),
     luoi(cauC.filter((c) => c.id !== "C6"), tt.fb.c_luoi),
-      cauChon(cauC.find((c) => c.id === "C6"))), khungNut(loi, nut));
+      cauChon(cauC.find((c) => c.id === "C6"))), khungNut(loi, nut, nutQuayLai(manB)));
 }
 
 // ---------- Màn 5: giới thiệu và game 1 (file game1.js). Màn 6: tạm thời (game 2 và 3 làm sau) ----------

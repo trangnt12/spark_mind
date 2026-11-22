@@ -143,16 +143,40 @@ def _luu_mot_lan(db, ten_bang: str, tai_lieu: dict) -> None:
         raise LoiNghiepVu(409, "Bạn đã nộp phần này rồi.")
 
 
-def luu_hanh_vi(db, session_token: str, tra_loi: dict) -> None:
+def _ghi_de(db, ten_bang: str, participant_id, tai_lieu: dict) -> None:
+    """Người dùng bấm "Quay lại" rồi sửa: ghi đè câu trả lời cũ (vẫn chỉ một tài liệu mỗi người),
+    ghi giờ sửa gần nhất và số lần sửa để còn biết."""
+    db[ten_bang].update_one({"participant_id": participant_id},
+                            {"$set": {**tai_lieu, "edited_at": datetime.now()}, "$inc": {"edit_count": 1}},
+                            upsert=True)
+
+
+def _luu(db, ten_bang: str, nguoi: dict, tai_lieu: dict, ghi_de: bool) -> None:
+    """Lưu một phần: lần đầu thì chặn nộp trùng (409), còn đang sửa thì ghi đè."""
+    if ghi_de:
+        _ghi_de(db, ten_bang, nguoi["_id"], tai_lieu)
+    else:
+        _luu_mot_lan(db, ten_bang, {"participant_id": nguoi["_id"], **tai_lieu})
+
+
+def luu_hanh_vi(db, session_token: str, tra_loi: dict, ghi_de: bool = False) -> None:
     """Lưu câu trả lời form B (tra_loi đã được kiểm tra hợp lệ, khóa theo erd.dbml)."""
-    nguoi = tim_nguoi(db, session_token)
-    _luu_mot_lan(db, COL_HANH_VI, {"participant_id": nguoi["_id"], **tra_loi})
+    _luu(db, COL_HANH_VI, tim_nguoi(db, session_token), tra_loi, ghi_de)
 
 
-def luu_tu_danh_gia(db, session_token: str, tra_loi: dict) -> float:
+def luu_tu_danh_gia(db, session_token: str, tra_loi: dict, ghi_de: bool = False) -> float:
     """Lưu C1..C5, C6 và điểm sáng tạo tự nhận thức. Trả về điểm."""
     nguoi = tim_nguoi(db, session_token)
     diem = tinh_diem_sang_tao([tra_loi[f"c{i}"] for i in range(1, 6)])
-    _luu_mot_lan(db, COL_TU_DANH_GIA, {"participant_id": nguoi["_id"], **tra_loi,
-                                        "creativity_score": diem})
+    _luu(db, COL_TU_DANH_GIA, nguoi, {**tra_loi, "creativity_score": diem}, ghi_de)
     return diem
+
+
+def sua_thong_tin(db, session_token: str, d: dict) -> None:
+    """Sửa lớp, giới tính, trường (phần A) sau khi đã bắt đầu. Email và đồng ý ban đầu giữ nguyên."""
+    nguoi = tim_nguoi(db, session_token)
+    if d["grade"] <= LOP_DUOI_18 and d.get("guardian_consent") is not True:
+        raise LoiNghiepVu(422, "Dưới 18 tuổi cần có sự đồng ý của phụ huynh hoặc giáo viên.")
+    db[COL_NGUOI].update_one({"_id": nguoi["_id"]}, {"$set": {
+        "grade": str(d["grade"]), "gender": str(d["gender"]), "school_name": d["school_name"].strip(),
+        "guardian_consent": bool(d.get("guardian_consent")), "info_edited_at": datetime.now()}})

@@ -37,8 +37,18 @@ class BatDauBody(MaBody):
         return kho.chuan_hoa_email(v) if isinstance(v, str) else v
 
 
+class SuaThongTinBody(BaseModel):
+    """Sửa phần A sau khi đã bắt đầu (nút Quay lại)."""
+    session_token: str = Field(min_length=1, max_length=100)
+    grade: int = Field(ge=1, le=12)
+    gender: int = Field(ge=1, le=3)
+    school_name: str = Field(min_length=1, max_length=200)
+    guardian_consent: bool = False
+
+
 class HanhViBody(BaseModel):
     session_token: str = Field(min_length=1, max_length=100)
+    edit: bool = False                        # true: đang sửa phần đã nộp (Quay lại), ghi đè thay vì báo 409
     A4: int                                   # dùng AI chưa; mã 4 = "Chưa bao giờ sử dụng"
     # B1–B7 bắt buộc, trừ khi A4 = 4 (kiểm tra trong nop_hanh_vi)
     B1: list[int] | None = Field(default=None, min_length=1, max_length=10)  # chọn nhiều
@@ -69,6 +79,7 @@ class TuDanhGiaBody(BaseModel):
     C4: int = Field(ge=1, le=5)
     C5: int = Field(ge=1, le=5)
     C6: int
+    edit: bool = False                        # true: đang sửa phần đã nộp (Quay lại), ghi đè thay vì báo 409
 
 
 @lru_cache
@@ -144,6 +155,14 @@ def bat_dau(body: BatDauBody, request: Request, db=Depends(lay_db_nghien_cuu)):
     return {"session_token": token}
 
 
+@router.post("/info/update")
+def sua_thong_tin(body: SuaThongTinBody, db=Depends(lay_db_nghien_cuu)):
+    kiem_tra_lua_chon("A1", body.grade)
+    kiem_tra_lua_chon("A2", body.gender)
+    chay(kho.sua_thong_tin, db, body.session_token, body.model_dump())
+    return {"ok": True}
+
+
 def _dang_chuoi(v):
     """Chọn nhiều -> "1,3" (đã bỏ trùng, sắp xếp); chọn một -> chuỗi; trống -> None."""
     if v is None:
@@ -171,7 +190,7 @@ def nop_hanh_vi(body: HanhViBody, db=Depends(lay_db_nghien_cuu)):
                "duration_sec": body.duration_sec}
     tra_loi.update({f"b4_{i}": getattr(body, f"B4_{i}") for i in range(1, 8)})
     tra_loi.update(chu_muc_khac(body))
-    chay(kho.luu_hanh_vi, db, body.session_token, tra_loi)
+    chay(kho.luu_hanh_vi, db, body.session_token, tra_loi, body.edit)
     return {"ok": True}
 
 
@@ -180,5 +199,5 @@ def nop_tu_danh_gia(body: TuDanhGiaBody, db=Depends(lay_db_nghien_cuu)):
     kiem_tra_lua_chon("C6", body.C6)
     tra_loi = {f"c{i}": getattr(body, f"C{i}") for i in range(1, 6)}
     tra_loi["c6"] = str(body.C6)
-    chay(kho.luu_tu_danh_gia, db, body.session_token, tra_loi)
+    chay(kho.luu_tu_danh_gia, db, body.session_token, tra_loi, body.edit)
     return {"ok": True}  # không trả điểm để người chơi không bị ảnh hưởng ở phần game
