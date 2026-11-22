@@ -80,5 +80,26 @@
     "mo_ta": "Máy này có một bài làm dở. Bạn muốn làm tiếp hay bắt đầu lại bằng một mã khác?",
     "nut_tiep": "Tiếp tục bài đang làm",
     "nut_moi": "Dùng mã khác"
+  },
+  "giao_dien": {
+    "khen": [
+      "Xong phần này rồi!",
+      "Bạn làm xong thêm một phần rồi!",
+      "Tuyệt, thêm một phần nữa xong!"
+    ],
+    "cau_thieu": "Bạn nhớ chọn một câu trả lời ở đây nhé.",
+    "mat_mang": "Đang mất mạng. Câu trả lời của bạn vẫn được giữ, có mạng lại bạn bấm nút để gửi.",
+    "xoa_y": "Xóa ý này",
+    "so_y": "Bạn đã thêm {n} ý",
+    "chua_co_y": "Chưa có ý nào, bạn gõ ý đầu tiên nhé!",
+    "dang_tai": "Đang tải...",
+    "emoji": {
+      "chao": "👋",
+      "tiep_tuc": "🔄",
+      "dong_y": "📝",
+      "game": "🎮",
+      "chua_xong": "🌱",
+      "hoan_thanh": "🎉"
+    }
   }
 }

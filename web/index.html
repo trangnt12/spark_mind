@@ -3,18 +3,45 @@
 <html lang="vi">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#2E9E3E">
   <title>SparkMind</title>
+  <!-- Phông Nunito (có tiếng Việt), font-display: swap để chữ hiện ngay bằng phông hệ thống rồi mới đổi -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito:wght@500;700;800&display=swap">
   <link rel="stylesheet" href="/play/style.css">
 </head>
 <body>
+  <!-- Bộ biểu tượng SVG nhúng trực tiếp (không tải thư viện icon): dùng bằng <use href="#tên"> -->
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+    <!-- Logo SparkMind: tia lửa trắng bốn cánh trên nền xanh, kèm một chiếc lá vàng -->
+    <symbol id="bd-logo" viewBox="0 0 64 64">
+      <rect width="64" height="64" rx="18" fill="#2E9E3E"/>
+      <path d="M32 10C34 22 42 30 54 32C42 34 34 42 32 54C30 42 22 34 10 32C22 30 30 22 32 10Z" fill="#fff"/>
+      <path d="M44 7C53 8 57 15 56 23C48 22 43 16 44 7Z" fill="#FFC93C"/>
+    </symbol>
+    <symbol id="bd-tick" viewBox="0 0 24 24">
+      <path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/>
+    </symbol>
+    <symbol id="bd-x" viewBox="0 0 24 24">
+      <path d="M6 6l12 12M18 6L6 18" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
+    </symbol>
+    <symbol id="bd-canh-bao" viewBox="0 0 24 24">
+      <path d="M12 3l10 18H2L12 3z" fill="currentColor"/>
+      <path d="M12 9.5v5M12 17.6v.2" stroke="#fff" stroke-width="2.4" stroke-linecap="round"/>
+    </symbol>
+  </svg>
   <header>
-    <div class="tien-do" role="progressbar" aria-valuemin="0" aria-valuemax="100">
+    <div class="dau">
+      <span class="ten-hieu"><svg class="logo" aria-hidden="true"><use href="#bd-logo"/></svg><span id="ten-he-thong" class="ten"></span></span>
+      <span id="nhan-tien-do" class="nhan-tien-do"></span>
+    </div>
+    <div class="tien-do" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
       <div id="thanh" class="thanh"></div>
     </div>
-    <p id="nhan-tien-do" class="nhan-tien-do"></p>
   </header>
-  <main id="man-hinh"></main>
+  <main id="man-hinh" tabindex="-1"></main>
   <script src="/play/game1.js"></script>
   <script src="/play/app.js"></script>
 </body>

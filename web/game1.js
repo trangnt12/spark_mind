@@ -9,8 +9,8 @@ const g1 = { cacY: [], paste: 0, roiTab: 0, conLai: 0, hanChot: 0, nhip: null, d
 
 function manGioiThieu() {
   const u = tt.ui.game_gioi_thieu;
-  hienThi(5, h("h1", {}, u.tieu_de_chung), h("p", { class: "mo-ta" }, u.mo_ta),
-    h("button", { type: "button", onclick: manGame1 }, u.nut_bat_dau));
+  hienThi(5, tieuDe("game", u.tieu_de_chung), h("p", { class: "mo-ta" }, u.mo_ta),
+    khungNut(h("button", { type: "button", onclick: manGame1 }, u.nut_bat_dau)));
 }
 
 // ---------- Màn game 1: lấy đề từ máy chủ ----------
@@ -27,7 +27,7 @@ async function manGame1() {
     veGame1(bd.du_lieu, nd.du_lieu);
     return 200;
   }, loi);
-  hienThi(5, loi, nut);
+  hienThi(5, h("p", { class: "mo-ta" }, tt.ui.giao_dien.dang_tai), khungNut(loi, nut));
   nut.click();   // tự gọi lần đầu
 }
 
@@ -38,13 +38,33 @@ function dinhDangGio(giay) {
   return Math.floor(giay / 60) + ":" + String(giay % 60).padStart(2, "0");
 }
 
+const CHU_VI_VONG = 213.63;   // chu vi vòng tròn bán kính 34 (khớp stroke-dasharray trong style.css)
+
+/** Vòng đồng hồ: trả về { khung (thẻ), nhan (chữ giờ), tien (nét vòng) }. */
+function veDongHo(chuGio) {
+  const nhan = h("strong", { class: "dong-ho" });
+  const vong = h("div", { class: "vong" }, nhan);
+  vong.insertAdjacentHTML("afterbegin", '<svg viewBox="0 0 80 80" aria-hidden="true">' +
+    '<circle class="nen" cx="40" cy="40" r="34"/><circle class="tien" cx="40" cy="40" r="34"/></svg>');
+  const khung = h("div", { class: "the khung-gio", role: "timer" }, vong, h("span", { class: "chu-gio" }, chuGio));
+  return { khung, nhan, tien: vong.querySelector(".tien") };
+}
+
+/** Cập nhật vòng: vòng cạn dần; còn dưới 30 giây thì vàng, dưới 10 giây thì đỏ. */
+function capNhatVong(dh, conLai, tong) {
+  dh.nhan.textContent = dinhDangGio(conLai);
+  dh.tien.style.strokeDashoffset = CHU_VI_VONG * (1 - conLai / tong);
+  dh.khung.classList.toggle("vang", conLai < 30 && conLai >= 10);
+  dh.khung.classList.toggle("do", conLai < 10);
+}
+
 /** Chạy đồng hồ từ số giây còn lại của server. Dùng giờ máy chỉ để đếm tiếp, nên tải lại trang vẫn đúng. */
-function chayDongHo(nhanGio, conLaiServer, khiHet) {
+function chayDongHo(dh, conLaiServer, tong, khiHet) {
   g1.hanChot = Date.now() + conLaiServer * 1000;
   clearInterval(g1.nhip);
   const dem = () => {
     g1.conLai = Math.max(0, Math.ceil((g1.hanChot - Date.now()) / 1000));
-    nhanGio.textContent = dinhDangGio(g1.conLai);
+    capNhatVong(dh, g1.conLai, tong);
     if (g1.conLai === 0) { clearInterval(g1.nhip); khiHet(); }
   };
   g1.nhip = setInterval(dem, 250);
@@ -66,10 +86,13 @@ function demRoiTab() {
 
 // ---------- Danh sách ý ----------
 
-/** Vẽ lại danh sách ý; mỗi ý có nút Xóa. */
+/** Vẽ lại danh sách ý thành các thẻ nhỏ; mỗi thẻ có nút xóa tròn. Dòng đếm chỉ nói số ý, không nhận xét nội dung. */
 function veDanhSachY(ds) {
+  const g = tt.ui.giao_dien;
+  document.getElementById("so-y").textContent = g1.cacY.length ? g.so_y.replace("{n}", g1.cacY.length) : g.chua_co_y;
   ds.replaceChildren(...g1.cacY.map((y, i) => h("li", { class: "dong-y" }, h("span", {}, y),
-    h("button", { type: "button", class: "phu nho", "aria-label": "Xóa", onclick: () => { g1.cacY.splice(i, 1); veDanhSachY(ds); } }, "✕"))));
+    h("button", { type: "button", class: "phu xoa-y", "aria-label": g.xoa_y, onclick: () => { g1.cacY.splice(i, 1); veDanhSachY(ds); } },
+      bieuTuong("bd-x")))));
 }
 
 /** Thêm ý trong ô vào danh sách (bỏ ý rỗng, cắt tối đa 120 ký tự). */
@@ -92,6 +115,7 @@ async function nopGame1(hopLoi) {
     g1.daNop = true; clearInterval(g1.nhip);
     document.removeEventListener("visibilitychange", demRoiTab);
     manChuaXong();
+    chucMung();
     return 200;
   }
   loiPhien(hopLoi, r.status);
@@ -125,7 +149,7 @@ function veDeBai(u, dv, nd) {
 function veGame1(bd, nd) {
   const u = tt.ui.game1, toiDa = nd.gioi_han_ky_tu_moi_y;
   Object.assign(g1, { cacY: [], paste: 0, roiTab: 0, daNop: false });
-  const gio = h("strong", { class: "dong-ho" });
+  const dh = veDongHo(u.hien_thi_gio);
   const loi = h("div", { class: "loi an", role: "alert" });
   const o = h("input", { type: "text", maxlength: toiDa, autocomplete: "off", "aria-label": u.nhan_y_tuong });
   const ds = h("ul", { class: "ds-y" });
@@ -134,10 +158,12 @@ function veGame1(bd, nd) {
   chanOMuc(o);
   o.addEventListener("keydown", (e) => { if (e.key === "Enter") { e.preventDefault(); themY(o, ds, toiDa); } });
   document.addEventListener("visibilitychange", demRoiTab);
-  hienThi(5, h("div", { class: "the khung-gio" }, u.hien_thi_gio + ": ", gio), veDeBai(u, bd.do_vat, nd),
+  hienThi(5, dh.khung, veDeBai(u, bd.do_vat, nd),
     h("div", { class: "the" }, h("p", { class: "cau-hoi" }, u.nhan_y_tuong), o,
-      h("button", { type: "button", class: "phu", onclick: () => themY(o, ds, toiDa) }, u.nut_them), ds),
-    loi, nut);
-  chayDongHo(gio, bd.remaining_sec, () => nut.click());   // hết giờ thì tự nộp
+      h("button", { type: "button", class: "phu", style: "margin-top:10px", onclick: () => themY(o, ds, toiDa) }, u.nut_them),
+      h("p", { class: "so-y", id: "so-y", "aria-live": "polite" }), ds),
+    khungNut(loi, nut));
+  veDanhSachY(ds);
+  chayDongHo(dh, bd.remaining_sec, nd.thoi_gian_giay, () => nut.click());   // hết giờ thì tự nộp
   o.focus();
 }
