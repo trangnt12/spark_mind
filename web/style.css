@@ -17,7 +17,7 @@
   --trang: #fff;
   --bo: 18px;
   --cao-dau: 64px;
-  --rong: 1200px;
+  --rong: 800px;
   --bong-the: 0 2px 0 #D3E9D6, 0 8px 20px rgba(31, 122, 46, .08);
 }
 * { box-sizing: border-box; }
@@ -216,7 +216,7 @@ button.nho.phu { margin-top: 8px; }
 /* ô "Mục khác": khi được focus có viền rõ */
 .lua-chon input[type=text].o-khac:focus { border: 2px solid var(--xanh-dam); border-radius: 10px; padding: 4px 10px; background: var(--trang); outline: 3px solid var(--vang); outline-offset: 1px; }
 
-/* ---------- Tablet và máy tính: trang rộng tới 1200px ---------- */
+/* ---------- Tablet và máy tính: trang rộng tới 800px ---------- */
 @media (min-width: 600px) {
   main { padding-top: 32px; }
   h1 { font-size: 30px; }
@@ -233,9 +233,7 @@ button.nho.phu { margin-top: 8px; }
   .hang-luoi { display: grid; grid-template-columns: 1fr minmax(300px, 380px); align-items: center; gap: 16px; }
   .hang-luoi > p { margin: 0; }
 }
-@media (min-width: 1000px) {
-  .ds-lua-chon { grid-template-columns: repeat(3, 1fr); }
-}
+
 
 /* ---------- Người dùng bật "giảm chuyển động": tắt mọi hiệu ứng ---------- */
 @media (prefers-reduced-motion: reduce) {
