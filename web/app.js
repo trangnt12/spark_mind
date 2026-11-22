@@ -63,6 +63,7 @@ function hienThi(buoc, ...nodes) {
   goc.replaceChildren(...cacNode.filter((n) => !nutChan.includes(n)));   // thân trang
   chan.replaceChildren(...nutChan);                                       // chân trang (nút)
   chan.classList.toggle("an", nutChan.length === 0);
+  document.body.classList.remove("man-gioi-thieu");   // chỉ các màn giới thiệu mới bật lại (xem danhDauGioiThieu)
   goc.classList.remove("vao");
   void goc.offsetWidth;                       // buộc trình duyệt chạy lại hiệu ứng
   goc.classList.add("vao");
@@ -78,6 +79,11 @@ function hienThi(buoc, ...nodes) {
 /** Chữ mô tả có nhiều dòng (ngăn bằng \n) thì tách thành các đoạn ngắn dễ đọc. */
 function cacDoan(chu) {
   return chu.split("\n").map((d) => h("p", { class: "mo-ta" }, d));
+}
+
+/** Bật motion cho màn giới thiệu: các khối hiện lần lượt, nút chính nhịp nhẹ, nền trôi chậm (CSS lo phần chuyển động). */
+function danhDauGioiThieu() {
+  document.body.classList.add("man-gioi-thieu");
 }
 
 /** Tiêu đề màn hình có emoji trang trí phía trên (emoji lấy từ research_ui.json). */
@@ -292,9 +298,10 @@ function manMa() {
     manThongTin();
     return 200;
   }, loi);
-  hienThi(1, h("div", { class: "hero" }, bieuTuong("bd-logo", "logo logo-lon"), h("h1", {}, u.tieu_de)),
+  hienThi(1, h("div", { class: "hero" }, h("div", { class: "logo-khung" }, bieuTuong("bd-logo", "logo logo-lon"), h("i"), h("i"), h("i")), h("h1", {}, u.tieu_de)),
     h("div", { class: "the the-chao" }, cacDoan(u.mo_ta), h("hr"),
       h("label", { class: "cau-hoi", for: "o-ma" }, u.nhan_o_ma), o, loi), khungNut(nut));
+  danhDauGioiThieu();
 }
 
 /** Máy đã có session_token đang dở thì hỏi có làm tiếp không. */
@@ -303,6 +310,7 @@ function manTiepTuc() {
   const tiep = h("button", { type: "button", onclick: () => { tt.token = localStorage.getItem(KHOA_TOKEN); manB(); } }, u.nut_tiep);
   const moi = h("button", { type: "button", class: "phu", onclick: () => { localStorage.removeItem(KHOA_TOKEN); manMa(); } }, u.nut_moi);
   hienThi(1, tieuDe("tiep_tuc", u.tieu_de), cacDoan(u.mo_ta), khungNut(tiep, moi));
+  danhDauGioiThieu();
 }
 
 // ---------- Màn 2: thông tin và đồng ý ----------
@@ -423,6 +431,7 @@ function manThongTin(sua = false) {
       h("h2", {}, tt.fb.tieu_de_phan.A),
       oChu("o-email", u.thong_tin.nhan_email, u.thong_tin.ghi_chu_email, "email", "email"), phanA),
     h("div", { class: "the" }, oTich("dongY", u.dong_y.o_dong_y), hopNguoiLon), khungNut(loi, nut));
+  danhDauGioiThieu();
   hienNguoiLon();
 }
 
@@ -561,6 +570,7 @@ function manC() {
 function manChuaXong() {
   const u = tt.ui.chua_xong;
   hienThi(6, tieuDe("chua_xong", u.tieu_de), cacDoan(u.mo_ta));
+  danhDauGioiThieu();
 }
 
 // ---------- Khởi động ----------

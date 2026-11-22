@@ -11,6 +11,7 @@ function manGioiThieu() {
   const u = tt.ui.game_gioi_thieu;
   hienThi(5, tieuDe("game", u.tieu_de_chung), cacDoan(u.mo_ta),
     khungNut(h("button", { type: "button", onclick: manGame1 }, u.nut_bat_dau), nutQuayLai(manC)));
+  danhDauGioiThieu();
 }
 
 // ---------- Màn game 1: lấy đề từ máy chủ ----------

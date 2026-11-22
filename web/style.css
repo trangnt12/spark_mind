@@ -258,6 +258,45 @@ button.nho.phu { margin-top: 8px; }
 }
 
 
+/* ---------- Motion cho các màn giới thiệu (body.man-gioi-thieu do JS bật) ---------- */
+/* Các khối hiện lần lượt từ dưới lên */
+body.man-gioi-thieu main > * { animation: len-dan .6s cubic-bezier(.2, .9, .3, 1) both; }
+body.man-gioi-thieu main > :nth-child(2) { animation-delay: .12s; }
+body.man-gioi-thieu main > :nth-child(3) { animation-delay: .24s; }
+body.man-gioi-thieu main > :nth-child(4) { animation-delay: .36s; }
+body.man-gioi-thieu main > :nth-child(n+5) { animation-delay: .48s; }
+body.man-gioi-thieu .the > .mo-ta { animation: len-dan .5s cubic-bezier(.2, .9, .3, 1) both; }
+body.man-gioi-thieu .the > .mo-ta:nth-child(1) { animation-delay: .3s; }
+body.man-gioi-thieu .the > .mo-ta:nth-child(2) { animation-delay: .5s; }
+body.man-gioi-thieu .the > .mo-ta:nth-child(3) { animation-delay: .7s; }
+body.man-gioi-thieu .the > .mo-ta:nth-child(n+4) { animation-delay: .9s; }
+@keyframes len-dan { from { opacity: 0; transform: translateY(20px) scale(.97); } }
+/* Emoji tiêu đề lắc nhẹ như đang vẫy */
+body.man-gioi-thieu .emo { display: inline-block; transform-origin: 50% 85%; animation: vay 2.6s ease-in-out .6s infinite; }
+@keyframes vay { 0%, 60%, 100% { transform: rotate(0); } 10% { transform: rotate(14deg) scale(1.08); } 20% { transform: rotate(-10deg); } 30% { transform: rotate(12deg); } 40% { transform: rotate(-6deg); } }
+/* Nút chính nhịp nhẹ như mời bấm */
+body.man-gioi-thieu footer button:not(.phu) { animation: nhip 2.2s ease-out 1.2s infinite; }
+@keyframes nhip { 0% { box-shadow: 0 5px 0 var(--xanh-dam), 0 0 0 0 rgba(46, 158, 62, .5); } 70%, 100% { box-shadow: 0 5px 0 var(--xanh-dam), 0 0 0 14px rgba(46, 158, 62, 0); } }
+/* Nền: hai đốm sáng trôi chậm */
+body.man-gioi-thieu::before, body.man-gioi-thieu::after {
+  content: ""; position: fixed; z-index: -1; pointer-events: none; border-radius: 50%; filter: blur(2px);
+}
+body.man-gioi-thieu::before { width: 240px; height: 240px; left: -90px; bottom: 18%; background: radial-gradient(circle, rgba(255, 201, 60, .28), transparent 70%); animation: troi 9s ease-in-out infinite alternate; }
+body.man-gioi-thieu::after { width: 300px; height: 300px; right: -120px; top: 22%; background: radial-gradient(circle, rgba(46, 158, 62, .2), transparent 70%); animation: troi 11s ease-in-out -4s infinite alternate; }
+@keyframes troi { to { transform: translate(40px, -50px) scale(1.15); } }
+/* Logo có ba tia lửa nhỏ nhấp nháy xung quanh */
+.logo-khung { position: relative; display: inline-block; }
+.logo-khung .logo-lon { margin: 0 auto 8px; }
+.logo-khung i {
+  position: absolute; width: 16px; height: 16px; background: var(--vang); opacity: 0;
+  clip-path: polygon(50% 0, 62% 38%, 100% 50%, 62% 62%, 50% 100%, 38% 62%, 0 50%, 38% 38%);
+  animation: lap-lanh 2.4s ease-in-out infinite;
+}
+.logo-khung i:nth-of-type(1) { top: -4px; left: -22px; }
+.logo-khung i:nth-of-type(2) { top: 14px; right: -26px; width: 12px; height: 12px; animation-delay: .8s; }
+.logo-khung i:nth-of-type(3) { bottom: 10px; left: -30px; width: 10px; height: 10px; animation-delay: 1.5s; }
+@keyframes lap-lanh { 0%, 100% { opacity: 0; transform: scale(.3) rotate(0); } 50% { opacity: 1; transform: scale(1) rotate(90deg); } }
+
 /* ---------- Người dùng bật "giảm chuyển động": tắt mọi hiệu ứng ---------- */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
