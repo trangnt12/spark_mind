@@ -5,9 +5,9 @@
   "huong_dan": "Bạn sẽ thấy một đồ vật quen thuộc. Hãy nghĩ ra càng nhiều cách dùng KHÁC với cách dùng thông thường của nó càng tốt. Mỗi ý một dòng, viết ngắn gọn. Không cần ý nào cũng nghiêm túc, miễn là có thể thực hiện được.",
   "vi_du": {"do_vat": "Cái cốc", "cach_dung_thuong": "Đựng nước uống", "vi_du_khac": ["Úp xuống làm chân đỡ cho cây nhỏ", "Dùng đo lượng gạo"]},
   "do_vat": [
-    {"id": "g1_gach", "ten": "Viên gạch", "cach_dung_thuong": "Xây tường", "anh": "assets/game1/gach.png", "mo_ta_anh": "Một viên gạch đỏ", "emoji": "🧱"},
-    {"id": "g1_chai", "ten": "Chai nhựa rỗng", "cach_dung_thuong": "Đựng nước", "anh": "assets/game1/chai.png", "mo_ta_anh": "Một chai nhựa rỗng", "emoji": "🧴"},
-    {"id": "g1_ghe", "ten": "Chiếc ghế nhựa", "cach_dung_thuong": "Ngồi", "anh": "assets/game1/ghe.png", "mo_ta_anh": "Một chiếc ghế nhựa", "emoji": "🪑"}
+    {"id": "g1_gach", "ten": "Viên gạch", "cach_dung_thuong": "Xây tường", "anh": "/play/assets/game1/gach.png", "mo_ta_anh": "Một viên gạch đỏ", "emoji": "🧱"},
+    {"id": "g1_chai", "ten": "Chai nhựa rỗng", "cach_dung_thuong": "Đựng nước", "anh": "/play/assets/game1/chai.png", "mo_ta_anh": "Một chai nhựa rỗng", "emoji": "🧴"},
+    {"id": "g1_ghe", "ten": "Chiếc ghế nhựa", "cach_dung_thuong": "Ngồi", "anh": "/play/assets/game1/ghe.png", "mo_ta_anh": "Một chiếc ghế nhựa", "emoji": "🪑"}
   ],
   "cach_giao_do_vat": "Chọn theo mã tham gia (băm mã chia 3) để mỗi đồ vật có khoảng 100 người chơi. Cần cùng một đồ vật mới tính được độ độc đáo theo tần suất.",
   "toi_thieu_y": 1,

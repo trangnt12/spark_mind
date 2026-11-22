@@ -123,7 +123,7 @@ def test_anh_do_vat_va_emoji_thay_the():
     goc = Path(__file__).resolve().parents[1]
     nd = json.loads((goc / "content/games/game1.json").read_text(encoding="utf-8"))
     for dv in nd["do_vat"]:
-        assert dv["anh"].startswith("assets/game1/") and dv["mo_ta_anh"] and dv["emoji"]
+        assert dv["anh"].startswith("/play/assets/game1/") and dv["mo_ta_anh"] and dv["emoji"]
     js = (goc / "web/game1.js").read_text(encoding="utf-8")
     assert 'addEventListener("error", emoji)' in js and "dv.emoji" in js   # ảnh lỗi/thiếu -> emoji
 
