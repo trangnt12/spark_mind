@@ -10,7 +10,7 @@ const LOP_CAN_NGUOI_LON = 7;   // mã A1 từ 1 đến 7 là lớp 6–12 (dư�
 const CHUA_TUNG_DUNG = 4;      // mã A4 "Chưa bao giờ sử dụng"
 
 // Trạng thái trong bộ nhớ: nội dung, mã, token, câu trả lời, giờ bắt đầu phần B
-const tt = { ui: null, fb: null, ma: "", token: "", tl: {}, batDauB: 0 };
+const tt = { ui: null, fb: null, ma: "", token: "", tl: {}, batDauB: 0, truong: [] };
 const goc = document.getElementById("man-hinh");
 
 // ---------- Hàm nhỏ dùng chung ----------
@@ -162,7 +162,7 @@ function manTiepTuc() {
 /** Thu và kiểm tra thông tin màn 2. Trả về { body } hoặc { loi } (chữ lỗi). */
 function thuThongTin() {
   const l = tt.ui.loi, t = tt.tl;
-  tt.tl.A3 = (document.getElementById("o-truong").value || "").trim();
+  if (t.truongKhac) t.A3 = (document.getElementById("o-truong-khac").value || "").trim();
   tt.tl.email = (document.getElementById("o-email").value || "").trim();
   if (!/^\S+@\S+\.\S+$/.test(t.email)) return { loi: tt.ui.chung.email_sai };
   if (thieuCau(["A1", "A2", "A3"])) return { loi: l.thieu_cau };
@@ -189,6 +189,42 @@ function oChu(id, nhan, ghiChu, loai, khoa) {
     ghiChu ? h("p", { class: "ghi-chu" }, ghiChu) : "", o);
 }
 
+// ---------- Ô chọn trường (có tìm kiếm, chọn một trong bảng schools) ----------
+
+/** Bỏ dấu và chuyển chữ thường để tìm không phân biệt dấu. */
+function boDau(chu) {
+  return chu.normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/đ/g, "d").toLowerCase();
+}
+
+/** Vẽ tối đa 50 trường khớp từ khóa vào danh sách; bấm một dòng là chọn. */
+function veDanhSach(ds, tuKhoa, chon) {
+  const k = boDau(tuKhoa.trim());
+  const kq = tt.truong.filter((t) => boDau(t.ten).includes(k)).slice(0, 50);
+  ds.replaceChildren(...(kq.length ? kq.map((t) => {
+    const dong = h("li", { class: "dong-truong" }, t.ten, h("small", {}, " · " + t.cap));
+    dong.addEventListener("mousedown", (e) => { e.preventDefault(); chon(t); });
+    return dong;
+  }) : [h("li", { class: "ghi-chu" }, tt.ui.thong_tin.khong_thay)]));
+  ds.classList.remove("an");
+}
+
+/** Ô tìm + danh sách chọn một trường; lưu tên vào tt.tl.A3 (chỉ trong bộ nhớ). */
+function oChonTruong(nhan) {
+  const u = tt.ui.thong_tin;
+  const o = h("input", { type: "search", id: "o-truong", autocomplete: "off", placeholder: u.tim_truong });
+  const ds = h("ul", { class: "ds-truong an" });
+  const da = h("p", { class: "ghi-chu" }, tt.tl.A3 && !tt.tl.truongKhac ? `${u.da_chon} ${tt.tl.A3}` : "");
+  const chon = (t) => { tt.tl.A3 = t.ten; o.value = ""; da.textContent = `${u.da_chon} ${t.ten}`; ds.classList.add("an"); };
+  o.addEventListener("input", () => veDanhSach(ds, o.value, chon));
+  o.addEventListener("focus", () => veDanhSach(ds, o.value, chon));
+  o.addEventListener("blur", () => ds.classList.add("an"));
+  const hopKhac = h("div", { class: tt.tl.truongKhac ? "" : "an" }, oChu("o-truong-khac", u.nhan_truong_khac, "", "text", "A3khac"));
+  const khac = oTich("truongKhac", u.khong_co_truong);
+  khac.addEventListener("change", () => { hopKhac.classList.toggle("an", !tt.tl.truongKhac); o.disabled = !!tt.tl.truongKhac; tt.tl.A3 = tt.tl.truongKhac ? "" : tt.tl.A3; });
+  return h("div", { class: "truong" }, h("label", { class: "cau-hoi", for: "o-truong" }, nhan),
+    h("div", { class: "hop-tim" }, o, ds), da, khac, hopKhac);
+}
+
 function manThongTin() {
   const u = tt.ui, a = Object.fromEntries(tt.fb.phan_a_thong_tin.map((c) => [c.id, c]));
   const loi = h("div", { class: "loi an", role: "alert" });
@@ -200,7 +236,7 @@ function manThongTin() {
     h("div", { class: "the" }, h("h2", {}, u.thong_tin.tieu_de),
       oChu("o-email", u.thong_tin.nhan_email, u.thong_tin.ghi_chu_email, "email", "email"),
       cauChon(a.A1, capNhatNguoiLon), cauChon(a.A2),
-      oChu("o-truong", a.A3.text, a.A3.huong_dan, "text", "A3")),
+      oChonTruong(a.A3.text)),
     h("div", { class: "the" }, oTich("dongY", u.dong_y.o_dong_y), hopNguoiLon, loi, nut));
   capNhatNguoiLon();
 }
@@ -301,13 +337,14 @@ function manChuaXong() {
 // ---------- Khởi động ----------
 
 async function khoiDong() {
-  const [ui, fb] = await Promise.all([goiApi("/api/content/ui"), goiApi("/api/content/form-b")]);
-  if (ui.status !== 200 || fb.status !== 200) {
+  const [ui, fb, tr] = await Promise.all([goiApi("/api/content/ui"), goiApi("/api/content/form-b"), goiApi("/api/content/schools")]);
+  if (ui.status !== 200 || fb.status !== 200 || tr.status !== 200) {
     goc.textContent = "Không tải được nội dung. Bạn tải lại trang sau vài giây.";  // chưa có chữ từ máy chủ nên chỉ dòng này viết sẵn
     return;
   }
   tt.ui = ui.du_lieu;
   tt.fb = fb.du_lieu;
+  tt.truong = tr.du_lieu;
   document.title = tt.ui.ten_he_thong;
   if (localStorage.getItem(KHOA_TOKEN)) manTiepTuc(); else manMa();
 }

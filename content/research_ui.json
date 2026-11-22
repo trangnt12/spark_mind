@@ -24,7 +24,12 @@
     "tieu_de": "Vài thông tin về bạn",
     "nhan_email": "Email của bạn",
     "ghi_chu_email": "Chỉ dùng để liên hệ và đếm số bài của mỗi người, không công bố.",
-    "nhan_truong": "Bạn đang theo học tại trường nào?"
+    "nhan_truong": "Bạn đang theo học tại trường nào?",
+    "tim_truong": "Gõ để tìm tên trường rồi chọn trong danh sách",
+    "khong_co_truong": "Trường của tôi không có trong danh sách",
+    "khong_thay": "Không tìm thấy trường nào.",
+    "nhan_truong_khac": "Nhập tên trường của bạn",
+    "da_chon": "Đã chọn:"
   },
   "form_b": {
     "tieu_de": "Cách bạn dùng AI",

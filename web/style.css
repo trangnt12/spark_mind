@@ -35,3 +35,11 @@ button.phu { background: #fff; color: var(--xanh); border: 1.5px solid var(--xan
 button:disabled { opacity: .6; cursor: default; }
 .loi { color: var(--do); background: #fdecea; border-radius: 10px; padding: 10px 12px; margin: 10px 0; font-size: 16px; }
 .an { display: none; }
+
+/* Ô chọn trường có tìm kiếm */
+.hop-tim { position: relative; }
+.ds-truong { position: absolute; left: 0; right: 0; top: 100%; z-index: 4; max-height: 260px; overflow-y: auto; margin: 4px 0 0; padding: 0;
+  list-style: none; background: #fff; border: 1.5px solid var(--vien); border-radius: 10px; box-shadow: 0 4px 12px #0002; }
+.ds-truong li { padding: 12px; min-height: 48px; border-bottom: 1px solid #eceef3; cursor: pointer; }
+.ds-truong small { color: var(--xam); }
+input[type=search] { width: 100%; min-height: 52px; font-size: 18px; padding: 10px 12px; border: 1.5px solid var(--vien); border-radius: 10px; }
