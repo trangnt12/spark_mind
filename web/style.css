@@ -23,6 +23,7 @@
 * { box-sizing: border-box; }
 html { -webkit-text-size-adjust: 100%; }
 body {
+  min-height: 100vh; min-height: 100dvh; display: flex; flex-direction: column;
   margin: 0; font: 500 17px/1.75 "Nunito", system-ui, "Segoe UI", Roboto, sans-serif; color: var(--chu);
   background: var(--nen) radial-gradient(circle at 100% 0, #E3F6E6 0, transparent 320px) no-repeat;
 }
@@ -42,7 +43,7 @@ header {
 .thanh { height: 100%; width: 0; background: var(--xanh); border-radius: 99px; transition: width .4s ease; box-shadow: inset 0 -3px 0 rgba(0, 0, 0, .12); }
 
 /* ---------- Bố cục ---------- */
-main { max-width: var(--rong); margin: 0 auto; padding: 16px 12px 24px; outline: none; }
+main { flex: 1; width: 100%; max-width: var(--rong); margin: 0 auto; padding: 16px 12px 28px; outline: none; }
 main.vao { animation: truot-vao .25s ease-out; }
 @keyframes truot-vao { from { opacity: 0; transform: translateX(28px); } to { opacity: 1; transform: none; } }
 h1 { font-size: 26px; line-height: 1.25; font-weight: 800; margin: 4px 0 12px; }
@@ -68,7 +69,7 @@ input[type=text]:focus, input[type=email]:focus { outline: 3px solid var(--vang)
 
 /* ---------- Lựa chọn một / nhiều: thẻ lớn, ô tròn hoặc vuông ---------- */
 .lua-chon {
-  display: flex; align-items: center; gap: 10px; min-height: 48px; padding: 6px 12px; margin: 6px 0;
+  display: flex; align-items: center; gap: 12px; min-height: 58px; padding: 12px 16px; margin: 8px 0;
   border: 2px solid var(--vien); border-radius: 16px; background: var(--trang); cursor: pointer;
   transition: background .15s, border-color .15s, transform .1s;
 }
@@ -86,10 +87,10 @@ input[type=text]:focus, input[type=email]:focus { outline: 3px solid var(--vang)
 }
 .lua-chon input:focus-visible { outline: none; }
 .lua-chon span { flex: 1; min-width: 0; }
-.lua-chon { flex-wrap: wrap; }
+.lua-chon span:has(+ .o-khac) { flex: 0 0 auto; }
 .lua-chon input[type=text].o-khac {
-  flex: 1 1 100%; min-width: 0; width: 100%; min-height: 48px; margin: 2px 0 4px; padding: 6px 12px; font-size: 17px;
-  border: 2px solid var(--vien); border-radius: 12px; background: var(--trang);
+  flex: 1 1 auto; min-width: 0; width: auto; min-height: 44px; padding: 4px 8px; font-size: 17px;
+  border: 0; border-bottom: 2px solid var(--vien); border-radius: 0; background: transparent;
 }
 
 /* ---------- Lưới 1–5: 5 nút tròn lớn ---------- */
@@ -113,8 +114,8 @@ input[type=text]:focus, input[type=email]:focus { outline: 3px solid var(--vang)
 
 /* ---------- Nút lớn có "bóng dưới" và hiệu ứng ấn xuống ---------- */
 button {
-  display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; min-height: 54px; padding: 0 20px;
-  font: 800 19px/1.2 "Nunito", system-ui, sans-serif; letter-spacing: .2px; color: #fff; background: var(--xanh);
+  display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; min-height: 48px; padding: 0 20px;
+  font: 800 18px/1.2 "Nunito", system-ui, sans-serif; letter-spacing: .2px; color: #fff; background: var(--xanh);
   border: 0; border-radius: 16px; box-shadow: 0 5px 0 var(--xanh-dam); cursor: pointer; margin: 0;
   transition: transform .08s, box-shadow .08s, background .15s;
 }
@@ -131,18 +132,17 @@ button.dang-tai::after {
 @keyframes quay { to { transform: rotate(360deg); } }
 
 /* Thanh nút dính đáy màn hình: nút "Tiếp tục" luôn nằm tầm tay */
-.thanh-nut {
-  position: sticky; bottom: 0; z-index: 6; display: flex; flex-wrap: wrap; gap: 10px;
-  margin: 8px -12px -24px; padding: 14px 12px calc(12px + env(safe-area-inset-bottom));
-  background: linear-gradient(to top, var(--nen) 72%, rgba(245, 251, 245, 0));
+footer {
+  position: sticky; bottom: 0; z-index: 6; background: var(--trang); border-top: 2px solid #D3E9D6;
+  box-shadow: 0 -6px 16px rgba(31, 122, 46, .08); padding: 12px 12px calc(12px + env(safe-area-inset-bottom));
 }
+.thanh-nut { display: flex; flex-wrap: wrap; gap: 10px; max-width: var(--rong); margin: 0 auto; }
 
 /* ---------- Báo lỗi ---------- */
 .loi { color: var(--loi-chu); background: var(--loi-nhat); border: 2px solid var(--loi); border-radius: 14px; padding: 10px 14px; margin: 10px 0; font-size: 16px; font-weight: 700; }
 .thanh-nut > * { flex: 1 1 220px; }
 .thanh-nut .loi { flex-basis: 100%; margin: 0; }
 .thanh-nut .quay-lai { flex: 0 0 auto; order: -1; width: auto; min-width: 112px; }
-.thanh-nut .quay-lai + * { order: 0; }
 .thieu { background: var(--loi-nhat); outline: 2px solid var(--loi); outline-offset: 4px; animation: lac .35s; }
 .loi-cau { display: flex; align-items: center; gap: 6px; margin: 8px 0 0; font-size: 16px; font-weight: 800; color: var(--loi-chu); }
 .loi-cau svg { flex: none; width: 20px; height: 20px; }
@@ -222,13 +222,13 @@ button.nho.phu { margin-top: 8px; }
 .dong-y button.xoa-y svg { width: 22px; height: 22px; }
 
 /* ô "Mục khác": khi được focus có viền rõ */
-.lua-chon input[type=text].o-khac:focus { border-color: var(--xanh-dam); outline: 3px solid var(--vang); outline-offset: 1px; }
+.lua-chon input[type=text].o-khac:focus { border-color: var(--xanh-dam); outline: 3px solid var(--vang); outline-offset: 2px; border-radius: 6px; background: var(--trang); }
 
 /* ---------- Tablet và máy tính: trang rộng tới 800px ---------- */
 @media (min-width: 600px) {
   main { padding-top: 32px; }
   h1 { font-size: 30px; }
-  .thanh-nut { margin-left: 0; margin-right: 0; padding-left: 0; padding-right: 0; justify-content: center; }
+  .thanh-nut { justify-content: center; }
   .thanh-nut > * { max-width: 460px; }
   .thanh-nut .loi { max-width: none; }
   .the { padding: 22px 24px; }

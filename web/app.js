@@ -57,7 +57,12 @@ function bieuTuong(ten, lop = "") {
 
 /** Đổi sang một màn hình: cập nhật thanh tiến độ, chạy hiệu ứng trượt vào (250ms) rồi vẽ nội dung. */
 function hienThi(buoc, ...nodes) {
-  goc.replaceChildren(...nodes.flat());   // nodes có thể chứa mảng (vd. các đoạn mô tả)
+  const cacNode = nodes.flat();            // nodes có thể chứa mảng (vd. các đoạn mô tả)
+  const chan = document.getElementById("chan-trang");
+  const nutChan = cacNode.filter((n) => n.classList && n.classList.contains("thanh-nut"));
+  goc.replaceChildren(...cacNode.filter((n) => !nutChan.includes(n)));   // thân trang
+  chan.replaceChildren(...nutChan);                                       // chân trang (nút)
+  chan.classList.toggle("an", nutChan.length === 0);
   goc.classList.remove("vao");
   void goc.offsetWidth;                       // buộc trình duyệt chạy lại hiệu ứng
   goc.classList.add("vao");
