@@ -49,6 +49,8 @@ main.vao { animation: truot-vao .25s ease-out; }
 h1 { font-size: 26px; line-height: 1.25; font-weight: 800; margin: 4px 0 12px; }
 h2 { font-size: 20px; line-height: 1.3; font-weight: 800; margin: 0 0 12px; color: var(--xanh-dam); }
 @keyframes nhun { 0%, 100% { transform: translateY(0) rotate(-3deg); } 50% { transform: translateY(-6px) rotate(3deg); } }
+/* Thẻ đang có ô nhập (vd. danh sách chọn trường) nổi lên trên các thẻ phía dưới để danh sách không bị đè */
+.the:focus-within { position: relative; z-index: 5; }
 .the { background: var(--trang); border-radius: var(--bo); padding: 20px 18px; margin-bottom: 20px; box-shadow: var(--bong-the); }
 .mo-ta, .ghi-chu { color: var(--chu-phu); font-size: 16px; margin: 0 0 12px; max-width: 78ch; }
 .cau-hoi { display: block; line-height: 1.5; margin: 0 0 14px; font-weight: 800; font-size: 17px; }
