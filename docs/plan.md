@@ -5,7 +5,7 @@ Nguồn: bảng `notebook_hang_ngay` của Trang. Mốc đã chốt: code hai h�
 |---|---|---|
 | 20/11 ✅ | Notebook 02 (mô tả, Cronbach alpha, so sánh nhóm, tương quan); nội dung form B và 3 game nháp trong `content/` | Bảng T1–T5, nội dung game nháp (đã xong) |
 | 21/11 ✅ | Server, Render, Apps Script, hướng 2 lát cắt 1, tạo mã | Server chạy trực tuyến (đã xong) |
-| 22/11 | Giao diện nhập mã, đồng ý, form B, game 1 | Game 1 chơi được |
+| 22/11 ✅ | Giao diện nhập mã, đồng ý, thông tin cơ bản, form B, game 1, chữ khớp form, ảnh game, giao diện xanh lá | Game 1 chơi được (đã xong) |
 | 23/11 | Notebook 03: RF, XGBoost, baseline, CV 5 lớp lặp lại trên 3 bản dữ liệu | Bảng so sánh mô hình |
 | 24/11 | Notebook 04: SHAP, kiểm tra `pred_contribs`, lưu mô hình | Biểu đồ SHAP, file mô hình |
 | 25/11 | `/api/predict` và trang kết quả, demo | Mốc: lõi hướng 1 xong |
@@ -19,6 +19,10 @@ Nguồn: bảng `notebook_hang_ngay` của Trang. Mốc đã chốt: code hai h�
 | 3/12 | Mở thu thập đầy đủ; gắn cờ chất lượng; file mẫu 100–150 câu cho người chấm | Thu thập đang chạy |
 | 4/12 | Xuất bảng và hình hướng 1; video demo dự phòng; gắn thẻ phiên bản ổn định | Xong cả hai hướng |
 | 5–6/12 | Dự phòng | |
+
+## Việc phát sinh
+- 22/11: `tests/test_form_text.py` (kiểm tra chữ trên giao diện khớp nội dung form).
+- 22/11: `docs/credits.md` (ghi nguồn, tác giả ảnh game: gạch, chai, ghế).
 
 ## Ba game (đã chốt hướng)
 1. Đồ vật bí ẩn (kiểu AUT): số ý, số ý hợp lệ (AI lọc), độ độc đáo theo tần suất.
