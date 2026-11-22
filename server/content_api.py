@@ -39,7 +39,7 @@ def giao_dien():
 def doc_truong() -> list[dict]:
     """Danh sách trường (content/schools.csv) gọn: tên và cấp, để người dùng chọn trong ô tìm kiếm."""
     with open(config.ROOT / "content" / "schools.csv", encoding="utf-8-sig", newline="") as f:
-        return [{"ten": r["ten"], "cap": r["cap_chuan"]} for r in csv.DictReader(f)]
+        return [{"ten": r["ten"], "cap": r["cap_chuan"], "vt": r["viet_tat"]} for r in csv.DictReader(f)]
 
 
 @router.get("/schools")

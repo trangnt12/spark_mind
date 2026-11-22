@@ -199,9 +199,9 @@ function boDau(chu) {
 /** Vẽ tối đa 50 trường khớp từ khóa vào danh sách; bấm một dòng là chọn. */
 function veDanhSach(ds, tuKhoa, chon) {
   const k = boDau(tuKhoa.trim());
-  const kq = tt.truong.filter((t) => boDau(t.ten).includes(k)).slice(0, 50);
+  const kq = tt.truong.filter((t) => boDau(t.ten + " " + t.vt).includes(k)).slice(0, 50);
   ds.replaceChildren(...(kq.length ? kq.map((t) => {
-    const dong = h("li", { class: "dong-truong" }, t.ten, h("small", {}, " · " + t.cap));
+    const dong = h("li", { class: "dong-truong" }, t.ten, h("small", {}, " · " + (t.vt ? t.vt + " · " : "") + t.cap));
     dong.addEventListener("mousedown", (e) => { e.preventDefault(); chon(t); });
     return dong;
   }) : [h("li", { class: "ghi-chu" }, tt.ui.thong_tin.khong_thay)]));
