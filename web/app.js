@@ -78,7 +78,14 @@ function hienThi(buoc, ...nodes) {
 
 /** Chữ mô tả có nhiều dòng (ngăn bằng \n) thì tách thành các đoạn ngắn dễ đọc. */
 function cacDoan(chu) {
-  return chu.split("\n").map((d) => h("p", { class: "mo-ta" }, d));
+  return chu.split("\n").map(dongMoTa);
+}
+
+/** Một dòng mô tả: nếu bắt đầu bằng emoji thì emoji nằm trong một "bong bóng" tròn bên trái, chữ bên phải. */
+function dongMoTa(chu) {
+  const m = chu.match(/^(\p{Extended_Pictographic}\uFE0F?)\s*([\s\S]*)$/u);
+  if (!m) return h("p", { class: "mo-ta" }, chu);
+  return h("p", { class: "mo-ta dong-mo-ta" }, h("span", { class: "bong", "aria-hidden": "true" }, m[1]), h("span", {}, m[2]));
 }
 
 /** Bật motion cho màn giới thiệu: các khối hiện lần lượt, nút chính nhịp nhẹ, nền trôi chậm (CSS lo phần chuyển động). */
@@ -88,7 +95,35 @@ function danhDauGioiThieu() {
 
 /** Tiêu đề màn hình có emoji trang trí phía trên (emoji lấy từ research_ui.json). */
 function tieuDe(khoa, chu) {
-  return h("h1", {}, h("span", { class: "emo", "aria-hidden": "true" }, tt.ui.giao_dien.emoji[khoa] || ""), chu);
+  return banner(h("span", { class: "emo" }, tt.ui.giao_dien.emoji[khoa] || ""), chu);
+}
+
+/** Dải banner đầu màn giới thiệu: nền xanh chuyển màu, hạt sáng bay lên, biểu tượng giữa vòng tròn có sóng lan,
+ *  tiêu đề hiện từng chữ, biểu tượng nghiêng theo con trỏ. */
+function banner(bieu, chu) {
+  const nghieng = h("div", { class: "nghieng" }, bieu);          // lớp này nghiêng theo con trỏ (lớp ngoài đang có chuyển động riêng)
+  const vong = h("div", { class: "bieu-tuong", "aria-hidden": "true" }, nghieng);
+  const tu = chu.split(" ").flatMap((t, i) => [i ? " " : "", h("span", { class: "tu", style: `--i:${i}` }, t)]);
+  const kh = h("div", { class: "banner" }, haoQuang(16), vong, h("h1", {}, tu));
+  kh.addEventListener("pointermove", (e) => {
+    const r = kh.getBoundingClientRect();
+    const dx = (e.clientX - r.left) / r.width - 0.5, dy = (e.clientY - r.top) / r.height - 0.5;
+    nghieng.style.transform = `perspective(400px) rotateY(${dx * 28}deg) rotateX(${-dy * 28}deg)`;
+  });
+  kh.addEventListener("pointerleave", () => { nghieng.style.transform = ""; });
+  return kh;
+}
+
+/** Các hạt sáng nhỏ bay lên chậm trong banner (hình và màu do CSS, vị trí và nhịp ngẫu nhiên). */
+function haoQuang(n) {
+  const lop = h("div", { class: "hat", "aria-hidden": "true" });
+  for (let i = 0; i < n; i++) {
+    const x = h("i");
+    x.style.cssText = `left:${Math.round(Math.random() * 100)}%;--c:${Math.round(8 + Math.random() * 14)}px;` +
+      `animation-duration:${(4 + Math.random() * 5).toFixed(1)}s;animation-delay:${(-Math.random() * 8).toFixed(1)}s`;
+    lop.append(x);
+  }
+  return lop;
 }
 
 /** Nút "Quay lại" (nút phụ): về màn trước để đổi câu trả lời, câu đã chọn vẫn được giữ. */
@@ -298,7 +333,7 @@ function manMa() {
     manThongTin();
     return 200;
   }, loi);
-  hienThi(1, h("div", { class: "hero" }, h("div", { class: "logo-khung" }, bieuTuong("bd-logo", "logo logo-lon"), h("i"), h("i"), h("i")), h("h1", {}, u.tieu_de)),
+  hienThi(1, banner(bieuTuong("bd-logo", "logo logo-lon"), u.tieu_de),
     h("div", { class: "the the-chao" }, cacDoan(u.mo_ta), h("hr"),
       h("label", { class: "cau-hoi", for: "o-ma" }, u.nhan_o_ma), o, loi), khungNut(nut));
   danhDauGioiThieu();
@@ -426,7 +461,7 @@ function manThongTin(sua = false) {
   if (sua) return manSuaThongTin(phanA, hopNguoiLon, loi, hienNguoiLon);
   const nut = nutGui(u.dong_y.nut, () => guiBatDau(thuThongTin(), loi), loi);
   hienThi(2, tieuDe("dong_y", u.dong_y.tieu_de),
-    h("div", { class: "the" }, u.dong_y.doan.map((d) => h("p", { class: "mo-ta" }, d))),
+    h("div", { class: "the" }, u.dong_y.doan.map(dongMoTa)),
     h("div", { class: "the" }, h("h2", {}, tt.fb.tieu_de), h("p", { class: "mo-ta" }, tt.fb.mo_ta),
       h("h2", {}, tt.fb.tieu_de_phan.A),
       oChu("o-email", u.thong_tin.nhan_email, u.thong_tin.ghi_chu_email, "email", "email"), phanA),

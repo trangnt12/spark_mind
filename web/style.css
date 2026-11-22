@@ -48,10 +48,6 @@ main.vao { animation: truot-vao .25s ease-out; }
 @keyframes truot-vao { from { opacity: 0; transform: translateX(28px); } to { opacity: 1; transform: none; } }
 h1 { font-size: 26px; line-height: 1.25; font-weight: 800; margin: 4px 0 12px; }
 h2 { font-size: 20px; line-height: 1.3; font-weight: 800; margin: 0 0 12px; color: var(--xanh-dam); }
-.emo { display: block; font-size: 46px; line-height: 1.2; margin-bottom: 4px; }
-.hero { text-align: center; margin-bottom: 12px; }
-.hero h1 { margin: 0; }
-.hero .logo-lon { width: 64px; height: 64px; margin: 0 auto 8px; animation: nhun 2.4s ease-in-out infinite; }
 @keyframes nhun { 0%, 100% { transform: translateY(0) rotate(-3deg); } 50% { transform: translateY(-6px) rotate(3deg); } }
 .the { background: var(--trang); border-radius: var(--bo); padding: 16px 14px; margin-bottom: 14px; box-shadow: var(--bong-the); }
 .mo-ta, .ghi-chu { color: var(--chu-phu); font-size: 16px; margin: 0 0 12px; max-width: 78ch; }
@@ -96,9 +92,12 @@ input[type=text]:focus, input[type=email]:focus { outline: 3px solid var(--vang)
 /* Bố cục đáp án theo từng câu (chọn trong research_ui.json): hang / luoi / cot / cot2 */
 .ds-lua-chon { display: grid; grid-template-columns: 1fr; gap: 0 12px; }
 .ds-lua-chon .lua-chon { margin: 5px 0; }
-.bo-cuc-luoi { grid-template-columns: repeat(auto-fill, minmax(138px, 1fr)); }
+.bo-cuc-luoi { display: flex; flex-wrap: wrap; gap: 8px; }
+.bo-cuc-luoi .lua-chon { flex: 1 1 130px; margin: 0; }
+.bo-cuc-luoi .lua-chon span, .bo-cuc-hang .lua-chon span { white-space: nowrap; flex: 0 1 auto; }
 .bo-cuc-hang { display: flex; flex-wrap: wrap; gap: 8px; }
 .bo-cuc-hang .lua-chon { flex: 1 1 auto; margin: 0; border-radius: 99px; padding: 8px 18px; min-height: 52px; }
+.bo-cuc-luoi .lua-chon:has(.o-khac) span, .bo-cuc-hang .lua-chon:has(.o-khac) span { white-space: nowrap; }
 .bo-cuc-cot2 { grid-template-columns: 1fr; }
 @media (min-width: 640px) { .bo-cuc-cot2 { grid-template-columns: 1fr 1fr; } }
 .ds-lua-chon .lua-chon:has(.o-khac) { grid-column: 1 / -1; flex-basis: 100%; border-radius: 16px; }   /* "Mục khác" luôn chiếm cả hàng */
@@ -271,9 +270,6 @@ body.man-gioi-thieu .the > .mo-ta:nth-child(2) { animation-delay: .5s; }
 body.man-gioi-thieu .the > .mo-ta:nth-child(3) { animation-delay: .7s; }
 body.man-gioi-thieu .the > .mo-ta:nth-child(n+4) { animation-delay: .9s; }
 @keyframes len-dan { from { opacity: 0; transform: translateY(20px) scale(.97); } }
-/* Emoji tiêu đề lắc nhẹ như đang vẫy */
-body.man-gioi-thieu .emo { display: inline-block; transform-origin: 50% 85%; animation: vay 2.6s ease-in-out .6s infinite; }
-@keyframes vay { 0%, 60%, 100% { transform: rotate(0); } 10% { transform: rotate(14deg) scale(1.08); } 20% { transform: rotate(-10deg); } 30% { transform: rotate(12deg); } 40% { transform: rotate(-6deg); } }
 /* Nút chính nhịp nhẹ như mời bấm */
 body.man-gioi-thieu footer button:not(.phu) { animation: nhip 2.2s ease-out 1.2s infinite; }
 @keyframes nhip { 0% { box-shadow: 0 5px 0 var(--xanh-dam), 0 0 0 0 rgba(46, 158, 62, .5); } 70%, 100% { box-shadow: 0 5px 0 var(--xanh-dam), 0 0 0 14px rgba(46, 158, 62, 0); } }
@@ -284,18 +280,49 @@ body.man-gioi-thieu::before, body.man-gioi-thieu::after {
 body.man-gioi-thieu::before { width: 240px; height: 240px; left: -90px; bottom: 18%; background: radial-gradient(circle, rgba(255, 201, 60, .28), transparent 70%); animation: troi 9s ease-in-out infinite alternate; }
 body.man-gioi-thieu::after { width: 300px; height: 300px; right: -120px; top: 22%; background: radial-gradient(circle, rgba(46, 158, 62, .2), transparent 70%); animation: troi 11s ease-in-out -4s infinite alternate; }
 @keyframes troi { to { transform: translate(40px, -50px) scale(1.15); } }
-/* Logo có ba tia lửa nhỏ nhấp nháy xung quanh */
-.logo-khung { position: relative; display: inline-block; }
-.logo-khung .logo-lon { margin: 0 auto 8px; }
-.logo-khung i {
-  position: absolute; width: 16px; height: 16px; background: var(--vang); opacity: 0;
-  clip-path: polygon(50% 0, 62% 38%, 100% 50%, 62% 62%, 50% 100%, 38% 62%, 0 50%, 38% 38%);
-  animation: lap-lanh 2.4s ease-in-out infinite;
+
+/* ---------- Banner màn giới thiệu ---------- */
+.banner {
+  position: relative; overflow: hidden; text-align: center; color: #fff; border-radius: 28px; padding: 26px 16px 58px; margin-bottom: 0;
+  background: linear-gradient(135deg, #1F7A2E 0%, #2E9E3E 60%, #3DB04D 100%); box-shadow: 0 10px 0 #17621F, 0 18px 30px rgba(31, 122, 46, .25);
 }
-.logo-khung i:nth-of-type(1) { top: -4px; left: -22px; }
-.logo-khung i:nth-of-type(2) { top: 14px; right: -26px; width: 12px; height: 12px; animation-delay: .8s; }
-.logo-khung i:nth-of-type(3) { bottom: 10px; left: -30px; width: 10px; height: 10px; animation-delay: 1.5s; }
-@keyframes lap-lanh { 0%, 100% { opacity: 0; transform: scale(.3) rotate(0); } 50% { opacity: 1; transform: scale(1) rotate(90deg); } }
+.banner h1 { position: relative; margin: 14px 0 0; font-size: 28px; line-height: 1.25; text-shadow: 0 2px 0 rgba(0, 0, 0, .15); }
+.banner .tu { display: inline-block; animation: tu-nay .55s cubic-bezier(.2, 1.5, .4, 1) calc(.25s + var(--i) * .07s) both; }
+@keyframes tu-nay { from { opacity: 0; transform: translateY(18px) scale(.6) rotate(-6deg); } }
+.bieu-tuong {
+  position: relative; display: grid; place-items: center; width: 92px; height: 92px; margin: 0 auto; border-radius: 50%;
+  background: #fff; box-shadow: 0 6px 0 rgba(0, 0, 0, .15); transition: transform .15s ease-out; animation: nhun 2.6s ease-in-out infinite;
+}
+.bieu-tuong::before, .bieu-tuong::after {
+  content: ""; position: absolute; inset: 0; border-radius: 50%; border: 3px solid rgba(255, 255, 255, .7); animation: song 2.6s ease-out infinite;
+}
+.bieu-tuong::after { animation-delay: 1.3s; }
+@keyframes song { from { transform: scale(1); opacity: .9; } to { transform: scale(1.9); opacity: 0; } }
+.bieu-tuong .logo-lon { width: 66px; height: 66px; }
+.bieu-tuong .emo { font-size: 50px; line-height: 1; display: block; transform-origin: 50% 85%; animation: vay 2.6s ease-in-out .8s infinite; }
+@keyframes vay { 0%, 60%, 100% { transform: rotate(0); } 10% { transform: rotate(14deg) scale(1.1); } 20% { transform: rotate(-10deg); } 30% { transform: rotate(12deg); } 40% { transform: rotate(-6deg); } }
+/* Hạt sáng bay lên: ngôi sao, chấm tròn, chiếc lá */
+.hat { position: absolute; inset: 0; pointer-events: none; }
+.hat i { position: absolute; bottom: -24px; width: var(--c); height: var(--c); background: rgba(255, 255, 255, .55); animation: bay-len 6s linear infinite; }
+.hat i:nth-child(3n+1) { clip-path: polygon(50% 0, 62% 38%, 100% 50%, 62% 62%, 50% 100%, 38% 62%, 0 50%, 38% 38%); background: var(--vang); }
+.hat i:nth-child(3n+2) { border-radius: 50%; }
+.hat i:nth-child(3n) { border-radius: 0 100% 0 100%; background: rgba(190, 240, 196, .7); }
+@keyframes bay-len { 0% { transform: translateY(0) rotate(0); opacity: 0; } 15% { opacity: 1; } 100% { transform: translateY(-260px) rotate(200deg); opacity: 0; } }
+/* Thẻ nội dung đè lên mép dưới banner */
+.banner + .the { position: relative; margin-top: -30px; }
+/* Dòng mô tả: emoji trong bong bóng tròn bên trái */
+.dong-mo-ta { display: flex; align-items: center; gap: 12px; }
+.bong { flex: none; display: grid; place-items: center; width: 42px; height: 42px; border-radius: 50%; background: var(--xanh-nhat); font-size: 22px; box-shadow: 0 3px 0 #BFE3C5; }
+body.man-gioi-thieu .dong-mo-ta .bong { animation: nay-bong .5s cubic-bezier(.2, 1.6, .4, 1) both; animation-delay: inherit; }
+@keyframes nay-bong { from { transform: scale(0) rotate(-40deg); } }
+/* Nút chính có vệt sáng quét ngang */
+body.man-gioi-thieu footer button:not(.phu) { position: relative; overflow: hidden; }
+.nghieng { display: grid; place-items: center; transition: transform .15s ease-out; }
+body.man-gioi-thieu footer button:not(.phu):not(.dang-tai)::after {
+  content: ""; position: absolute; top: 0; bottom: 0; width: 40%; left: -60%; transform: skewX(-20deg);
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, .45), transparent); animation: quet 2.8s ease-in-out 1.4s infinite;
+}
+@keyframes quet { 0% { left: -60%; } 55%, 100% { left: 130%; } }
 
 /* ---------- Người dùng bật "giảm chuyển động": tắt mọi hiệu ứng ---------- */
 @media (prefers-reduced-motion: reduce) {
