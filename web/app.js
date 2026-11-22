@@ -309,11 +309,21 @@ function phanB(cauB) {
     luoi(b4.cac_dong, b4), ["B5", "B6", "B7"].map((id) => cauChon(theo(id))));
 }
 
+/** Đã chọn "Mục khác:" ở câu nào mà để trống ô gõ chữ thì trả về true (bắt người dùng nhập). */
+function thieuMucKhac(ids) {
+  return ids.some((id) => {
+    const cau = tt.fb.phan_b_hanh_vi.find((c) => c.id === id);
+    const ma = cau.options.find((o) => o.khac).ma, v = tt.tl[id];
+    return (Array.isArray(v) ? v.includes(ma) : v === ma) && !(tt.tl[id + "_other"] || "").trim();
+  });
+}
+
 /** Thu câu trả lời form B thành body gửi /behavior. Trả về { body } hoặc { loi }. */
 function thuHanhVi() {
   const t = tt.tl, boQuaB = t.A4 === CHUA_TUNG_DUNG;
   const ids = ["B1", "B2", "B3", "B4_1", "B4_2", "B4_3", "B4_4", "B4_5", "B4_6", "B4_7", "B5", "B6", "B7"];
   if (thieuCau(["A4"]) || (!boQuaB && thieuCau(ids))) return { loi: tt.ui.loi.thieu_cau };
+  if (!boQuaB && thieuMucKhac(["B1", "B3", "B6"])) return { loi: tt.ui.loi.thieu_muc_khac };
   const body = { session_token: tt.token, A4: t.A4, duration_sec: Math.round((Date.now() - tt.batDauB) / 1000) };
   if (!boQuaB) ids.forEach((id) => { body[id] = t[id]; });
   if (!boQuaB) ["B1", "B3", "B6"].forEach((id) => { body[id + "_other"] = (t[id + "_other"] || "").trim(); });  // chữ ở "Mục khác:"
