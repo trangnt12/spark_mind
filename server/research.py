@@ -8,6 +8,7 @@ from sparkmind import config, research_store as kho
 from sparkmind.security import GioiHanTocDo, bam_ip
 
 router = APIRouter(prefix="/api/research")
+CHUA_TUNG_DUNG = 4  # mã A4 "Chưa bao giờ sử dụng"
 gioi_han_ma = GioiHanTocDo(toi_da=10, giay=60)  # tối đa 10 lần nhập SAI mỗi phút cho mỗi IP
 
 
@@ -38,17 +39,21 @@ class BatDauBody(MaBody):
 
 class HanhViBody(BaseModel):
     session_token: str = Field(min_length=1, max_length=100)
-    B2: int
-    B4_1: int = Field(ge=1, le=5)
-    B4_2: int = Field(ge=1, le=5)
-    B4_3: int = Field(ge=1, le=5)
-    B4_4: int = Field(ge=1, le=5)
-    B4_5: int = Field(ge=1, le=5)
-    B4_6: int = Field(ge=1, le=5)
-    B4_7: int = Field(ge=1, le=5)
-    B5: int
-    B6: list[int] = Field(min_length=1, max_length=10)  # chọn nhiều
-    B7: int
+    A4: int                                   # dùng AI chưa; mã 4 = "Chưa bao giờ sử dụng"
+    # B1–B7 bắt buộc, trừ khi A4 = 4 (kiểm tra trong nop_hanh_vi)
+    B1: list[int] | None = Field(default=None, min_length=1, max_length=10)  # chọn nhiều
+    B2: int | None = None
+    B3: list[int] | None = Field(default=None, min_length=1, max_length=10)  # chọn nhiều
+    B4_1: int | None = Field(default=None, ge=1, le=5)
+    B4_2: int | None = Field(default=None, ge=1, le=5)
+    B4_3: int | None = Field(default=None, ge=1, le=5)
+    B4_4: int | None = Field(default=None, ge=1, le=5)
+    B4_5: int | None = Field(default=None, ge=1, le=5)
+    B4_6: int | None = Field(default=None, ge=1, le=5)
+    B4_7: int | None = Field(default=None, ge=1, le=5)
+    B5: int | None = None
+    B6: list[int] | None = Field(default=None, min_length=1, max_length=10)  # chọn nhiều
+    B7: int | None = None
     duration_sec: int = Field(ge=0, le=86400)
 
 
@@ -67,7 +72,7 @@ def lua_chon_hop_le() -> dict:
     """Các mã lựa chọn hợp lệ của từng câu, đọc từ content/form_b.json (không viết cứng)."""
     with open(config.ROOT / "content" / "form_b.json", encoding="utf-8") as f:
         form = json.load(f)
-    cau = form["phan_b_hanh_vi"] + form["phan_c_tu_danh_gia"]
+    cau = form["phan_a_thong_tin"] + form["phan_b_hanh_vi"] + form["phan_c_tu_danh_gia"]
     return {c["id"]: {o["ma"] for o in c["options"]} for c in cau if "options" in c}
 
 
@@ -118,13 +123,31 @@ def bat_dau(body: BatDauBody, request: Request, db=Depends(lay_db_nghien_cuu)):
     return {"session_token": token}
 
 
+def _dang_chuoi(v):
+    """Chọn nhiều -> "1,3" (đã bỏ trùng, sắp xếp); chọn một -> chuỗi; trống -> None."""
+    if v is None:
+        return None
+    return ",".join(str(x) for x in sorted(set(v))) if isinstance(v, list) else str(v)
+
+
+def _kiem_tra_hanh_vi(body: HanhViBody) -> None:
+    """A4 phải hợp lệ; B1–B7 bắt buộc trừ khi chưa bao giờ dùng AI; mọi mã phải có trong form."""
+    kiem_tra_lua_chon("A4", body.A4)
+    ten_cau = ["B1", "B2", "B3", "B5", "B6", "B7"] + [f"B4_{i}" for i in range(1, 8)]
+    if body.A4 != CHUA_TUNG_DUNG and any(getattr(body, c) is None for c in ten_cau):
+        raise HTTPException(status_code=422, detail="Thiếu câu trả lời ở phần B.")
+    for c in ("B1", "B2", "B3", "B5", "B6", "B7"):
+        if getattr(body, c) is not None:
+            kiem_tra_lua_chon(c, getattr(body, c))
+
+
 @router.post("/behavior")
 def nop_hanh_vi(body: HanhViBody, db=Depends(lay_db_nghien_cuu)):
-    for id_cau, gia_tri in (("B2", body.B2), ("B5", body.B5), ("B6", body.B6), ("B7", body.B7)):
-        kiem_tra_lua_chon(id_cau, gia_tri)
-    tra_loi = {"b2_frequency": str(body.B2), "b5_duration": str(body.B5),
-               "b6_prompting": ",".join(str(x) for x in sorted(set(body.B6))),
-               "b7_after_answer": str(body.B7), "duration_sec": body.duration_sec}
+    _kiem_tra_hanh_vi(body)
+    tra_loi = {"a4": str(body.A4), "b1": _dang_chuoi(body.B1), "b2_frequency": _dang_chuoi(body.B2),
+               "b3": _dang_chuoi(body.B3), "b5_duration": _dang_chuoi(body.B5),
+               "b6_prompting": _dang_chuoi(body.B6), "b7_after_answer": _dang_chuoi(body.B7),
+               "duration_sec": body.duration_sec}
     tra_loi.update({f"b4_{i}": getattr(body, f"B4_{i}") for i in range(1, 8)})
     chay(kho.luu_hanh_vi, db, body.session_token, tra_loi)
     return {"ok": True}

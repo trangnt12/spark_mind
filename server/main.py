@@ -16,8 +16,9 @@ from fastapi import Depends, FastAPI, Header, HTTPException  # noqa: E402
 from sparkmind import config  # noqa: E402
 from sparkmind.db import lay_db  # noqa: E402
 from sparkmind.ingest import nhan_form  # noqa: E402
+from sparkmind.game_store import tao_chi_muc_game  # noqa: E402
 from sparkmind.research_store import tao_chi_muc  # noqa: E402
-from server import research  # noqa: E402
+from server import content_api, game1, research  # noqa: E402
 
 @lru_cache
 def lay_db_dung_chung():
@@ -30,6 +31,7 @@ async def vong_doi(_app):
     """Khi server khởi động: tạo chỉ mục cho chế độ nghiên cứu. Lỗi thì ghi tên lỗi (không ghi chuỗi kết nối)."""
     try:
         tao_chi_muc(lay_db_dung_chung())
+        tao_chi_muc_game(lay_db_dung_chung())
     except Exception as loi:
         logging.getLogger("uvicorn.error").error("Không tạo được chỉ mục: %s", type(loi).__name__)
     yield
@@ -37,6 +39,8 @@ async def vong_doi(_app):
 
 app = FastAPI(title="SparkMind", lifespan=vong_doi)
 app.include_router(research.router)
+app.include_router(game1.router)
+app.include_router(content_api.router)
 
 
 def kiem_tra_khoa(x_api_key: str = Header(default="")) -> None:

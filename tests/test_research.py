@@ -14,7 +14,7 @@ from sparkmind.security import GioiHanTocDo, bam_ip  # noqa: E402
 
 BAT_DAU = {"email": "  Trang@Gmail.COM ", "grade": 6, "gender": 2, "school_name": "THPT Bắc Bình",
            "consent": True, "guardian_consent": True}
-HANH_VI = {"B2": 2, "B4_1": 4, "B4_2": 5, "B4_3": 2, "B4_4": 4, "B4_5": 3, "B4_6": 2, "B4_7": 5,
+HANH_VI = {"A4": 1, "B1": [1, 2], "B3": [1, 5], "B2": 2, "B4_1": 4, "B4_2": 5, "B4_3": 2, "B4_4": 4, "B4_5": 3, "B4_6": 2, "B4_7": 5,
            "B5": 2, "B6": [1, 3], "B7": 2, "duration_sec": 120}
 TU_DANH_GIA = {"C1": 4, "C2": 3, "C3": 4, "C4": 5, "C5": 4, "C6": 3}
 
