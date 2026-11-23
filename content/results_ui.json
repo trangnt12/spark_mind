@@ -45,7 +45,7 @@
     "doan": [
       "Đây là ước lượng thống kê từ khảo sát tự đánh giá, không phải đánh giá con người hay năng lực thật của bạn.",
       "Mức thấp, trung bình, cao được chia theo điểm tự đánh giá sáng tạo trên thang 0–100: dưới 60 là thấp, từ 60 đến dưới 80 là trung bình, từ 80 trở lên là cao. Đây chỉ là cách chia để phân tích, không phải thang đo giá trị của một người.",
-      "Ước lượng chỉ dựa trên 7 câu về cách dùng AI mà bạn vừa trả lời.",
+      "Ước lượng chỉ dựa trên 7 câu về cách dùng AI mà bạn đã trả lời.",
       "Trong thử nghiệm của nghiên cứu, mô hình đoán đúng mức khoảng 6/10 trường hợp, tức là vẫn có thể sai khá nhiều.",
       "Phần 'ảnh hưởng' chỉ mô tả cách mô hình đưa ra ước lượng, không có nghĩa là nguyên nhân."
     ]
