@@ -72,3 +72,15 @@ Chi tiết từng chữ đổi: `docs/form_changes_log.md`. Nguyên tắc: code 
 - **Bản dữ liệu:** bản chính 297 là kết quả chính; 361 và 231 chạy riêng (T6b), 231 chỉ để đối chiếu vì bộ lọc dùng B4_3/B4_4.
 - **LOBO và thử độc lập (T7, T8):** `dot` chỉ để chia nhóm, không là đặc trưng. File Excel hiện chỉ có dot1, dot2, dot3 (dot4, dot5 chưa có), nên T8 chỉ có dot1 làm tập thử (31 dòng) và trùng dòng dot1 của T7.
 - **Lưu ý khi viết báo cáo:** macro-F1 khoảng 0.6–0.66 khá cao so với mức ngẫu nhiên 0.33, nhưng B4 và C cùng nằm trong một bảng tự khai (cả B4_3, B4_6 tiêu cực cũng tương quan dương với điểm), nên có thể một phần do cách trả lời chung. Ghi là giả thuyết, không viết thành kết luận nhân quả.
+
+## Kết quả bỏ nhóm biến và chẩn đoán dot1 (23/11/2026, notebook 03 mục G2, G3)
+- **G2 (T9, bản chính 297, CV 5×10, cùng các lần chia với T6):** nhóm B4 (7 câu) mang gần hết tín hiệu. "Chỉ có B4" cho macro-F1 xấp xỉ "đủ biến" (RF 0.658 so với 0.659). Bỏ B4 thì macro-F1 còn khoảng 0.43 và R2 hồi quy khoảng 0 (từ −0.12 đến 0.01). Bỏ B1/B3/B6/B7 hoặc bỏ B2/B5 gần như không đổi kết quả, tức các nhóm này không thêm gì. Chỉ có thông tin nền (lớp, giới, cấp học) cho macro-F1 khoảng 0.34, ngang đoán bừa.
+- **G3 (dot1, n=31, giữ lại dot1, huấn luyện trên dot2+dot3):** Random Forest macro-F1 0.56, dummy theo tỉ lệ trung bình 0.32 (độ lệch chuẩn 0.09 qua 200 hạt giống); RF đoán đúng 19/31 dòng; R2 hồi quy khoảng 0. F1 cao hơn đoán bừa nhưng R2 không, nên **bằng chứng lẫn lộn**, và cỡ mẫu quá nhỏ để kết luận.
+- **Quyết định:** giữ nguyên danh sách đặc trưng 35 cột (không bỏ nhóm nào dù không thêm gì, vì kết quả ablation là phân tích bổ sung, không dùng để chọn lại đặc trưng sau khi đã xem kết quả). Không dò tham số.
+- **T8 (thử độc lập):** chờ dữ liệu dot4, dot5 trong MongoDB. Sau khi chốt và đóng băng dữ liệu (khoảng 22/12), chạy lại notebook 03 với `NGUON = 'mongo'`.
+
+## Hạn chế đã biết
+- **Xu hướng trả lời chung:** B4 và điểm sáng tạo (C1–C5) cùng là tự đánh giá, cùng một lần trả lời; B4_3 và B4_6 (câu tiêu cực) vẫn tương quan dương với điểm. Có thể một phần tín hiệu là cách trả lời chung. Chỉ nói về liên hệ dự đoán, không nói về nguyên nhân.
+- **Dữ liệu dot1 nhỏ:** nhóm form tự nhiên hiện chỉ 31 dòng (trong bản 297), kết quả rất dao động; chưa kết luận được về nhóm tự nhiên.
+- **Chống gian lận theo IP trên Render:** IP có thể bị giả qua header, nên `ip_hash` và giới hạn tốc độ chỉ để gắn cờ, không phải biện pháp chặn chắc chắn.
+- Các hạn chế khác đã ghi ở trên: biến đầu ra tự nhận thức, mẫu nhỏ, trường Bắc Bình chiếm khoảng 9% mẫu.
