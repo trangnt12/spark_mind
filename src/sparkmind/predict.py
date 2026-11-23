@@ -1,11 +1,11 @@
-"""Dự đoán mức tự đánh giá sáng tạo từ câu trả lời B4 (dùng cho demo và kết quả nghiên cứu).
+"""Dự đoán mức tự đánh giá sáng tạo từ 7 câu B4 (dùng cho demo và kết quả nghiên cứu).
 
 Chỉ cần xgboost + numpy (KHÔNG shap, KHÔNG sklearn, KHÔNG pandas, KHÔNG pickle):
-- Mô hình nạp từ file JSON gốc của XGBoost (models/xgb_clf.json, models/xgb_reg.json), nạp một lần rồi giữ lại.
-- Vector đầu vào dựng đúng thứ tự cột trong models/model_meta.json. Biến không có trong câu trả lời được điền
-  bằng trung vị lưu trong meta (giống bước điền thiếu của pipeline huấn luyện ở modeling.py).
-- "Đóng góp" của từng câu lấy từ pred_contribs của XGBoost (khớp TreeSHAP), tính cho đúng mức được dự đoán.
-  Kết quả chỉ trả chiều (tăng/giảm) và độ lớn (nhỏ/vừa/lớn), KHÔNG trả số thô.
+- Dùng mô hình CHỈ 7 câu B4 (models/xgb_b4_clf.json, xgb_b4_reg.json, model_b4_meta.json; xem model_b4.py),
+  nạp từ JSON gốc của XGBoost, nạp một lần rồi giữ lại. Không điền trung vị vì mô hình chỉ có đúng 7 cột.
+- Mức và xác suất lấy từ mô hình phân loại; điểm và "đóng góp" lấy từ mô hình hồi quy.
+- "Đóng góp" của từng câu lấy từ pred_contribs của mô hình hồi quy (khớp TreeSHAP): dương = kéo điểm dự đoán lên
+  ("tang"), âm = kéo xuống ("giam"). Kết quả chỉ trả chiều và độ lớn (nhỏ/vừa/lớn), KHÔNG trả số thô.
 
 Đây là mô tả cách mô hình ước lượng, không phải nguyên nhân và không phải đánh giá năng lực thật.
 """
@@ -21,38 +21,25 @@ THU_MUC = ["Thap", "Trung_binh", "Cao"]            # thứ tự mức: 0, 1, 2 (
 CAU_B4 = [f"B4_{i}" for i in range(1, 8)]
 TOI_DA_DONG_GOP = 4
 THU_MUC_MODELS = config.ROOT / "models"
-LOP_TOI_DA_THCS, LOP_TOI_DA_THPT = 9, 12            # lớp 6–9 THCS, 10–12 THPT, từ 13 là Đại học (decisions.md)
 
 
 @lru_cache
 def nap_mo_hinh() -> dict:
     """Nạp mô hình và meta MỘT lần (lazy): lần gọi đầu mới đọc file, các lần sau dùng lại bản trong bộ nhớ."""
-    meta = json.loads((THU_MUC_MODELS / "model_meta.json").read_text(encoding="utf-8"))
+    meta = json.loads((THU_MUC_MODELS / "model_b4_meta.json").read_text(encoding="utf-8"))
     nguong = json.loads((THU_MUC_MODELS / "do_lon.json").read_text(encoding="utf-8"))["nguong"]
     mo = {}
     for ten in ("xgb_clf", "xgb_reg"):
         mo[ten] = xgb.Booster()
-        mo[ten].load_model(str(THU_MUC_MODELS / f"{ten}.json"))
+        mo[ten].load_model(str(THU_MUC_MODELS / f"{ten.replace('xgb_', 'xgb_b4_')}.json"))
     ban = meta["ten_ban_du_lieu"].split()[0]
-    phien_ban = f"{meta['ngay']}-{ban}-n{meta['so_dong']}"
+    phien_ban = f"{meta['ngay']}-b4-{ban}-n{meta['so_dong']}"
     return {"meta": meta, "nguong": nguong, "phien_ban": phien_ban, **mo}
 
 
-def _cap_hoc_tu_lop(lop: float) -> str:
-    """Cấp học suy ra từ lớp (cùng quy ước với cleaning.py: không dựa vào tên trường)."""
-    if lop <= LOP_TOI_DA_THCS:
-        return "THCS"
-    return "THPT" if lop <= LOP_TOI_DA_THPT else "Đại học"
-
-
 def dung_vector(tra_loi: dict, meta: dict) -> np.ndarray:
-    """Dựng vector 1 x 37 đúng thứ tự cột của meta. Biến thiếu = trung vị; cap_hoc one-hot theo lớp (trung vị)."""
-    gia_tri = dict(meta["trung_vi_dien_thieu"])
-    gia_tri.update({k: float(v) for k, v in tra_loi.items() if k in gia_tri})
-    cap = _cap_hoc_tu_lop(gia_tri["lop_so"])
-    for c in meta["cap_hoc_cac_gia_tri"]:
-        gia_tri[f"cap_hoc_{c}"] = 1.0 if c == cap else 0.0
-    return np.array([[gia_tri[c] for c in meta["cot_mo_hinh_theo_thu_tu"]]], dtype=float)
+    """Dựng vector 1 x 7 đúng thứ tự cột của meta. Câu chưa trả lời = NaN (XGBoost tự xử lý; API demo luôn gửi đủ 7)."""
+    return np.array([[float(tra_loi.get(c, np.nan)) for c in meta["cot_mo_hinh_theo_thu_tu"]]], dtype=float)
 
 
 def _kiem_tra_tra_loi(tra_loi: dict) -> None:
@@ -80,7 +67,8 @@ def _muc_do_lon(gia_tri_tuyet_doi: float, nguong: list) -> str:
 def tinh_dong_gop(contrib: np.ndarray, tra_loi: dict, mh: dict) -> list:
     """Tối đa 4 câu B4 người dùng THỰC SỰ trả lời, ảnh hưởng nhiều nhất (theo |đóng góp|).
 
-    contrib: đóng góp của 37 biến cho mức được dự đoán. Biến điền trung vị không được liệt kê.
+    contrib: đóng góp của 7 câu B4 vào ĐIỂM DỰ ĐOÁN của mô hình hồi quy (đơn vị điểm 0-100).
+    chieu = "tang": câu này kéo điểm dự đoán lên; "giam": kéo điểm dự đoán xuống (so với điểm trung bình nền).
     """
     cot = mh["meta"]["cot_mo_hinh_theo_thu_tu"]
     ds = [(c, float(contrib[cot.index(c)])) for c in CAU_B4 if c in tra_loi]
@@ -90,13 +78,12 @@ def tinh_dong_gop(contrib: np.ndarray, tra_loi: dict, mh: dict) -> list:
 
 
 def chay_mo_hinh(tra_loi: dict, mh: dict) -> dict:
-    """Chạy hai mô hình trên một người. Trả xác suất thô (3 mức), điểm thô và đóng góp (37 biến) của mức dự đoán."""
+    """Chạy hai mô hình trên một người. Trả xác suất thô (3 mức, từ phân loại), điểm thô và đóng góp (7 câu, từ hồi quy)."""
     cot = mh["meta"]["cot_mo_hinh_theo_thu_tu"]
     dm = xgb.DMatrix(dung_vector(tra_loi, mh["meta"]), feature_names=cot)
-    xs = mh["xgb_clf"].predict(dm)[0]
-    pc = mh["xgb_clf"].predict(dm, pred_contribs=True)[0]       # (3 mức, 37 biến + 1 giá trị nền)
-    diem = float(mh["xgb_reg"].predict(dm)[0])
-    return {"xac_suat": xs, "diem": diem, "contrib": pc[int(np.argmax(xs)), :-1]}
+    pc = mh["xgb_reg"].predict(dm, pred_contribs=True)[0]       # (7 câu + 1 giá trị nền)
+    return {"xac_suat": mh["xgb_clf"].predict(dm)[0], "diem": float(mh["xgb_reg"].predict(dm)[0]),
+            "contrib": pc[:-1]}
 
 
 def du_doan(tra_loi: dict) -> dict:

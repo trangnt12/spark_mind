@@ -43,3 +43,11 @@ Nội dung nháp: `content/games/`, `content/form_b.json`.
 | trước 24/12 | Nhận kết quả của 2 người chấm |
 | 2–3/1/2027 | Gửi thầy bản gần hoàn chỉnh (thầy chấm qua sau tuần 1 tháng 1) |
 | 11/1/2027 | Hạn nộp đề án về trường |
+
+## Danh sách đóng băng mô hình (~22/12)
+Làm theo thứ tự, mỗi bước chạy xong mới sang bước sau:
+1. Chạy lại notebook 03 và 04 trên dữ liệu đã đóng băng.
+2. Huấn luyện lại `models/`: mô hình đủ biến (notebook 04) và mô hình B4 (`python scripts/train_b4.py`).
+3. Chạy lại `python scripts/make_contrib_thresholds.py` (cập nhật `models/do_lon.json`).
+4. Cập nhật số "X/10" trong `content/results_ui.json` (lấy `dung_khoang_x_tren_10` trong `models/model_b4_meta.json`) và ghi số thật vào `docs/decisions.md`. `model_version` tự đổi theo ngày và số dòng của meta.
+5. Chạy `python -m pytest tests -q`, rồi commit và deploy.

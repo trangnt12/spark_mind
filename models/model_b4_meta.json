@@ -1,0 +1,51 @@
+{
+  "ngay": "2026-11-23",
+  "ten_ban_du_lieu": "chat (bản chính của báo cáo)",
+  "so_dong": 297,
+  "cot_mo_hinh_theo_thu_tu": [
+    "B4_1",
+    "B4_2",
+    "B4_3",
+    "B4_4",
+    "B4_5",
+    "B4_6",
+    "B4_7"
+  ],
+  "anh_xa_muc": {
+    "0": "Thap",
+    "1": "Trung_binh",
+    "2": "Cao"
+  },
+  "phien_ban": {
+    "xgboost": "3.4.1"
+  },
+  "cv_5x10": {
+    "so_fold": 50,
+    "phan_loai": {
+      "macro_f1": {
+        "tb": 0.6326675929638116,
+        "sd": 0.05766045193246226
+      },
+      "acc": {
+        "tb": 0.6282711864406779,
+        "sd": 0.05735878343131269
+      },
+      "bal_acc": {
+        "tb": 0.6389334023464458,
+        "sd": 0.05897983479411979
+      }
+    },
+    "hoi_quy": {
+      "r2": {
+        "tb": 0.47731012747187485,
+        "sd": 0.09328957336969787
+      },
+      "mae": {
+        "tb": 10.556020683460991,
+        "sd": 1.0039042462610286
+      }
+    }
+  },
+  "dung_khoang_x_tren_10": 6,
+  "ghi_chu": "Mô hình CHỈ 7 câu B4, dự đoán năng lực sáng tạo TỰ NHẬN THỨC. 'dung_khoang_x_tren_10' = accuracy CV làm tròn xuống một chữ số."
+}

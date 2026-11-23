@@ -1,9 +1,9 @@
 {
   "nguong": [
-    0.10027207185824714,
-    0.2519326905409496
+    1.478347500165304,
+    3.4836560885111494
   ],
   "so_dong": 297,
   "so_gia_tri": 2079,
-  "cach_tinh": "phân vị 33.3% và 66.7% của |pred_contribs| (mức dự đoán) của 7 câu B4 trên bản 'chat'"
+  "cach_tinh": "phân vị 33.3% và 66.7% của |pred_contribs| của mô hình HỒI QUY B4 (đơn vị: điểm 0-100) cho 7 câu B4 trên bản 'chat'"
 }

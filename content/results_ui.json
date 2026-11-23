@@ -15,8 +15,8 @@
   "nhan_xac_suat": "Khả năng của từng mức theo mô hình",
   "nhan_dong_gop": "Những câu trả lời ảnh hưởng nhiều nhất đến ước lượng này",
   "chieu": {
-    "tang": "kéo ước lượng về phía mức này",
-    "giam": "kéo ước lượng ra xa mức này"
+    "tang": "kéo điểm dự đoán lên",
+    "giam": "kéo điểm dự đoán xuống"
   },
   "do_lon": {
     "nho": "ảnh hưởng nhỏ",
@@ -28,7 +28,7 @@
     "doan": [
       "Đây là ước lượng thống kê từ khảo sát tự đánh giá, không phải đánh giá con người hay năng lực thật của bạn.",
       "Phiên bản demo chỉ dựa trên 7 câu về cách dùng AI mà bạn vừa trả lời.",
-      "Trong thử nghiệm của nghiên cứu, mô hình đoán đúng mức khoảng 6 trên 10 trường hợp.",
+      "Trong thử nghiệm của nghiên cứu, mô hình đoán đúng mức khoảng 6/10 trường hợp.",
       "Phần 'ảnh hưởng' chỉ mô tả cách mô hình đưa ra ước lượng, không có nghĩa là nguyên nhân."
     ]
   },

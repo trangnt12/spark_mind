@@ -64,10 +64,9 @@ def _b4_da_luu(db, nguoi: dict) -> dict:
 
 
 @router.get("/api/research/result")
-def ket_qua_nghien_cuu(x_session_token: str = Header(default=""), session_token: str = "",
-                       db=Depends(lay_db_nghien_cuu)):
-    """Token nên gửi bằng header X-Session-Token (query sẽ lọt vào log truy cập của server)."""
-    nguoi = chay(kho.tim_nguoi, db, x_session_token or session_token)
+def ket_qua_nghien_cuu(x_session_token: str = Header(default=""), db=Depends(lay_db_nghien_cuu)):
+    """Token CHỈ nhận qua header X-Session-Token (query sẽ lọt vào log truy cập của server nên không nhận)."""
+    nguoi = chay(kho.tim_nguoi, db, x_session_token)
     if not nguoi.get("completed_at"):
         raise HTTPException(status_code=409, detail=chu("loi_research", "chua_xong"))
     return {**predict.du_doan(_b4_da_luu(db, nguoi)), "che_do": "research"}

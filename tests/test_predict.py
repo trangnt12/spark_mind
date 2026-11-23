@@ -133,7 +133,7 @@ def test_research_result_200_khi_da_xong(client):
     r = c.get("/api/research/result", headers={"X-Session-Token": t})
     assert r.status_code == 200 and r.json()["che_do"] == "research"
     assert r.json()["muc"] == demo(c, DUNG).json()["muc"]              # cùng B4 gốc -> cùng kết quả
-    assert c.get("/api/research/result", params={"session_token": t}).status_code == 200
+    assert c.get("/api/research/result", params={"session_token": t}).status_code == 401   # query không còn được nhận
     assert {n: db[n].count_documents({}) for n in db.list_collection_names()} == truoc   # không lưu thêm
 
 
@@ -145,20 +145,56 @@ def test_research_result_token_sai_va_thieu_b4(client):
     assert c.get("/api/research/result", headers={"X-Session-Token": t}).status_code == 422
 
 
-# (e) pred_contribs + nền = đầu ra margin của mô hình
+# (e) pred_contribs + nền = đầu ra của mô hình
 def test_pred_contribs_cong_bang_margin():
     mh = P.nap_mo_hinh()
     cot = mh["meta"]["cot_mo_hinh_theo_thu_tu"]
     dm = xgb.DMatrix(np.vstack([P.dung_vector(a, mh["meta"]) for a in vector_mau(20)]), feature_names=cot)
-    pc = mh["xgb_clf"].predict(dm, pred_contribs=True)                 # (người, 3 mức, 37 biến + nền)
+    pc = mh["xgb_clf"].predict(dm, pred_contribs=True)                 # (người, 3 mức, 7 câu + nền)
     margin = mh["xgb_clf"].predict(dm, output_margin=True)
     assert np.abs(pc.sum(axis=2) - margin).max() < 1e-4
     pr = mh["xgb_reg"].predict(dm, pred_contribs=True)
     assert np.abs(pr.sum(axis=1) - mh["xgb_reg"].predict(dm)).max() < 1e-3   # hồi quy: sai số float32 cỡ 1e-4
 
 
+def test_mo_hinh_b4_chi_co_dung_7_cot():
+    mh = P.nap_mo_hinh()
+    assert mh["meta"]["cot_mo_hinh_theo_thu_tu"] == P.CAU_B4 == M.B4
+    for ten in ("xgb_clf", "xgb_reg"):
+        assert mh[ten].num_features() == 7 and mh[ten].feature_names == P.CAU_B4
+    assert P.dung_vector(DUNG, mh["meta"]).shape == (1, 7)
+    M.kiem_tra_cot_cam(mh["meta"]["cot_mo_hinh_theo_thu_tu"])         # không có cột cấm
+
+
+def test_chieu_khop_dau_pred_contribs_hoi_quy():
+    """chieu 'tang' <=> đóng góp hồi quy dương (kéo điểm lên); ca B4_7 = 5 trong ví dụ DUNG phải là 'tang'."""
+    mh = P.nap_mo_hinh()
+    cot = mh["meta"]["cot_mo_hinh_theo_thu_tu"]
+    for a in vector_mau(20) + [DUNG]:
+        dm = xgb.DMatrix(P.dung_vector(a, mh["meta"]), feature_names=cot)
+        pc = mh["xgb_reg"].predict(dm, pred_contribs=True)[0]
+        for g in P.du_doan(a)["dong_gop"]:
+            assert (g["chieu"] == "tang") == (pc[cot.index(g["id"])] >= 0)
+    b47 = next(g for g in P.du_doan(DUNG)["dong_gop"] if g["id"] == "B4_7")
+    assert b47["chieu"] == "tang"
+
+
+def test_do_lon_chia_ba_muc_theo_nguong():
+    ng = P.nap_mo_hinh()["nguong"]
+    assert 0 < ng[0] < ng[1]
+    assert [P._muc_do_lon(v, ng) for v in (ng[0] / 2, (ng[0] + ng[1]) / 2, ng[1] * 2)] == ["nho", "vua", "lon"]
+
+
+def test_khong_con_nhan_token_qua_query(client):
+    c, db = client
+    t = nguoi_xong(db, xong=True)
+    assert c.get("/api/research/result", params={"session_token": t}).status_code == 401
+    assert c.get("/api/research/result", headers={"X-Session-Token": t}).status_code == 200
+
+
 # (f) models/ không được phục vụ ra ngoài
 @pytest.mark.parametrize("duong", ["/models/xgb_clf.json", "/models/model_meta.json", "/models/do_lon.json",
+                                   "/models/xgb_b4_clf.json", "/models/model_b4_meta.json",
                                    "/play/models/xgb_clf.json", "/play/../models/xgb_clf.json",
                                    "/play/%2e%2e/models/xgb_clf.json", "/static/xgb_clf.json", "/xgb_clf.json"])
 def test_models_khong_tai_duoc(client, duong):
@@ -183,12 +219,12 @@ def test_cung_dau_vao_cung_dau_ra():
     assert all(P.du_doan(a) == P.du_doan(a) for a in vector_mau())
 
 
-# (h) đối chiếu với mô hình gốc nạp từ JSON (XGBClassifier/XGBRegressor), 5 vector mẫu
+# (h) đối chiếu với mô hình B4 nạp từ JSON (XGBClassifier/XGBRegressor), 5 vector mẫu
 def test_doi_chieu_mo_hinh_goc():
     mh = P.nap_mo_hinh()
     clf, reg = xgb.XGBClassifier(), xgb.XGBRegressor()
-    clf.load_model(str(GOC / "models" / "xgb_clf.json"))
-    reg.load_model(str(GOC / "models" / "xgb_reg.json"))
+    clf.load_model(str(GOC / "models" / "xgb_b4_clf.json"))
+    reg.load_model(str(GOC / "models" / "xgb_b4_reg.json"))
     cot = mh["meta"]["cot_mo_hinh_theo_thu_tu"]
     for a in vector_mau(5):
         X = pd.DataFrame(P.dung_vector(a, mh["meta"]), columns=cot)
@@ -199,16 +235,11 @@ def test_doi_chieu_mo_hinh_goc():
 
 
 # Khớp với modeling.py và meta
-def test_vector_dung_thu_tu_cot_va_trung_vi():
+def test_vector_dung_thu_tu_cot():
     meta = P.nap_mo_hinh()["meta"]
-    goc = [c for c in M.DAC_TRUNG if c != "cap_hoc"]
-    assert meta["cot_mo_hinh_theo_thu_tu"] == goc + [f"cap_hoc_{c}" for c in meta["cap_hoc_cac_gia_tri"]]
-    v = P.dung_vector({}, meta)[0]
-    cot = meta["cot_mo_hinh_theo_thu_tu"]
-    for c, tv in meta["trung_vi_dien_thieu"].items():
-        assert v[cot.index(c)] == tv                                   # thiếu -> trung vị
-    assert v[cot.index("cap_hoc_THPT")] == 1 and v[cot.index("cap_hoc_THCS")] == 0   # lớp 12 -> THPT
-    assert P.dung_vector({"B4_1": 1}, meta)[0][cot.index("B4_1")] == 1
+    assert meta["cot_mo_hinh_theo_thu_tu"] == M.B4
+    assert P.dung_vector({"B4_1": 1, "B4_7": 5}, meta)[0][[0, 6]].tolist() == [1, 5]
+    assert np.isnan(P.dung_vector({"B4_1": 1}, meta)[0][1])           # câu chưa trả lời = NaN, không điền trung vị
 
 
 def test_chi_liet_ke_cau_da_tra_loi():
@@ -219,6 +250,8 @@ def test_chi_liet_ke_cau_da_tra_loi():
 def test_requirements_server_ghim_xgboost_dung_ban_va_khong_co_thu_vien_nang():
     dong = [d.strip() for d in (GOC / "requirements-server.txt").read_text(encoding="utf-8").splitlines()]
     ten = {d.split("==")[0].lower() for d in dong if d and not d.startswith("#")}
-    meta = json.loads((GOC / "models" / "model_meta.json").read_text(encoding="utf-8"))
-    assert f"xgboost=={meta['phien_ban']['xgboost']}" in dong
+    for ten_meta in ("model_meta.json", "model_b4_meta.json"):
+        meta = json.loads((GOC / "models" / ten_meta).read_text(encoding="utf-8"))
+        assert f"xgboost-cpu=={meta['phien_ban']['xgboost']}" in dong
+    assert "xgboost" not in ten                                        # chỉ dùng xgboost-cpu trên server
     assert not {"shap", "scikit-learn", "sklearn"} & ten
