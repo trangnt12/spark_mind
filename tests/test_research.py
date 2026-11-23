@@ -219,7 +219,7 @@ def test_sua_phan_da_nop_khi_quay_lai(client):
     assert c.post("/api/research/self-assessment", json={**tdg, "C1": 1, "C2": 1, "C3": 1, "C4": 1, "C5": 1, "edit": True}).status_code == 200
     assert db["behavior_answers"].count_documents({}) == 1 and db["self_assessment"].count_documents({}) == 1
     assert db["behavior_answers"].find_one()["b7_after_answer"] == "3"
-    assert db["behavior_answers"].find_one()["edit_count"] == 1
+    assert db["behavior_answers"].find_one()["so_lan_sua"] == 1
     assert db["self_assessment"].find_one()["creativity_score"] == 0.0
 
 

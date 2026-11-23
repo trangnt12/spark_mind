@@ -151,12 +151,19 @@ def _ghi_de(db, ten_bang: str, participant_id, tai_lieu: dict) -> None:
     """Người dùng bấm "Quay lại" rồi sửa: ghi đè câu trả lời cũ (vẫn chỉ một tài liệu mỗi người),
     ghi giờ sửa gần nhất và số lần sửa để còn biết."""
     db[ten_bang].update_one({"participant_id": participant_id},
-                            {"$set": {**tai_lieu, "edited_at": datetime.now()}, "$inc": {"edit_count": 1}},
+                            {"$set": {**tai_lieu, "sua_luc": datetime.now()}, "$inc": {"so_lan_sua": 1}},
                             upsert=True)
 
 
+def chan_neu_da_hoan_thanh(nguoi: dict) -> None:
+    """Sau khi completed_at được gán thì khóa khảo sát: không sửa nữa (403)."""
+    if nguoi.get("completed_at"):
+        raise LoiNghiepVu(403, "Bạn đã hoàn thành, không sửa được nữa.")
+
+
 def _luu(db, ten_bang: str, nguoi: dict, tai_lieu: dict, ghi_de: bool) -> None:
-    """Lưu một phần: lần đầu thì chặn nộp trùng (409), còn đang sửa thì ghi đè."""
+    """Lưu một phần: lần đầu thì chặn nộp trùng (409), còn đang sửa thì ghi đè (chỉ khi chưa hoàn thành)."""
+    chan_neu_da_hoan_thanh(nguoi)
     if ghi_de:
         _ghi_de(db, ten_bang, nguoi["_id"], tai_lieu)
     else:
@@ -180,8 +187,9 @@ def luu_tu_danh_gia(db, session_token: str, tra_loi: dict, ghi_de: bool = False)
 def sua_thong_tin(db, session_token: str, d: dict) -> None:
     """Sửa lớp, giới tính, trường (phần A) sau khi đã bắt đầu. Email và đồng ý ban đầu giữ nguyên."""
     nguoi = tim_nguoi(db, session_token)
+    chan_neu_da_hoan_thanh(nguoi)
     if d["grade"] <= LOP_DUOI_18 and d.get("guardian_consent") is not True:
         raise LoiNghiepVu(422, "Dưới 18 tuổi cần có sự đồng ý của phụ huynh hoặc giáo viên.")
-    db[COL_NGUOI].update_one({"_id": nguoi["_id"]}, {"$set": {
+    db[COL_NGUOI].update_one({"_id": nguoi["_id"]}, {"$inc": {"so_lan_sua": 1}, "$set": {
         "grade": str(d["grade"]), "gender": str(d["gender"]), "school_name": d["school_name"].strip(),
-        "guardian_consent": bool(d.get("guardian_consent")), "info_edited_at": datetime.now()}})
+        "guardian_consent": bool(d.get("guardian_consent")), "sua_luc": datetime.now()}})

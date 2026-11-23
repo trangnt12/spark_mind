@@ -9,7 +9,7 @@ Nguồn: bảng `notebook_hang_ngay` của Trang. Mốc đã chốt (đổi 23/1
 | 23/11 | Notebook 03: RF, XGBoost, baseline, CV 5 lớp lặp lại trên 3 bản dữ liệu | Bảng so sánh mô hình |
 | 24/11 | Notebook 04: SHAP, kiểm tra `pred_contribs`, lưu mô hình | Biểu đồ SHAP, file mô hình |
 | 25/11 ✅ | `/api/predict` (API dự đoán), mô hình B4, demo, trang kết quả, endpoint `/api/admin/memory`, chữ kết quả đã duyệt | Mốc: lõi hướng 1 xong (đã xong; còn "Danh sách đóng băng mô hình ~22/12") |
-| 24–27/11 | Game 2 + `completed_at` khi đủ 3 game; chống gian lận + 2 câu kiểm tra chú ý (cờ `chu_y_sai`); tạo mã hàng loạt; game 3 | Cả 3 game chơi được, chống gian lận cơ bản, mã theo lô |
+| 24–27/11 | Game 2 + `completed_at` khi đủ 3 game (✅ đã xong 24/11, chờ game 3); chống gian lận + 2 câu kiểm tra chú ý (cờ `chu_y_sai`); tạo mã hàng loạt; game 3 | Cả 3 game chơi được, chống gian lận cơ bản, mã theo lô |
 | 28/11 | Thử trên điện thoại; script sao lưu MongoDB | Danh sách lỗi, bản sao lưu |
 | 29/11 | Thử nghiệm ~20 người (gắn nhãn `pilot`) | Danh sách lỗi từ người thử |
 | 30/11 | Sửa lỗi; xóa dữ liệu pilot; chạy thử script chấm AI | Bản ổn định, sẵn sàng mở thu |
@@ -21,12 +21,16 @@ Nguồn: bảng `notebook_hang_ngay` của Trang. Mốc đã chốt (đổi 23/1
 - 22/11: `tests/test_form_text.py` (kiểm tra chữ trên giao diện khớp nội dung form).
 - 22/11: `docs/credits.md` (ghi nguồn, tác giả ảnh game: gạch, chai, ghế).
 
+- 24/11 (tối): luồng quay lại/khôi phục theo từng màn (F5 giữ màn, quay lại mọi trang, hỏi tiếp tục hay làm mới khi vào lại), nút "Tiếp tục", nút xanh trang giới thiệu bên phải, bỏ dòng "Không phải bạn?".
+- 24/11 (chiều): sửa viền lỗi bị đè, bản nháp `sessionStorage` (`web/nhap.js`), `no-cache` cho `/play`, xem lại game đã nộp, dải tên game, bố cục game 2 mới.
+- 24/11 (sửa): kết quả game 2 tô xanh/đỏ có ✓/✗; `GET /api/research/progress` (`src/sparkmind/progress.py`, `server/progress_api.py`) để F5 hoặc nhập lại mã về đúng bước dở dang, điền sẵn câu trả lời, khóa sửa khảo sát sau `completed_at`; đổi `edited_at`/`edit_count` thành `sua_luc`/`so_lan_sua`.
+- 24/11: game 2 (`server/game2.py`, `src/sparkmind/game2_store.py`, `score_game2.py`, `web/game2.js`) và `completed_at` (`game_store.kiem_tra_hoan_thanh`, danh sách `config.GAME_BAT_BUOC`).
 - 23/11: `docs/rubric_game1.md` và `src/sparkmind/score_game1.py` (lọc ý hợp lệ, đếm fluency; không chấm lúc nộp).
 - **Làm khi phân tích (sau khi thu xong, sau 20/12):** chấm đa dạng (flexibility) và độc đáo (originality) của game 1. AI gán nhóm công dụng cho từng ý hợp lệ và gom ý tương tự; 2 người chấm kiểm tra lại một mẫu (cùng mẫu rút khoảng 12–15/12). Độc đáo tính trong cùng đồ vật, ý xuất hiện ở dưới 5% người chơi. Chi tiết: `docs/rubric_game1.md`.
 
 ## Ba game (đã chốt hướng)
 1. Đồ vật bí ẩn (kiểu AUT): số ý, số ý hợp lệ (AI lọc), độ độc đáo theo tần suất.
-2. Soi lỗi AI: chọn nhận xét đúng về lỗi, +1/−1, chấm tự động.
+2. Soi lỗi AI (đã xong 24/11): 12 ý, 5 ý sai, chọn ý cho là sai, +1/−1, tối thiểu 0, tối đa 5, chấm tự động; không nói số ý sai.
 3. Nâng cấp ý tưởng AI: AI chấm `them_y_moi`, `khac_goc`, `kha_thi` (1–5); 2 người chấm lại 100–150 bài.
 Nội dung nháp: `content/games/`, `content/form_b.json`.
 

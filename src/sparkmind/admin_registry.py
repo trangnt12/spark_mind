@@ -68,7 +68,7 @@ BANG = {
                 ("grade", "Lớp (mã)", "text"), ("gender", "Giới tính (mã)", "text"), ("school_name", "Trường", "text"),
                 ("email", "Email", "email"), ("consent", "Đồng ý", "bool"), ("guardian_consent", "Phụ huynh đồng ý", "bool"),
                 ("ip_hash", "IP (băm)", "hash"), ("completed_at", "Hoàn thành", "datetime")],
-        "chi_tiet": {"code_id": "Mã tham gia (ID)", "consent_at": "Đồng ý lúc", "info_edited_at": "Sửa thông tin lúc"},
+        "chi_tiet": {"code_id": "Mã tham gia (ID)", "consent_at": "Đồng ý lúc", "sua_luc": "Sửa thông tin lúc"},
         "tim": ["school_name"],
         "loc": [("source", "Nguồn", "enum", NGUON_THAM_GIA), ("consent", "Đồng ý", "bool", None),
                 ("guardian_consent", "Phụ huynh đồng ý", "bool", None), _nhan_loc()],
@@ -85,22 +85,22 @@ BANG = {
                 ("b1", "B1", "text"), ("b2_frequency", "B2", "text"), ("b3", "B3", "text")]
                + [(f"b4_{i}", f"B4.{i}", "int") for i in range(1, 8)]
                + [("b5_duration", "B5", "text"), ("b6_prompting", "B6", "text"), ("b7_after_answer", "B7", "text"),
-                  ("duration_sec", "Thời gian (giây)", "int"), ("edit_count", "Số lần sửa", "int")],
-        "chi_tiet": {"b1_other": "B1 mục khác", "b3_other": "B3 mục khác", "b6_other": "B6 mục khác", "edited_at": "Sửa lúc"},
+                  ("duration_sec", "Thời gian (giây)", "int"), ("so_lan_sua", "Số lần sửa", "int")],
+        "chi_tiet": {"b1_other": "B1 mục khác", "b3_other": "B3 mục khác", "b6_other": "B6 mục khác", "sua_luc": "Sửa lúc"},
         "tim": [],
         "loc": [("a4", "A4", "text", None), _nhan_loc()],
-        "sap_xep": ["duration_sec", "edit_count"], "mac_dinh": ("_id", -1),
+        "sap_xep": ["duration_sec", "so_lan_sua"], "mac_dinh": ("_id", -1),
         "quyen": {"doc": XEM, "xuat": XEM, "ghi": KHONG, "xoa": ADMIN},
     },
     "self_assessment": {
         "nhom": "huong2", "ten": "Tự đánh giá (C1–C5)", "che_do": "readonly", "co_nhan": True,
         "cot": [("participant_id", "Người tham gia (ID)", "id"), ("data_label", "Nhãn", "nhan")]
                + [(f"c{i}", f"C{i}", "int") for i in range(1, 6)]
-               + [("c6", "C6", "text"), ("creativity_score", "Điểm sáng tạo", "float"), ("edit_count", "Số lần sửa", "int")],
-        "chi_tiet": {"edited_at": "Sửa lúc"},
+               + [("c6", "C6", "text"), ("creativity_score", "Điểm sáng tạo", "float"), ("so_lan_sua", "Số lần sửa", "int")],
+        "chi_tiet": {"sua_luc": "Sửa lúc"},
         "tim": [],
         "loc": [_nhan_loc()],
-        "sap_xep": ["creativity_score", "edit_count"], "mac_dinh": ("_id", -1),
+        "sap_xep": ["creativity_score", "so_lan_sua"], "mac_dinh": ("_id", -1),
         "quyen": {"doc": XEM, "xuat": XEM, "ghi": KHONG, "xoa": ADMIN},
     },
     "game_responses": {

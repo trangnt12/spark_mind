@@ -147,7 +147,7 @@ footer {
   position: sticky; bottom: 0; z-index: 6; background: var(--trang); border-top: 2px solid #D3E9D6;
   box-shadow: 0 -6px 16px rgba(31, 122, 46, .08); padding: 12px 12px calc(12px + env(safe-area-inset-bottom));
 }
-.thanh-nut { display: flex; flex-wrap: wrap; gap: 10px; max-width: var(--rong); margin: 0 auto; }
+.thanh-nut { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; max-width: var(--rong); margin: 0 auto; }   /* mọi trang: nút căn giữa, một nút cũng không lệch trái */
 
 /* ---------- Báo lỗi ---------- */
 .toast-loi {
@@ -162,7 +162,11 @@ footer {
 .thanh-nut > * { flex: 1 1 220px; }
 .thanh-nut .loi { flex-basis: 100%; margin: 0; }
 .thanh-nut .quay-lai { flex: 0 0 auto; order: -1; width: auto; min-width: 112px; }
-.thieu { background: var(--loi-nhat); outline: 2px solid var(--loi); outline-offset: 4px; animation: lac .35s; }
+.thieu { background: var(--loi-nhat); box-shadow: inset 0 0 0 2px var(--loi); border-radius: 14px; padding: 10px 12px; animation: lac .35s; }
+/* Viền đỏ vẽ BÊN TRONG khung (inset), không dùng outline lòi ra ngoài, nên các hàng sát nhau không đè viền lên nhau */
+.hang-luoi.thieu { border-top-color: transparent; padding: 14px 10px; }
+.hang-luoi + .hang-luoi { margin-top: 6px; }
+.thieu > .loi-cau { grid-column: 1 / -1; }
 .loi-cau { display: flex; align-items: center; gap: 6px; margin: 8px 0 0; font-size: 16px; font-weight: 800; color: var(--loi-chu); }
 .loi-cau svg { flex: none; width: 20px; height: 20px; }
 @keyframes lac { 25% { transform: translateX(-5px); } 75% { transform: translateX(5px); } }
@@ -395,3 +399,56 @@ input.o-chon {
 .dg-nhan { font-size: 15px; font-weight: 800; color: var(--xanh-dam); margin-top: 4px !important; }
 .chieu-giam .dg-nhan { color: var(--chu-phu); }
 .dg-chon { font-size: 15px; color: var(--chu-phu); }
+
+/* ---------- Tên game: dải to ở đầu mọi màn game ---------- */
+.ten-game { display: flex; align-items: center; gap: 12px; margin: 0 0 16px; padding: 14px 18px; border-radius: 18px; color: #fff;
+  background: linear-gradient(135deg, var(--xanh-dam), var(--xanh)); box-shadow: 0 4px 0 var(--xanh-dam); }
+.so-game { flex: none; padding: 4px 12px; border-radius: 99px; background: var(--vang); color: var(--chu); font-weight: 800; font-size: 15px; }
+.ten-game-chu { font-size: 22px; font-weight: 800; line-height: 1.25; }
+
+/* ---------- Game 2: màn đánh dấu (khung tình huống + thẻ đánh số có nút gạt) ---------- */
+.tinh-huong .bong-noi { margin: 0 0 12px; padding: 14px 16px; border-radius: 18px 18px 18px 4px; background: var(--xanh-nhat); border: 2px solid #BFE3C5; font-weight: 600; }
+.dem-y2 { margin: 0 0 10px; text-align: center; font-weight: 800; color: var(--xanh-dam); }
+.ds-y2 { display: flex; flex-direction: column; gap: 12px; margin-bottom: 20px; }
+.the-y2 { position: relative; display: grid; grid-template-columns: 1fr; gap: 6px; padding: 14px 16px; cursor: pointer; background: var(--trang);
+  border: 2px solid var(--vien); border-radius: 18px; box-shadow: var(--bong-the); transition: background .15s, border-color .15s, transform .1s; }
+.the-y2:active { transform: scale(.99); }
+.the-y2 input { position: absolute; opacity: 0; inset: 0; margin: 0; cursor: pointer; }
+.the-y2:has(input:focus-visible) { outline: 3px solid var(--vang); outline-offset: 2px; }
+.so-y2 { font-size: 13px; font-weight: 800; color: var(--chu-phu); text-transform: uppercase; letter-spacing: .04em; }
+.chu-y2 { font-size: 17px; }
+.gat-y2 { justify-self: start; padding: 6px 14px; border-radius: 99px; font-weight: 800; font-size: 15px; border: 2px dashed var(--vien); color: var(--chu-phu); }
+.gat-roi { display: none; }
+.the-y2:has(input:checked) { border-color: var(--loi); background: var(--loi-nhat); }
+.the-y2:has(input:checked) .gat-chua { display: none; }
+.the-y2:has(input:checked) .gat-roi { display: inline; }
+.the-y2:has(input:checked) .gat-y2 { border: 2px solid var(--loi); background: var(--trang); color: var(--loi-chu); }
+
+/* ---------- Game 2: kết quả (viền màu + ký hiệu ✓/✗ + chữ, không chỉ dựa vào màu) ---------- */
+.diem-tong { text-align: center; }
+.vong-diem { --pct: 0%; width: 124px; height: 124px; margin: 8px auto 12px; border-radius: 50%; display: grid; place-items: center;
+  background: conic-gradient(var(--xanh) var(--pct), var(--xanh-nhat) 0); position: relative; }
+.vong-diem::before { content: ""; position: absolute; inset: 12px; border-radius: 50%; background: var(--trang); }
+.vong-diem .so-diem { position: relative; font-size: 34px; font-weight: 800; color: var(--xanh-dam); }
+.tom-tat { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin-top: 8px; }
+.tom-tat span { padding: 6px 12px; border-radius: 99px; font-weight: 800; font-size: 15px; }
+.chip-dung { background: var(--xanh-nhat); color: var(--xanh-dam); border: 2px solid var(--xanh); }
+.chip-sai { background: var(--loi-nhat); color: var(--loi-chu); border: 2px solid var(--loi); }
+.ds-kq2 { list-style: none; margin: 0 0 20px; padding: 0; display: flex; flex-direction: column; gap: 10px; }
+.ket-qua-y { display: flex; gap: 12px; align-items: flex-start; padding: 12px 16px; border: 2px solid var(--vien); border-radius: 18px; background: var(--trang); }
+.ket-qua-y p { margin: 0 0 4px; }
+.ket-qua-y .dau-kq { flex: none; width: 32px; height: 32px; border-radius: 50%; display: grid; place-items: center; font-weight: 800; color: #fff; }
+.ket-qua-y.y-dung { border-color: var(--xanh); background: var(--xanh-nhat); }
+.ket-qua-y.y-dung .dau-kq { background: var(--xanh-dam); }
+.ket-qua-y.y-sai { border-color: var(--loi); background: var(--loi-nhat); padding: 16px; box-shadow: var(--bong-the); }
+.ket-qua-y.y-sai .dau-kq { background: var(--loi-chu); }
+.ket-qua-y .giai-thich { margin-top: 8px; padding: 10px 12px; border-radius: 12px; background: var(--trang); font-weight: 700; color: var(--chu); }
+.noi-dung-kq { flex: 1; min-width: 0; }
+
+/* ---------- Trang giới thiệu: nút xanh (chính) nằm bên phải, nút phụ (Quay lại...) bên trái ---------- */
+/* Nút ở chân trang giới thiệu LUÔN cùng một hàng (không xuống dòng, kể cả điện thoại hẹp), căn giữa: nút phụ bên trái, nút xanh bên phải */
+body.man-gioi-thieu .thanh-nut { flex-wrap: nowrap; justify-content: center; }
+body.man-gioi-thieu .thanh-nut > button { flex: 1 1 0; max-width: 460px; min-width: 0; width: auto; padding: 8px 12px; font-size: 16px; text-align: center; }
+body.man-gioi-thieu .thanh-nut > button:not(.phu) { order: 2; }
+body.man-gioi-thieu .thanh-nut > .phu { order: 1; }
+@media (min-width: 480px) { body.man-gioi-thieu .thanh-nut > button { font-size: 18px; padding: 0 20px; } }

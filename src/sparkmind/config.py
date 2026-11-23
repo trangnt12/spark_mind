@@ -20,6 +20,10 @@ IP_HASH_SECRET = os.environ.get("IP_HASH_SECRET", "")  # khóa HMAC để băm I
 NHAN_HOP_LE = ("thu", "pilot", "that")   # nhãn dữ liệu (trường data_label): thử, thử nghiệm 30/11, thật
 NHAN_MAC_DINH = "that"                    # bản ghi chưa có data_label được coi là "that" (an toàn: không bao giờ bị xóa nhầm)
 NHAN_DU_LIEU_THU = ("thu", "pilot")       # các nhãn bị ẩn bởi công tắc "ẩn dữ liệu thử" và bị "xóa dữ liệu thử" xóa
+# Các game bắt buộc để được coi là hoàn thành (gán participants.completed_at). Thêm game mới: thêm số vào đây.
+# Game 3 chưa có nên hiện chưa ai hoàn thành; trong lúc chờ, GET /api/research/result vẫn trả 409.
+GAME_BAT_BUOC = (1, 2, 3)
+GAME_DA_CO = (1, 2)   # game đã có màn chơi, theo thứ tự chơi; làm xong game 3 thì thêm 3 vào đây (endpoint tiến độ dùng để chỉ bước kế tiếp)
 MUC_TIEU_HUONG1 = 1000                # số form mục tiêu của hướng 1
 MUC_TIEU_HUONG2 = 300                 # số người hoàn thành mục tiêu của hướng 2
 ATLAS_GIOI_HAN_MB = 512               # dung lượng gói Atlas M0

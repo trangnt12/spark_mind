@@ -1,36 +1,19 @@
 {
-  "_ghi_chu": "NHÁP 20/11. Game 2 'Soi lỗi AI'. Tự động: mỗi lựa chọn đúng +1, chọn nhầm -1, điểm mỗi đề tối thiểu 0, tối đa 4. Điểm game 2 = tổng các đề.",
+  "_ghi_chu": "Game 2 'Soi lỗi AI' (chốt 24/11/2026): 12 ý, 5 ý sai, thứ tự hiển thị cố định như trong file. KHÔNG nói cho người chơi biết có bao nhiêu ý sai. la_loi, loai_loi, giai_thich KHÔNG được trả về trình duyệt trước khi nộp. Chấm: +1 mỗi ý sai chọn đúng, -1 mỗi ý đúng bị chọn nhầm, tối thiểu 0, tối đa 5.",
   "ten": "Soi lỗi AI",
-  "thoi_gian_giay_moi_de": 150,
-  "huong_dan": "AI vừa đưa ra một đề xuất. Hãy đọc kỹ rồi chọn những nhận xét NÓI ĐÚNG về chỗ chưa ổn của đề xuất. Chọn nhầm sẽ bị trừ điểm.",
-  "de": [
-    {
-      "id": "g2_thuvien",
-      "de_xuat_cua_ai": "Để tăng số học sinh đến thư viện, nhà trường nên mở cửa đến 22h mỗi ngày. Theo thống kê, 90% học sinh sẽ học nhiều hơn nếu thư viện mở muộn. Chỉ cần thêm một thủ thư ca tối là đủ. Giải pháp này đã thành công ở mọi trường học nên chắc chắn hiệu quả tại trường mình. Ngoài ra, nên bỏ hẳn các hoạt động câu lạc bộ ở thư viện để giữ yên tĩnh.",
-      "nhan_xet": [
-        {"text": "Đề xuất có nhắc đến thư viện.", "la_loi": false, "giai_thich": "Đây không phải lỗi."},
-        {"text": "Số liệu 90% không nêu nguồn nên chưa đáng tin.", "la_loi": true, "giai_thich": "Con số không có nguồn cần được kiểm chứng."},
-        {"text": "Mục tiêu tăng số học sinh đến thư viện được nêu rõ.", "la_loi": false, "giai_thich": "Đây là điểm ổn, không phải lỗi."},
-        {"text": "Không nhắc tới chi phí và an toàn khi học sinh về muộn.", "la_loi": true, "giai_thich": "Thiếu cân nhắc điều kiện thực tế."},
-        {"text": "Đoạn văn chia thành nhiều câu ngắn.", "la_loi": false, "giai_thich": "Cách viết không phải vấn đề."},
-        {"text": "Cụm từ \"mọi trường học\" là khái quát quá mức.", "la_loi": true, "giai_thich": "Một vài trường thành công không chứng minh mọi trường đều thành công."},
-        {"text": "Văn bản dùng tiếng Việt có dấu đầy đủ.", "la_loi": false, "giai_thich": "Đây không phải lỗi."},
-        {"text": "Bỏ hẳn câu lạc bộ mà không cân nhắc tác động ngược.", "la_loi": true, "giai_thich": "Có thể làm mất hoạt động đang thu hút học sinh."}
-      ]
-    },
-    {
-      "id": "g2_nhua",
-      "de_xuat_cua_ai": "Để giảm rác nhựa ở căng tin, trường nên cấm hoàn toàn bán nước đóng chai từ tuần sau. Một khảo sát 12 sinh viên cho thấy tất cả đều ủng hộ, nên cả trường chắc chắn ủng hộ. Chỉ cần đặt 2 máy lọc nước là mọi người sẽ tự mang bình. Chi phí vận hành không đáng kể. Ngoài ra, nên phạt 100.000 đồng mỗi lần bị phát hiện mang chai nhựa vào lớp.",
-      "nhan_xet": [
-        {"text": "Đề xuất nêu mục tiêu giảm rác nhựa.", "la_loi": false, "giai_thich": "Đây là điểm ổn, không phải lỗi."},
-        {"text": "Kết luận cả trường ủng hộ chỉ dựa trên khảo sát 12 người.", "la_loi": true, "giai_thich": "Mẫu quá nhỏ để suy ra cho cả trường."},
-        {"text": "Đoạn văn có đúng năm câu.", "la_loi": false, "giai_thich": "Số câu không phải vấn đề."},
-        {"text": "Nói chi phí vận hành \"không đáng kể\" mà không đưa con số.", "la_loi": true, "giai_thich": "Khẳng định chưa có bằng chứng."},
-        {"text": "Có nhắc đến việc đặt máy lọc nước.", "la_loi": false, "giai_thich": "Đây không phải lỗi."},
-        {"text": "Cấm hoàn toàn chỉ sau một tuần, không có thời gian chuyển tiếp.", "la_loi": true, "giai_thich": "Thiếu bước chuyển tiếp và lựa chọn thay thế cho người quên mang bình."},
-        {"text": "Văn bản được viết bằng tiếng Việt.", "la_loi": false, "giai_thich": "Đây không phải lỗi."},
-        {"text": "Mức phạt 100.000 đồng cho mỗi lần là nặng so với thu nhập của học sinh, sinh viên.", "la_loi": true, "giai_thich": "Biện pháp phạt chưa cân nhắc tính phù hợp."}
-      ]
-    }
+  "tinh_huong": "Bạn nhờ AI: \"Hãy giới thiệu ngắn về Việt Nam cho một bạn học sinh nước ngoài.\" AI trả lời 12 ý dưới đây. Trong đó có một số ý sai. Hãy chọn những ý bạn cho là SAI.",
+  "y": [
+    {"id": "g2_01", "van_ban": "Hà Nội là thủ đô của Việt Nam.", "la_loi": false, "loai_loi": null, "giai_thich": "Đúng."},
+    {"id": "g2_02", "van_ban": "Tuyên ngôn Độc lập được đọc tại Quảng trường Ba Đình vào năm 1954.", "la_loi": true, "loai_loi": "sai_nam", "giai_thich": "Tuyên ngôn Độc lập được đọc năm 1945 (ngày 2/9/1945), không phải năm 1954."},
+    {"id": "g2_03", "van_ban": "Đường bờ biển của Việt Nam dài khoảng 3.260 km.", "la_loi": false, "loai_loi": null, "giai_thich": "Đúng."},
+    {"id": "g2_04", "van_ban": "Đỉnh Fansipan, nóc nhà Đông Dương, cao khoảng 4.143 m.", "la_loi": true, "loai_loi": "sai_so_lieu", "giai_thich": "Fansipan cao khoảng 3.143 m, không phải 4.143 m."},
+    {"id": "g2_05", "van_ban": "Việt Nam có biên giới đất liền với ba nước: Trung Quốc, Lào và Campuchia.", "la_loi": false, "loai_loi": null, "giai_thich": "Đúng."},
+    {"id": "g2_06", "van_ban": "Vịnh Hạ Long ở Quảng Ninh và được UNESCO công nhận là di sản thiên nhiên thế giới.", "la_loi": false, "loai_loi": null, "giai_thich": "Đúng."},
+    {"id": "g2_07", "van_ban": "Hà Nội là thành phố đông dân nhất cả nước.", "la_loi": true, "loai_loi": "sai_so_sanh", "giai_thich": "Thành phố Hồ Chí Minh mới là nơi đông dân nhất cả nước."},
+    {"id": "g2_08", "van_ban": "Việt Nam gia nhập ASEAN vào năm 1995.", "la_loi": false, "loai_loi": null, "giai_thich": "Đúng."},
+    {"id": "g2_09", "van_ban": "Sông Mê Kông tạo nên đồng bằng sông Cửu Long ở phía nam.", "la_loi": false, "loai_loi": null, "giai_thich": "Đúng."},
+    {"id": "g2_10", "van_ban": "Vì Việt Nam nằm trong vùng nhiệt đới nên không nơi nào trong cả nước từng có nhiệt độ dưới 0°C.", "la_loi": true, "loai_loi": "khai_quat_vo_can_cu", "giai_thich": "Vùng núi cao phía Bắc như Sa Pa, Mẫu Sơn từng có băng giá, thậm chí có tuyết. Vị trí nhiệt đới không loại trừ điều đó."},
+    {"id": "g2_11", "van_ban": "Việt Nam nằm trong nhóm các nước xuất khẩu cà phê hàng đầu thế giới.", "la_loi": false, "loai_loi": null, "giai_thich": "Đúng."},
+    {"id": "g2_12", "van_ban": "Quán cà phê mọc lên ngày càng nhiều ở các thành phố, nên chắc chắn uống cà phê giúp sinh viên học giỏi hơn.", "la_loi": true, "loai_loi": "nhan_qua_vo_can_cu", "giai_thich": "Quán nhiều lên không chứng minh cà phê làm học giỏi hơn; đó chỉ là hai việc cùng xảy ra."}
   ]
 }

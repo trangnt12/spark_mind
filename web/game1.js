@@ -3,11 +3,20 @@
 "use strict";
 
 // Trạng thái game 1: các ý đã thêm, số lần dán thử, số lần rời tab, đồng hồ, đã nộp chưa
-const g1 = { cacY: [], paste: 0, roiTab: 0, conLai: 0, hanChot: 0, nhip: null, daNop: false };
+const g1 = { cacY: [], paste: 0, roiTab: 0, conLai: 0, hanChot: 0, nhip: null, daNop: false, dangChoi: false };
+
+/** Dải tên game to, rõ ở đầu mọi màn game: "Game 1" + tên. Tên lấy từ "ten" trong content/games/gameN.json (một chỗ duy nhất),
+ *  mẫu chữ "Game {so}: {ten}" lấy từ research_ui.json (đọc màn hình đọc cả câu). */
+function tenGame(so, ten) {
+  const chu = tt.ui.tieu_game.replace("{so}", so).replace("{ten}", ten);
+  return h("div", { class: "ten-game", role: "heading", "aria-level": "1", "aria-label": chu },
+    h("span", { class: "so-game", "aria-hidden": "true" }, "Game " + so), h("span", { class: "ten-game-chu", "aria-hidden": "true" }, ten));
+}
 
 // ---------- Màn giới thiệu chung 3 trò ----------
 
 function manGioiThieu() {
+  datMan("gioi_thieu");
   const u = tt.ui.game_gioi_thieu;
   hienThi(5, tieuDe("game", u.tieu_de_chung), h("div", { class: "the" }, cacDoan(u.mo_ta)),
     khungNut(h("button", { type: "button", onclick: manGame1 }, u.nut_bat_dau), nutQuayLai(manC)));
@@ -18,13 +27,14 @@ function manGioiThieu() {
 
 /** Gọi game1/start và tải chữ hướng dẫn. Lỗi mạng thì hiện nút "Thử lại" (chưa có gì để mất). */
 async function manGame1() {
+  datMan("game1");
   const loi = h("div", { class: "loi an", role: "alert" });
   const nut = nutGui(tt.ui.chung.nut_thu_lai, async () => {
     const [bd, nd] = await Promise.all([goiApi("/api/research/game1/start", { session_token: tt.token }),
                                         goiApi("/api/content/game1")]);
     const status = bd.status !== 200 ? bd.status : nd.status;
     if (status !== 200) { loiPhien(loi, status); return status; }
-    if (bd.du_lieu.submitted) { manChuaXong(); return 200; }
+    if (bd.du_lieu.submitted) { veGame1DaNop(bd.du_lieu, nd.du_lieu); return 200; }
     veGame1(bd.du_lieu, nd.du_lieu);
     return 200;
   }, loi);
@@ -82,7 +92,7 @@ function chanOMuc(o) {
 
 /** Đếm số lần rời tab (chuyển sang tab khác hoặc thu nhỏ trình duyệt). */
 function demRoiTab() {
-  if (document.hidden && !g1.daNop) g1.roiTab++;
+  if (document.hidden && g1.dangChoi && !g1.daNop) g1.roiTab++;
 }
 
 // ---------- Danh sách ý ----------
@@ -90,6 +100,7 @@ function demRoiTab() {
 /** Vẽ lại danh sách ý thành các thẻ nhỏ; mỗi thẻ có nút xóa tròn. Dòng đếm chỉ nói số ý, không nhận xét nội dung. */
 function veDanhSachY(ds) {
   const g = tt.ui.giao_dien;
+  ghiNhap("g1", { cacY: g1.cacY, paste: g1.paste, roiTab: g1.roiTab });   // nhớ để F5 không mất
   document.getElementById("so-y").textContent = g1.cacY.length ? g.so_y.replace("{n}", g1.cacY.length) : g.chua_co_y;
   ds.replaceChildren(...g1.cacY.map((y, i) => h("li", { class: "dong-y" }, h("span", {}, y),
     h("button", { type: "button", class: "phu xoa-y", "aria-label": g.xoa_y, onclick: () => { g1.cacY.splice(i, 1); veDanhSachY(ds); } },
@@ -113,14 +124,26 @@ async function nopGame1(hopLoi) {
   const r = await goiApi("/api/research/game1/submit",
     { session_token: tt.token, ideas: g1.cacY, paste_count: g1.paste, tab_leave_count: g1.roiTab });
   if (r.status === 200 || r.status === 409) {     // 409: đã nộp rồi, cứ đi tiếp
-    g1.daNop = true; clearInterval(g1.nhip);
+    g1.daNop = true; clearInterval(g1.nhip); xoaNhap("g1");
     document.removeEventListener("visibilitychange", demRoiTab);
-    manChuaXong();
+    manGame2();
     chucMung();
     return 200;
   }
   loiPhien(hopLoi, r.status);
   return r.status;
+}
+
+// ---------- Game 1 đã nộp: chỉ xem lại, không làm lại ----------
+
+/** Xem lại bài đã nộp (đồ vật và các ý của chính người chơi). Không có ô nhập, không có nút nộp. */
+function veGame1DaNop(bd, nd) {
+  const u = tt.ui.game1;
+  const ds = h("ul", { class: "ds-y" }, (bd.ideas || []).map((y) => h("li", { class: "dong-y" }, h("span", {}, y))));
+  hienThi(5, tenGame(1, nd.ten), h("div", { class: "the" }, h("p", { class: "ghi-chu" }, u.nhan_do_vat),
+      veAnh(bd.do_vat), h("h2", {}, bd.do_vat.ten)),
+    h("div", { class: "the" }, h("h2", {}, u.nhan_da_nop), h("p", { class: "ghi-chu" }, u.da_nop_khong_sua), ds),
+    khungNut(h("button", { type: "button", onclick: manGame2 }, tt.ui.game2.nut_sang_game2), nutQuayLai(manGioiThieu)));
 }
 
 // ---------- Vẽ màn game 1 ----------
@@ -149,7 +172,8 @@ function veDeBai(u, dv, nd) {
 /** Màn game 1 đầy đủ: đồng hồ, ô nhập, danh sách, nút nộp. */
 function veGame1(bd, nd) {
   const u = tt.ui.game1, toiDa = nd.gioi_han_ky_tu_moi_y;
-  Object.assign(g1, { cacY: [], paste: 0, roiTab: 0, daNop: false });
+  const nhap = docNhap().g1 || {};   // ý đang gõ dở (nếu vừa F5) được khôi phục; đồng hồ vẫn do máy chủ tính
+  Object.assign(g1, { cacY: nhap.cacY || [], paste: nhap.paste || 0, roiTab: nhap.roiTab || 0, daNop: false });
   const dh = veDongHo(u.hien_thi_gio);
   const loi = h("div", { class: "loi an", role: "alert" });
   const o = h("input", { type: "text", maxlength: toiDa, autocomplete: "off", "aria-label": u.nhan_y_tuong });
@@ -159,11 +183,12 @@ function veGame1(bd, nd) {
   chanOMuc(o);
   o.addEventListener("keydown", (e) => { if (e.key === "Enter") { e.preventDefault(); themY(o, ds, toiDa); } });
   document.addEventListener("visibilitychange", demRoiTab);
-  hienThi(5, dh.khung, veDeBai(u, bd.do_vat, nd),
+  hienThi(5, tenGame(1, nd.ten), dh.khung, veDeBai(u, bd.do_vat, nd),
     h("div", { class: "the" }, h("p", { class: "cau-hoi" }, u.nhan_y_tuong), o,
       h("button", { type: "button", class: "phu", style: "margin-top:10px", onclick: () => themY(o, ds, toiDa) }, u.nut_them),
       h("p", { class: "so-y", id: "so-y", "aria-live": "polite" }), ds),
-    khungNut(loi, nut));
+    khungNut(loi, nut, nutQuayLai(manGioiThieu)));
+  g1.dangChoi = true;   // từ đây mới đếm rời tab
   veDanhSachY(ds);
   chayDongHo(dh, bd.remaining_sec, nd.thoi_gian_giay, () => nut.click());   // hết giờ thì tự nộp
   o.focus();

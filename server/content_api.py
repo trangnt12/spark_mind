@@ -45,7 +45,7 @@ def chu_ket_qua():
 def game1():
     """Chữ hướng dẫn và ví dụ của game 1. Không trả danh sách đồ vật (đồ vật do /game1/start chọn theo mã)."""
     d = doc_noi_dung("games/game1.json")
-    return {k: d[k] for k in ("thoi_gian_giay", "huong_dan", "vi_du", "gioi_han_ky_tu_moi_y")}
+    return {k: d[k] for k in ("ten", "thoi_gian_giay", "huong_dan", "vi_du", "gioi_han_ky_tu_moi_y")}
 
 
 @lru_cache

@@ -73,8 +73,11 @@ def bat_dau_game1(db, session_token: str, noi_dung: dict) -> dict:
         bai = _tao_bai(db, nguoi, do_vat)
     gioi_han = noi_dung["thoi_gian_giay"]
     do_vat = next(d for d in noi_dung["do_vat"] if d["id"] == bai["prompt_id"])
-    return {"do_vat": do_vat, "time_limit_sec": gioi_han, "remaining_sec": con_lai(bai, gioi_han),
-            "started_at": bai["started_at"].isoformat(), "submitted": bai["submitted_at"] is not None}
+    kq = {"do_vat": do_vat, "time_limit_sec": gioi_han, "remaining_sec": con_lai(bai, gioi_han),
+          "started_at": bai["started_at"].isoformat(), "submitted": bai["submitted_at"] is not None}
+    if kq["submitted"]:
+        kq["ideas"] = bai["answer"]["ideas"]   # trả lại các ý đã nộp để người chơi xem lại (chỉ của chính họ)
+    return kq
 
 
 def nop_game1(db, session_token: str, d: dict, gioi_han: int) -> dict:
@@ -94,4 +97,15 @@ def nop_game1(db, session_token: str, d: dict, gioi_han: int) -> dict:
     kq = db[COL_GAME].update_one({"_id": bai["_id"], "submitted_at": None}, {"$set": gia_tri})
     if kq.modified_count != 1:
         raise kho.LoiNghiepVu(409, "Bạn đã nộp game 1 rồi.")
+    kiem_tra_hoan_thanh(db, nguoi)
     return {"ok": True, "n_ideas": len(y)}
+
+
+def kiem_tra_hoan_thanh(db, nguoi: dict) -> bool:
+    """Đủ mọi game trong config.GAME_BAT_BUOC đã nộp thì gán participants.completed_at (một lần, không ghi đè)."""
+    da_nop = {b["game"] for b in db[COL_GAME].find({"participant_id": nguoi["_id"], "submitted_at": {"$ne": None}})}
+    if not set(config.GAME_BAT_BUOC) <= da_nop:
+        return False
+    # Điều kiện completed_at=None: lần sau (hoặc hai yêu cầu cùng lúc) không ghi đè giờ đã có
+    db[kho.COL_NGUOI].update_one({"_id": nguoi["_id"], "completed_at": None}, {"$set": {"completed_at": bay_gio()}})
+    return True

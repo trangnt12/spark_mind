@@ -65,6 +65,7 @@ function hienThi(buoc, ...nodes) {
   chan.replaceChildren(...nutChan);                                       // chân trang (nút)
   chan.classList.toggle("an", nutChan.length === 0);
   document.body.classList.remove("man-gioi-thieu");   // chỉ các màn giới thiệu mới bật lại (xem danhDauGioiThieu)
+  g1.dangChoi = false; clearInterval(g1.nhip);        // rời màn game 1 thì dừng đồng hồ và ngừng đếm rời tab
   goc.classList.remove("vao");
   void goc.offsetWidth;                       // buộc trình duyệt chạy lại hiệu ứng
   goc.classList.add("vao");
@@ -126,6 +127,17 @@ function haoQuang(n) {
     lop.append(x);
   }
   return lop;
+}
+
+/** Quên người đang làm trên máy này (chỉ trong trình duyệt, KHÔNG xóa gì trên máy chủ) rồi về màn nhập mã. Dùng cho lựa chọn "làm bài mới". */
+function thoatPhien() {
+  localStorage.removeItem(KHOA_TOKEN);
+  xoaNhap();                                         // bỏ luôn bản nháp và màn đang xem của người trước
+  sessionStorage.removeItem(KHOA_MAN);
+  clearInterval(g1.nhip);
+  g1.daNop = true;                                   // ngừng đếm rời tab của game 1
+  Object.assign(tt, { token: "", ma: "", tl: {}, batDauB: 0, daNop: { B: false, C: false } });
+  manMa();
 }
 
 /** Nút "Quay lại" (nút phụ): về màn trước để đổi câu trả lời, câu đã chọn vẫn được giữ. */
@@ -322,16 +334,17 @@ function nutGui(chu, xuLy, hopLoi) {
 // ---------- Màn 1: chào và nhập mã ----------
 
 function manMa() {
-  tt.demo = false; tt.tl = {};                   // rời bản demo: bỏ câu trả lời demo, không để lẫn vào form nghiên cứu
+  if (tt.demo) { tt.demo = false; tt.tl = {}; }   // rời bản demo: bỏ câu trả lời demo, không để lẫn vào form nghiên cứu
+  datMan("ma");
   const u = tt.ui.chao;
-  const o = h("input", { type: "text", id: "o-ma", autocomplete: "off", autocapitalize: "characters", maxlength: 32 });
+  const o = h("input", { type: "text", id: "o-ma", autocomplete: "off", autocapitalize: "characters", maxlength: 32, value: tt.ma || "" });
   const loi = h("div", { class: "loi an", role: "alert" });
   const nut = nutGui(u.nut, async () => {
     const ma = o.value.trim();
     if (!ma) return baoLoi(loi, tt.ui.loi.ma_sai);
     const kq = await goiApi("/api/research/code/check", { code: ma });
     if (kq.status !== 200) { baoLoi(loi, chuLoi(kq.status)); return kq.status; }
-    if (!kq.du_lieu.valid) { baoLoi(loi, tt.ui.loi.ma_sai); return 200; }
+    if (!kq.du_lieu.valid && !kq.du_lieu.can_resume) { baoLoi(loi, tt.ui.loi.ma_sai); return 200; }   // mã dùng dở thì cho vào, nhập đúng email để làm tiếp
     tt.ma = ma;
     manThongTin();
     return 200;
@@ -343,13 +356,47 @@ function manMa() {
   danhDauGioiThieu();
 }
 
-/** Máy đã có session_token đang dở thì hỏi có làm tiếp không. */
-function manTiepTuc() {
-  const u = tt.ui.tiep_tuc;
-  const tiep = h("button", { type: "button", onclick: () => { tt.token = localStorage.getItem(KHOA_TOKEN); manB(); } }, u.nut_tiep);
-  const moi = h("button", { type: "button", class: "phu", onclick: () => { localStorage.removeItem(KHOA_TOKEN); manMa(); } }, u.nut_moi);
-  hienThi(1, tieuDe("tiep_tuc", u.tieu_de), h("div", { class: "the" }, cacDoan(u.mo_ta)), khungNut(tiep, moi));
-  danhDauGioiThieu();
+/** Điền sẵn câu trả lời đã lưu (từ máy chủ) vào tt.tl và nhớ phần nào đã nộp (để lần lưu sau là "sửa"). */
+function dienSanCauTraLoi(tienDo) {
+  const { info, behavior, self_assessment: tdg } = tienDo.answers;
+  tt.tl = { A1: info.A1, A2: info.A2, A3: info.A3, nguoiLon: info.guardian_consent,
+            truongKhac: !tt.truong.some((t) => t.ten === info.A3) };
+  for (const phan of [behavior, tdg]) {
+    for (const [khoa, v] of Object.entries(phan || {})) if (v != null) tt.tl[khoa] = v;
+  }
+  Object.assign(tt.tl, docNhap().tl || {});   // bản nháp gõ dở (chưa nộp) đè lên bản đã lưu
+  tt.daNop = { B: tienDo.steps.behavior, C: tienDo.steps.self_assessment };
+}
+
+// Thứ tự các màn của người tham gia (từ trước ra sau). Người chơi được quay lại mọi màn trước và đi tiếp tới màn xa nhất đã tới.
+const THU_TU_MAN = ["sua_thong_tin", "b", "c", "gioi_thieu", "game1", "game2", "chua_xong"];
+const MAN = { sua_thong_tin: () => manThongTin(true), b: manB, c: manC, gioi_thieu: manGioiThieu, game1: manGame1, game2: manGame2, chua_xong: manChuaXong };
+// Bước kế tiếp máy chủ báo -> { vao: màn mở mặc định, xa: màn xa nhất được phép mở }
+const BUOC_SANG_MAN = { behavior: { vao: "b", xa: "b" }, self_assessment: { vao: "c", xa: "c" }, game1: { vao: "gioi_thieu", xa: "game1" },
+                        game2: { vao: "game2", xa: "game2" }, cho_game_khac: { vao: "game2", xa: "chua_xong" } };
+
+/** Mở màn theo bước máy chủ báo. Nếu tab còn nhớ màn đang xem (vừa tải lại trang) và màn đó không vượt quá bước đã tới thì ở lại màn đó. */
+function diDenBuoc(buoc, giuMan) {
+  if (buoc === "completed") { manHoanThanh(); return; }
+  const dich = BUOC_SANG_MAN[buoc] || BUOC_SANG_MAN.cho_game_khac;
+  const luu = giuMan ? docMan() : null;
+  const hopLe = luu && luu.token === tt.token && THU_TU_MAN.includes(luu.man) && THU_TU_MAN.indexOf(luu.man) <= THU_TU_MAN.indexOf(dich.xa);
+  MAN[hopLe ? luu.man : dich.vao]();
+}
+
+/** Hỏi máy chủ tiến độ rồi đưa người chơi đến bước dở dang đầu tiên (dùng khi tải lại trang hoặc nhập lại mã).
+ *  Lỗi mạng: hiện nút "Thử lại"; phiên hỏng (401): xóa token, về màn nhập mã. */
+async function diDenBuocDangLam(giuMan = false) {
+  const loi = h("div", { class: "loi an", role: "alert" });
+  const nut = nutGui(tt.ui.chung.nut_thu_lai, async () => {
+    const r = await goiApi("/api/research/progress", undefined, { "X-Session-Token": tt.token });
+    if (r.status !== 200) { loiPhien(loi, r.status); return r.status; }
+    dienSanCauTraLoi(r.du_lieu);
+    diDenBuoc(r.du_lieu.next, giuMan);
+    return 200;
+  }, loi);
+  hienThi(1, h("p", { class: "mo-ta" }, tt.ui.giao_dien.dang_tai), khungNut(loi, nut));
+  nut.click();   // tự gọi lần đầu
 }
 
 // ---------- Màn 2: thông tin và đồng ý ----------
@@ -484,6 +531,7 @@ function oChonLop(cau, khiDoi) {
 }
 
 function manThongTin(sua = false) {
+  datMan(sua ? "sua_thong_tin" : "thong_tin");
   const u = tt.ui, a = Object.fromEntries(tt.fb.phan_a_thong_tin.map((c) => [c.id, c]));
   const loi = h("div", { class: "loi an", role: "alert" });
   const hopNguoiLon = h("div", { id: "hop-nguoi-lon" }, oTich("nguoiLon", u.dong_y.o_nguoi_lon));
@@ -502,7 +550,7 @@ function manThongTin(sua = false) {
     h("div", { class: "the" }, h("h2", {}, tt.fb.tieu_de), h("p", { class: "mo-ta" }, tt.fb.mo_ta),
       h("h2", {}, tt.fb.tieu_de_phan.A),
       oChu("o-email", u.thong_tin.nhan_email, u.thong_tin.ghi_chu_email, "email", "email"), phanA),
-    h("div", { class: "the" }, oTich("dongY", u.dong_y.o_dong_y), hopNguoiLon), khungNut(loi, nut));
+    h("div", { class: "the" }, oTich("dongY", u.dong_y.o_dong_y), hopNguoiLon), khungNut(loi, nut, nutQuayLai(manMa)));
   danhDauGioiThieu();
   hienNguoiLon();
 }
@@ -510,8 +558,9 @@ function manThongTin(sua = false) {
 /** Màn sửa phần A (sau khi bấm Quay lại từ form B): chỉ lớp, giới tính, trường; không hỏi lại email và đồng ý. */
 function manSuaThongTin(phanA, hopNguoiLon, loi, hienNguoiLon) {
   const nut = nutGui(tt.ui.giao_dien.nut_luu, () => guiSuaThongTin(thuSuaThongTin(), loi), loi);
-  hienThi(2, h("div", { class: "the" }, h("h2", {}, tt.fb.tieu_de_phan.A), phanA, hopNguoiLon),
-    khungNut(loi, nut, nutQuayLai(manB)));
+  hienThi(2, tieuDe("dong_y", tt.ui.dong_y.tieu_de), h("div", { class: "the" }, tt.ui.dong_y.doan.map(dongMoTa)),   // trang giới thiệu/đồng ý (chỉ đọc, đã đồng ý rồi)
+    h("div", { class: "the" }, h("h2", {}, tt.fb.tieu_de_phan.A), phanA, hopNguoiLon), khungNut(loi, nut));
+  danhDauGioiThieu();
   hienNguoiLon();
 }
 
@@ -528,6 +577,7 @@ async function guiSuaThongTin(kq, hopLoi) {
   if (kq.loi) { baoLoi(hopLoi, kq.loi); return 200; }
   const r = await goiApi("/api/research/info/update", kq.body);
   if (r.status !== 200) { loiPhien(hopLoi, r.status); return r.status; }
+  xoaNhap("tl");
   manB();
   return 200;
 }
@@ -540,7 +590,7 @@ async function guiBatDau(kq, hopLoi) {
   if (r.status !== 200) { baoLoi(hopLoi, chuLoi(r.status)); return r.status; }
   tt.token = r.du_lieu.session_token;
   localStorage.setItem(KHOA_TOKEN, tt.token);
-  manB();
+  diDenBuocDangLam();   // người mới: vào form B; người nhập lại mã dùng dở: vào bước dở dang
   chucMung();
   return 200;
 }
@@ -584,6 +634,7 @@ async function guiHanhVi(kq, hopLoi) {
   const r = await goiApi("/api/research/behavior", { ...kq.body, edit: tt.daNop.B });   // đã nộp rồi thì lần này là sửa
   if (r.status === 409) { manC(); return 409; }          // đã nộp phần này rồi: đi tiếp
   if (r.status !== 200) { loiPhien(hopLoi, r.status); return r.status; }
+  xoaNhap("tl");
   manC();
   if (!tt.daNop.B) chucMung();                           // chỉ khen lần hoàn thành đầu, không khen lúc sửa
   tt.daNop.B = true;
@@ -597,6 +648,7 @@ function loiPhien(hopLoi, status) {
 }
 
 function manB() {
+  datMan("b");
   const u = tt.ui.form_b, cauB = tt.fb.phan_b_hanh_vi;
   const a4 = tt.fb.phan_a_thong_tin.find((c) => c.id === "A4");
   const loi = h("div", { class: "loi an", role: "alert" });
@@ -622,6 +674,7 @@ async function guiTuDanhGia(kq, hopLoi) {
   if (kq.loi) { baoLoi(hopLoi, kq.loi); return 200; }
   const r = await goiApi("/api/research/self-assessment", { ...kq.body, edit: tt.daNop.C });
   if (r.status !== 200 && r.status !== 409) { loiPhien(hopLoi, r.status); return r.status; }
+  xoaNhap("tl");
   manGioiThieu();
   if (!tt.daNop.C) chucMung();
   tt.daNop.C = true;
@@ -629,6 +682,7 @@ async function guiTuDanhGia(kq, hopLoi) {
 }
 
 function manC() {
+  datMan("c");
   const u = tt.ui.form_c, cauC = tt.fb.phan_c_tu_danh_gia;
   const loi = h("div", { class: "loi an", role: "alert" });
   const nut = nutGui(u.nut, () => guiTuDanhGia(thuTuDanhGia(), loi), loi);
@@ -640,9 +694,34 @@ function manC() {
 // ---------- Màn 5: giới thiệu và game 1 (file game1.js). Màn 6: tạm thời (game 2 và 3 làm sau) ----------
 
 function manChuaXong() {
+  datMan("chua_xong");
   const u = tt.ui.chua_xong;
-  hienThi(6, tieuDe("chua_xong", u.tieu_de), h("div", { class: "the" }, cacDoan(u.mo_ta)));
+  hienThi(6, tieuDe("chua_xong", u.tieu_de), h("div", { class: "the" }, cacDoan(u.mo_ta)), khungNut(nutQuayLai(manGame2)));
   danhDauGioiThieu();
+}
+
+// ---------- Vào lại web: hỏi tiếp tục bài cũ hay làm bài mới ----------
+
+/** Máy đã có bài đang làm dở (token trong localStorage) nhưng đây là lần mở mới (không phải tải lại trang): hỏi người dùng. */
+function manTiepTuc() {
+  const u = tt.ui.tiep_tuc;
+  const tiep = h("button", { type: "button", onclick: () => diDenBuocDangLam() }, u.nut_tiep);
+  const moi = h("button", { type: "button", class: "phu", onclick: thoatPhien }, u.nut_moi);   // chỉ quên trong trình duyệt; bài cũ vẫn ở máy chủ
+  hienThi(1, tieuDe("tiep_tuc", u.tieu_de), h("div", { class: "the" }, cacDoan(u.mo_ta)), khungNut(moi, tiep));
+  danhDauGioiThieu();
+}
+
+/** Mở web: (1) vừa tải lại trang -> ở lại đúng màn đang xem; (2) vào lại sau khi đã thoát -> hỏi tiếp tục hay làm mới; (3) chưa có gì -> nhập mã. */
+function batDauTheoTrangThai() {
+  const luu = localStorage.getItem(KHOA_TOKEN), man = docMan();
+  if (luu) {
+    tt.token = luu;
+    if (man && man.token === luu) diDenBuocDangLam(true); else manTiepTuc();
+  } else if (man && man.man === "thong_tin" && man.ma) {   // đang điền thông tin/đồng ý rồi tải lại: giữ nguyên màn, giữ chữ đã gõ
+    tt.ma = man.ma;
+    tt.tl = docNhap().tl || {};
+    manThongTin();
+  } else manMa();
 }
 
 // ---------- Khởi động ----------
@@ -670,8 +749,14 @@ async function khoiDong() {
   document.getElementById("ten-he-thong").textContent = tt.ui.ten_he_thong;
   goc.addEventListener("change", boDauLoi);
   goc.addEventListener("input", boDauLoi);
+  const nhoNhap = (e) => {   // nhớ câu đang gõ dở (kể cả email ở màn đồng ý, trước khi có token)
+    if (e && e.target && e.target.id === "o-email") tt.tl.email = e.target.value;
+    if (!tt.demo) ghiNhap("tl", tt.tl);
+  };
+  goc.addEventListener("change", nhoNhap);
+  goc.addEventListener("input", nhoNhap);
   theoDoiMang();
-  if (localStorage.getItem(KHOA_TOKEN)) manTiepTuc(); else manMa();
+  batDauTheoTrangThai();
 }
 
 khoiDong();

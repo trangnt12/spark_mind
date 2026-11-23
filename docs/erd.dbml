@@ -88,8 +88,9 @@ Table participants {
   session_token varchar [unique, note: 'random token (secrets.token_urlsafe), sent to the browser; never exported']
   user_agent varchar
   started_at datetime
-  completed_at datetime
-  info_edited_at datetime [note: 'lần sửa phần A gần nhất (nút Quay lại); trống nếu chưa sửa']
+  completed_at datetime [note: 'gán MỘT LẦN (không ghi đè) khi đã nộp đủ mọi game trong config.GAME_BAT_BUOC (hiện 1, 2, 3); trống = chưa hoàn thành']
+  sua_luc datetime [note: 'lần sửa phần A gần nhất (nút Quay lại); trống nếu chưa sửa']
+  so_lan_sua int [note: 'số lần sửa phần A']
   indexes {
     code_id [unique]
     email
@@ -120,8 +121,8 @@ Table behavior_answers {
   b4_6 int
   b4_7 int
   duration_sec int
-  edited_at datetime [note: 'lần sửa gần nhất (nút Quay lại)']
-  edit_count int [note: 'số lần sửa']
+  sua_luc datetime [note: 'lần sửa gần nhất (nút Quay lại)']
+  so_lan_sua int [note: 'số lần sửa']
 }
 
 Table self_assessment {
@@ -135,8 +136,8 @@ Table self_assessment {
   c5 int
   c6 varchar
   creativity_score float
-  edited_at datetime [note: 'lần sửa gần nhất (nút Quay lại)']
-  edit_count int [note: 'số lần sửa']
+  sua_luc datetime [note: 'lần sửa gần nhất (nút Quay lại)']
+  so_lan_sua int [note: 'số lần sửa']
 }
 
 Table game_responses {
@@ -144,8 +145,8 @@ Table game_responses {
   participant_id objectid [not null]
   data_label varchar [note: 'thu | pilot | that. Missing is treated as that (safe: never deleted by the test-data cleanup). Set by make_codes.py --data-label, copied access_codes -> participants -> child tables']
   game int [not null, note: '1 | 2 | 3']
-  prompt_id varchar
-  answer json
+  prompt_id varchar [note: 'game 1: id đồ vật; game 2: "game2" (một đề cố định)']
+  answer json [note: 'game 1: {ideas, n_ideas}. game 2: {selected_ids (id các ý chọn là SAI, theo thứ tự hiển thị), score 0-5, n_correct, n_wrong}']
   duration_sec int
   paste_count int
   tab_leave_count int

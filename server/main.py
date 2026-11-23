@@ -24,7 +24,7 @@ from sparkmind.ingest import nhan_form  # noqa: E402
 from sparkmind.memory import rss_mb  # noqa: E402
 from sparkmind.game_store import tao_chi_muc_game  # noqa: E402
 from sparkmind.research_store import tao_chi_muc  # noqa: E402
-from server import admin_data_api, admin_stats_api, admin_testdata_api, admin_users, auth, auth_api, content_api, game1, predict_api, research  # noqa: E402
+from server import admin_data_api, admin_stats_api, admin_testdata_api, admin_users, auth, auth_api, content_api, game1, game2, predict_api, progress_api, research  # noqa: E402
 from sparkmind import audit, session_store, user_store  # noqa: E402
 
 @lru_cache
@@ -50,6 +50,8 @@ async def vong_doi(_app):
 app = FastAPI(title="SparkMind", lifespan=vong_doi)
 app.include_router(research.router)
 app.include_router(game1.router)
+app.include_router(game2.router)
+app.include_router(progress_api.router)
 app.include_router(content_api.router)
 app.include_router(predict_api.router)
 app.include_router(auth_api.router)
@@ -68,6 +70,8 @@ CSP_QUAN_TRI = ("default-src 'self'; style-src 'self' https://fonts.googleapis.c
 async def header_quan_tri(request: Request, call_next):
     """Thêm header bảo mật cho mọi đường của trang quản trị (giao diện và API)."""
     resp = await call_next(request)
+    if request.url.path.startswith("/play/") and not request.url.path.startswith(DUONG_QUAN_TRI):
+        resp.headers["Cache-Control"] = "no-cache"   # luôn hỏi lại máy chủ (ETag): sửa JS/CSS thì người chơi nhận bản mới ngay, không bị kẹt bản cũ
     if request.url.path.startswith(DUONG_QUAN_TRI):
         resp.headers["X-Robots-Tag"] = "noindex, nofollow"
         resp.headers["Cache-Control"] = "no-store"

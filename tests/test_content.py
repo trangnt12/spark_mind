@@ -18,10 +18,11 @@ def test_form_b_du_cau():
     assert dao == ["B4_3", "B4_6"]  # khớp NEG trong columns.py
 
 
-def test_game2_moi_de_4_loi_that():
-    for de in doc("games/game2.json")["de"]:
-        assert len(de["nhan_xet"]) == 8
-        assert sum(n["la_loi"] for n in de["nhan_xet"]) == 4
+def test_game2_12_y_5_loi():
+    y = doc("games/game2.json")["y"]
+    assert len(y) == 12 and len({i["id"] for i in y}) == 12
+    assert sum(i["la_loi"] for i in y) == 5
+    assert all(i["loai_loi"] for i in y if i["la_loi"]) and all(i["loai_loi"] is None for i in y if not i["la_loi"])
 
 
 def test_game1_va_game3_co_noi_dung():
