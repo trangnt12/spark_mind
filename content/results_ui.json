@@ -14,6 +14,7 @@
   "nhan_muc": "Mức tự đánh giá dự đoán",
   "nhan_diem": "Điểm ước lượng (thang 0–100)",
   "diem": {
+    "giai_thich": "Điểm này là điểm tự đánh giá sáng tạo, tính từ 5 câu hỏi trong khảo sát của nghiên cứu.",
     "sai_so": 10.5,
     "khoang": "Khoảng {tu} đến {den} điểm",
     "ghi_chu": "Sai số trung bình khoảng 10 điểm, nên chỉ nên xem đây là một khoảng, không phải một con số chính xác."
@@ -27,7 +28,7 @@
   "nhan_dong_gop": "Mô hình đã dựa vào đâu?",
   "dong_gop": {
     "mo_ta": "Bấm để xem những câu trả lời ảnh hưởng nhiều nhất đến ước lượng này.",
-    "canh_bao": "Lưu ý: với hai câu phát biểu tiêu cực (B4.3 và B4.6), mô hình học được chiều ngược với điều ta kỳ vọng, có thể do xu hướng trả lời chung trong dữ liệu khảo sát. Đây là mô tả dữ liệu, không phải lời khuyên hay đánh giá về bạn.",
+    "canh_bao": "Lưu ý: hai câu B4.3 và B4.6 nói về việc dùng AI thiếu kiểm chứng và phụ thuộc vào AI. Trong dữ liệu khảo sát, người đồng ý với hai câu này lại có xu hướng tự đánh giá sáng tạo cao hơn, ngược với điều ta thường nghĩ. Có thể do một số người có xu hướng chọn mức đồng ý cho nhiều câu. Đây là mô tả dữ liệu, không phải lời khuyên hay đánh giá về bạn.",
     "ban_chon": "Bạn chọn: {gia_tri}"
   },
   "chieu": {
@@ -43,8 +44,9 @@
     "tieu_de": "Cần lưu ý",
     "doan": [
       "Đây là ước lượng thống kê từ khảo sát tự đánh giá, không phải đánh giá con người hay năng lực thật của bạn.",
+      "Mức thấp, trung bình, cao được chia theo điểm tự đánh giá sáng tạo trên thang 0–100: dưới 60 là thấp, từ 60 đến dưới 80 là trung bình, từ 80 trở lên là cao. Đây chỉ là cách chia để phân tích, không phải thang đo giá trị của một người.",
       "Ước lượng chỉ dựa trên 7 câu về cách dùng AI mà bạn vừa trả lời.",
-      "Trong thử nghiệm của nghiên cứu, mô hình đoán đúng mức khoảng 6/10 trường hợp.",
+      "Trong thử nghiệm của nghiên cứu, mô hình đoán đúng mức khoảng 6/10 trường hợp, tức là vẫn có thể sai khá nhiều.",
       "Phần 'ảnh hưởng' chỉ mô tả cách mô hình đưa ra ước lượng, không có nghĩa là nguyên nhân."
     ]
   },

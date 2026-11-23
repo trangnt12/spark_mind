@@ -32,6 +32,7 @@ function theDiem(kq) {
   const u = tt.kq, k = khoangDiem(kq.diem_du_doan, u.diem.sai_so);
   const dai = h("span", { class: "khoang tuong-chay", style: `--tu:${k.tu}%;--den:${k.den}%` });
   return h("div", { class: "the" }, h("h2", {}, u.nhan_diem),
+    h("small", { class: "mo-ta" }, u.diem.giai_thich),
     h("p", { class: "so-khoang" }, u.diem.khoang.replace("{tu}", k.tu).replace("{den}", k.den)),
     h("div", { class: "duong-diem", "aria-hidden": "true" }, dai),
     h("div", { class: "moc-diem", "aria-hidden": "true" }, h("span", {}, "0"), h("span", {}, "100")),
