@@ -60,3 +60,15 @@ Chi tiết từng chữ đổi: `docs/form_changes_log.md`. Nguyên tắc: code 
 
 ## Nút Quay lại (22/11/2026)
 - Người chơi được quay lại sửa phần A, B, C trước khi vào game 1 (trong game thì không). Sửa ghi đè câu trả lời cũ (vẫn một tài liệu mỗi người), ghi `edited_at` và `edit_count` (hoặc `info_edited_at` ở participants). Email và đồng ý ban đầu không sửa được. Không có `edit` thì nộp lại vẫn trả 409.
+
+## Mô hình (23/11/2026, notebook 03, `src/sparkmind/modeling.py`)
+- **Biến mục tiêu:** chính là `muc` (Thap, Trung_binh, Cao); phụ là `diem_sang_tao` (hồi quy). Đây là năng lực sáng tạo **tự nhận thức**.
+- **Danh sách đặc trưng (35):** `lop_so`, `A2_nu`, `A2_khac`, `cap_hoc` (one-hot), `B2_so`, `B5_so`, `B4_1..B4_7` (số gốc, KHÔNG đảo chiều; đảo chiều chỉ dùng cho điểm tổng hành vi), các cột 0/1 của B1, B3, B6, B7 và `B1_so`, `B3_so`, `B6_so`. Danh sách trắng nằm ở `modeling.DAC_TRUNG`.
+- **Cấm làm đầu vào:** C1..C5, `diem_sang_tao`, `muc`, C6, `C6_so`, `dot`, `nguon`, `thoi_gian`, các cột `in_*`, `co_*`, tên trường, id. Hàm `kiem_tra_cot_cam` báo lỗi nếu lọt; có test (`tests/test_modeling.py`).
+- **Lý do loại C6:** C6 (hoạt động sáng tạo 12 tháng) thuộc khối đo sáng tạo, không phải hành vi dùng LLM; đưa vào sẽ làm lẫn hai thứ. Chỉ chạy như phân tích bổ sung (mục F của notebook), kết quả thay đổi trong ±0.01 macro-F1.
+- **Không dò tham số.** Tham số cố định: RF (500 cây, `min_samples_leaf=3`, `class_weight=balanced_subsample`); XGBoost (`max_depth=3`, `learning_rate=0.05`, `n_estimators=300`, `subsample=0.8`, `colsample_bytree=0.8`, trọng số mẫu cân bằng lớp tính trong fit); Logistic (`class_weight=balanced`, chuẩn hóa). Lý do: mẫu nhỏ (297), dò tham số dễ làm số đẹp giả.
+- **Đánh giá:** CV phân tầng lặp 5 lớp × 10 lần, `random_state=42`, mọi mô hình dùng chung các lần chia (so ghép cặp theo fold). Chỉ số chính macro-F1. Khoảng 95% bằng bootstrap trên 50 fold, chỉ là *khoảng tham khảo* vì fold không độc lập hoàn toàn. Tiền xử lý (điền thiếu bằng trung vị, chuẩn hóa, one-hot) nằm trong pipeline, chỉ học trên train.
+- **Kiểm tra rò rỉ:** xáo trộn nhãn thì macro-F1 phải ≈ 0.33 (đã đúng, 0.31–0.35).
+- **Bản dữ liệu:** bản chính 297 là kết quả chính; 361 và 231 chạy riêng (T6b), 231 chỉ để đối chiếu vì bộ lọc dùng B4_3/B4_4.
+- **LOBO và thử độc lập (T7, T8):** `dot` chỉ để chia nhóm, không là đặc trưng. File Excel hiện chỉ có dot1, dot2, dot3 (dot4, dot5 chưa có), nên T8 chỉ có dot1 làm tập thử (31 dòng) và trùng dòng dot1 của T7.
+- **Lưu ý khi viết báo cáo:** macro-F1 khoảng 0.6–0.66 khá cao so với mức ngẫu nhiên 0.33, nhưng B4 và C cùng nằm trong một bảng tự khai (cả B4_3, B4_6 tiêu cực cũng tương quan dương với điểm), nên có thể một phần do cách trả lời chung. Ghi là giả thuyết, không viết thành kết luận nhân quả.

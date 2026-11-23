@@ -50,3 +50,42 @@ def ve_rho_theo_dot(t5b: pd.DataFrame, tieu_de: str, duong_dan):
     ax.set(title=tieu_de, ylabel="Hệ số Spearman với điểm sáng tạo")
     ax.legend(fontsize=8)
     fig.tight_layout(); fig.savefig(duong_dan, dpi=150); plt.close(fig)
+
+
+# Bảng màu Okabe-Ito: dễ phân biệt, kể cả người khó nhìn màu
+MAU_MO_HINH = ["#999999", "#56B4E9", "#E69F00", "#009E73", "#D55E00"]
+
+
+def ve_boxplot_macro_f1(folds: pd.DataFrame, tieu_de: str, duong_dan):
+    """Boxplot macro-F1 theo mô hình (mỗi điểm là một fold; chấm đen là trung bình)."""
+    ten = list(dict.fromkeys(folds["mo_hinh"]))
+    du_lieu = [folds.loc[folds["mo_hinh"] == t, "macro_f1"] for t in ten]
+    fig, ax = plt.subplots(figsize=(8, 4.5))
+    hop = ax.boxplot(du_lieu, tick_labels=ten, patch_artist=True, showmeans=True, widths=0.6,
+                     medianprops={"color": "black"},
+                     meanprops={"marker": "o", "markerfacecolor": "black", "markeredgecolor": "black"})
+    for o, m in zip(hop["boxes"], MAU_MO_HINH):
+        o.set_facecolor(m)
+    ax.axhline(1 / 3, color="#D55E00", linestyle=":", linewidth=1)
+    ax.text(0.5, 1 / 3 + 0.005, "đoán ngẫu nhiên ≈ 0.33", fontsize=7, color="#D55E00")
+    ax.set(title=tieu_de, ylabel="Macro-F1 theo fold (5 lớp × 10 lần lặp)")
+    plt.setp(ax.get_xticklabels(), rotation=15, ha="right")
+    fig.tight_layout(); fig.savefig(duong_dan, dpi=150); plt.close(fig)
+
+
+def ve_cot_lobo(t7: pd.DataFrame, tieu_de: str, duong_dan):
+    """Cột macro-F1 theo đợt thử (leave-one-batch-out), mỗi mô hình một màu, ghi n_thu dưới tên đợt."""
+    t = t7.dropna(subset=["macro_f1"])
+    dots = list(dict.fromkeys(t["dot_thu"]))
+    ten = list(dict.fromkeys(t["mo_hinh"]))
+    rong = 0.8 / len(ten)
+    fig, ax = plt.subplots(figsize=(8, 4.5))
+    for k, m in enumerate(ten):
+        d = t[t["mo_hinh"] == m].set_index("dot_thu").reindex(dots)
+        ax.bar(np.arange(len(dots)) + k * rong, d["macro_f1"], rong, label=m, color=MAU_MO_HINH[k % 5])
+    nhan = [f"{d}\n(n thử={int(t.loc[t['dot_thu'] == d, 'n_thu'].iloc[0])})" for d in dots]
+    ax.set_xticks(np.arange(len(dots)) + rong * (len(ten) - 1) / 2, nhan)
+    ax.axhline(1 / 3, color="#D55E00", linestyle=":", linewidth=1)
+    ax.set(title=tieu_de, ylabel="Macro-F1 trên đợt bị giữ lại")
+    ax.legend(fontsize=7, ncol=2)
+    fig.tight_layout(); fig.savefig(duong_dan, dpi=150); plt.close(fig)
