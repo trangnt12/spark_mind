@@ -8,6 +8,8 @@ from datetime import datetime
 
 from pymongo.errors import DuplicateKeyError
 
+from . import config
+
 COL_MA = "access_codes"
 COL_NGUOI = "participants"
 COL_HANH_VI = "behavior_answers"
@@ -49,16 +51,18 @@ def chuan_hoa_email(email: str) -> str:
     return re.sub(r"\s+", "", email or "").lower()
 
 
-def tao_ma_moi(db, n: int, nguon: str) -> list:
-    """Tạo n mã ngẫu nhiên 8 ký tự, ghi vào access_codes, trả về danh sách mã."""
+def tao_ma_moi(db, n: int, nguon: str, data_label: str = config.NHAN_MAC_DINH) -> list:
+    """Tạo n mã ngẫu nhiên 8 ký tự, ghi vào access_codes (kèm nhãn dữ liệu), trả về danh sách mã."""
     if nguon not in NGUON_HOP_LE:
         raise ValueError(f"source phải là một trong {NGUON_HOP_LE}")
+    if data_label not in config.NHAN_HOP_LE:
+        raise ValueError(f"data_label phải là một trong {config.NHAN_HOP_LE}")
     ket_qua = []
     while len(ket_qua) < n:
         ma = "".join(secrets.choice(BANG_CHU) for _ in range(8))
         try:
             db[COL_MA].insert_one({"code": ma, "source": nguon, "is_used": False,
-                                   "used_at": None, "created_at": datetime.now()})
+                                   "used_at": None, "created_at": datetime.now(), "data_label": data_label})
             ket_qua.append(ma)
         except DuplicateKeyError:
             continue  # trùng mã cũ (rất hiếm): thử mã khác
@@ -95,7 +99,7 @@ def _tiep_tuc(db, ma: dict, email: str) -> str:
 def _nguoi_moi(ma: dict, d: dict, email: str, ip_hash: str, user_agent: str) -> dict:
     """Tài liệu participants mới (không có IP thô, chỉ có ip_hash)."""
     bay_gio = datetime.now()
-    return {"code_id": ma["_id"], "source": ma["source"], "email": email,
+    return {"code_id": ma["_id"], "source": ma["source"], "data_label": ma.get("data_label", config.NHAN_MAC_DINH), "email": email,
             "grade": str(d["grade"]), "gender": str(d["gender"]),
             "school_name": d["school_name"].strip(), "consent": True, "consent_at": bay_gio,
             "guardian_consent": bool(d.get("guardian_consent")), "ip_hash": ip_hash,
@@ -156,7 +160,8 @@ def _luu(db, ten_bang: str, nguoi: dict, tai_lieu: dict, ghi_de: bool) -> None:
     if ghi_de:
         _ghi_de(db, ten_bang, nguoi["_id"], tai_lieu)
     else:
-        _luu_mot_lan(db, ten_bang, {"participant_id": nguoi["_id"], **tai_lieu})
+        nhan = nguoi.get("data_label", config.NHAN_MAC_DINH)   # bảng con thừa hưởng nhãn của người tham gia
+        _luu_mot_lan(db, ten_bang, {"participant_id": nguoi["_id"], "data_label": nhan, **tai_lieu})
 
 
 def luu_hanh_vi(db, session_token: str, tra_loi: dict, ghi_de: bool = False) -> None:

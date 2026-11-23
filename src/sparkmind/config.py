@@ -11,18 +11,20 @@ except ImportError:  # chưa cài python-dotenv thì bỏ qua
     pass
 
 MONGODB_URI = os.environ.get("MONGODB_URI", "")
-MONGODB_DB = os.environ.get("MONGODB_DB", "spark_mind")
+MONGODB_DB = os.environ.get("MONGODB_DB", "spark-mind")
 INGEST_SECRET = os.environ.get("INGEST_SECRET", "")  # khóa bí mật để Apps Script gửi form vào server
 
 IP_HASH_SECRET = os.environ.get("IP_HASH_SECRET", "")  # khóa HMAC để băm IP, không bao giờ lưu IP thô
 
 # Trang quản trị (thống kê)
-NHAN_DU_LIEU_THU = ("thu", "pilot")   # giá trị nguon/dot/source đánh dấu dữ liệu thử; công tắc "ẩn dữ liệu thử" loại chúng ra
+NHAN_HOP_LE = ("thu", "pilot", "that")   # nhãn dữ liệu (trường data_label): thử, thử nghiệm 30/11, thật
+NHAN_MAC_DINH = "that"                    # bản ghi chưa có data_label được coi là "that" (an toàn: không bao giờ bị xóa nhầm)
+NHAN_DU_LIEU_THU = ("thu", "pilot")       # các nhãn bị ẩn bởi công tắc "ẩn dữ liệu thử" và bị "xóa dữ liệu thử" xóa
 MUC_TIEU_HUONG1 = 1000                # số form mục tiêu của hướng 1
 MUC_TIEU_HUONG2 = 300                 # số người hoàn thành mục tiêu của hướng 2
 ATLAS_GIOI_HAN_MB = 512               # dung lượng gói Atlas M0
 
-RAW_EXCEL =ROOT / "data" / "raw" / "data_raw.xlsx"
+RAW_EXCEL = ROOT / "data" / "raw" / "data_raw.xlsx"
 PROCESSED = ROOT / "data" / "processed"
 
 COL_RAW = "survey_form1"     # dữ liệu gốc, không sửa

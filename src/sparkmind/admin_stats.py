@@ -23,26 +23,9 @@ def xoa_cache() -> None:
 
 # ---------- Bộ lọc dữ liệu thử ----------
 
-def _loc_form(an_thu: bool) -> dict:
-    """Form hướng 1: bỏ nguon hoặc dot mang nhãn thử."""
-    return {"nguon": {"$nin": list(config.NHAN_DU_LIEU_THU)}, "dot": {"$nin": list(config.NHAN_DU_LIEU_THU)}} if an_thu else {}
-
-
-def _loc_nguon(an_thu: bool) -> dict:
-    """Mã tham gia và người tham gia: bỏ source mang nhãn thử."""
-    return {"source": {"$nin": list(config.NHAN_DU_LIEU_THU)}} if an_thu else {}
-
-
-def _id_thu(db, an_thu: bool) -> list:
-    """Danh sách participant_id thuộc dữ liệu thử (để loại khỏi các bảng con)."""
-    if not an_thu:
-        return []
-    return [p["_id"] for p in db[COL_NGUOI].find({"source": {"$in": list(config.NHAN_DU_LIEU_THU)}}, {"_id": 1})]
-
-
-def _loc_con(ids_thu: list, them: dict = None) -> dict:
-    loc = {"participant_id": {"$nin": ids_thu}} if ids_thu else {}
-    return {**loc, **(them or {})}
+def loc_an_thu(an_thu: bool) -> dict:
+    """Bỏ bản ghi có data_label thuộc nhãn thử (thu, pilot). Bản ghi chưa có nhãn được coi là "that" nên vẫn hiện."""
+    return {"data_label": {"$nin": list(config.NHAN_DU_LIEU_THU)}} if an_thu else {}
 
 
 # ---------- Khối đếm dùng chung ----------
@@ -80,7 +63,7 @@ def _ngay_moi_nhat(db, loc: dict):
 
 
 def thong_ke_huong1(db, an_thu: bool) -> dict:
-    loc, bang = _loc_form(an_thu), config.COL_CLEAN
+    loc, bang = loc_an_thu(an_thu), config.COL_CLEAN
     ban = _tong_dieu_kien(db, bang, loc, {k: {"$eq": ["$in_" + k, True]} for k in ("chinh", "chat", "rat_chat")})
     return {"tong": db[bang].count_documents(loc), "muc_tieu": config.MUC_TIEU_HUONG1,
             "theo_nguon": _nhom(db, bang, loc, "nguon"), "theo_dot": _nhom(db, bang, loc, "dot"),
@@ -91,15 +74,15 @@ def thong_ke_huong1(db, an_thu: bool) -> dict:
 # ---------- Hướng 2 ----------
 
 def _thong_ke_ma(db, an_thu: bool) -> dict:
-    loc = _loc_nguon(an_thu)
+    loc = loc_an_thu(an_thu)
     dung = db[COL_MA].count_documents({**loc, "is_used": True})
     tong = db[COL_MA].count_documents(loc)
     return {"da_tao": tong, "da_dung": dung, "chua_dung": tong - dung, "theo_nguon": _nhom(db, COL_MA, loc, "source")}
 
 
-def _pheu(db, loc_nguoi: dict, ids_thu: list) -> list:
+def _pheu(db, loc_nguoi: dict) -> list:
     """Phễu từ đồng ý đến hoàn thành: [{"khoa", "n"}]. Mỗi bước đếm số người (mỗi bảng con chỉ một dòng/người/game)."""
-    con = lambda them=None: _loc_con(ids_thu, them)   # noqa: E731
+    con = lambda them=None: {**loc_nguoi, **(them or {})}   # noqa: E731  (bảng con cũng mang data_label)
     buoc = [("consent", db[COL_NGUOI].count_documents({**loc_nguoi, "consent": True})),
             ("info", db[COL_NGUOI].count_documents({**loc_nguoi, "grade": {"$ne": None}, "school_name": {"$ne": None}})),
             ("behavior", db[COL_HANH_VI].count_documents(con())),
@@ -110,20 +93,20 @@ def _pheu(db, loc_nguoi: dict, ids_thu: list) -> list:
     return [{"khoa": k, "n": n} for k, n in buoc]
 
 
-def _co_gian_lan(db, ids_thu: list) -> dict:
+def _co_gian_lan(db, loc_nguoi: dict) -> dict:
     """Số bài game đã nộp và số bài bị gắn cờ (nộp trễ, có dán, có rời tab)."""
-    loc = _loc_con(ids_thu, {"submitted_at": {"$ne": None}})
+    loc = {**loc_nguoi, "submitted_at": {"$ne": None}}
     return _tong_dieu_kien(db, COL_GAME, loc, {
         "da_nop": {"$eq": [1, 1]}, "over_time": {"$eq": ["$over_time", True]},
         "paste": {"$gt": ["$paste_count", 0]}, "tab_leave": {"$gt": ["$tab_leave_count", 0]}})
 
 
 def thong_ke_huong2(db, an_thu: bool) -> dict:
-    loc_nguoi, ids_thu = _loc_nguon(an_thu), _id_thu(db, an_thu)
+    loc_nguoi = loc_an_thu(an_thu)
     return {"ma": _thong_ke_ma(db, an_thu), "muc_tieu": config.MUC_TIEU_HUONG2,
-            "pheu": _pheu(db, loc_nguoi, ids_thu),
+            "pheu": _pheu(db, loc_nguoi),
             "nguoi_moi_theo_ngay": _theo_ngay(db, COL_NGUOI, loc_nguoi, "started_at"),
-            "co": _co_gian_lan(db, ids_thu)}
+            "co": _co_gian_lan(db, loc_nguoi)}
 
 
 # ---------- Hệ thống và hàm chính ----------

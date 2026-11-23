@@ -12,7 +12,7 @@ from .columns import RAW_KEYS
 
 
 def lay_db():
-    """Mở kết nối tới database spark_mind trên Atlas (chuỗi kết nối lấy từ .env)."""
+    """Mở kết nối tới database spark-mind (tên có gạch ngang) trên Atlas (chuỗi kết nối lấy từ .env)."""
     if not config.MONGODB_URI:
         raise RuntimeError("Chưa có MONGODB_URI. Hãy tạo file .env từ .env.example.")
     from pymongo import MongoClient

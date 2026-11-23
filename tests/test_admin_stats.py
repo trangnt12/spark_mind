@@ -39,24 +39,24 @@ def vao(db, role="viewer", ip="1.2.3.4"):
     return c
 
 
-def nap_form(db, nhieu: int, nguon="google_form", dot="dot4_sau_5_11", **co):
+def nap_form(db, nhieu: int, nguon="google_form", dot="dot4_sau_5_11", label="that", **co):
     gio = utc_now()
     for i in range(nhieu):
-        db[config.COL_CLEAN].insert_one({"nguon": nguon, "dot": dot, "thoi_gian": gio - timedelta(days=i % 3),
+        db[config.COL_CLEAN].insert_one({"nguon": nguon, "dot": dot, "data_label": label, "thoi_gian": gio - timedelta(days=i % 3),
                                          "in_chinh": co.get("chinh", True), "in_chat": co.get("chat", False), "in_rat_chat": co.get("rat", False)})
 
 
-def nap_nguoi(db, nguon="volunteer", buoc=("consent",), game=(), cot=None):
-    ma = db["access_codes"].insert_one({"code": f"MA{db['access_codes'].count_documents({})}", "source": nguon, "is_used": True}).inserted_id
-    p = {"code_id": ma, "source": nguon, "email": EMAIL, "school_name": "Trường Bí Mật", "grade": "3", "consent": True,
+def nap_nguoi(db, nguon="volunteer", buoc=("consent",), game=(), cot=None, label="that"):
+    ma = db["access_codes"].insert_one({"code": f"MA{db['access_codes'].count_documents({})}", "source": nguon, "is_used": True, "data_label": label}).inserted_id
+    p = {"code_id": ma, "source": nguon, "data_label": label, "email": EMAIL, "school_name": "Trường Bí Mật", "grade": "3", "consent": True,
          "ip_hash": "abc123", "started_at": utc_now(), "completed_at": utc_now() if "done" in buoc else None}
     pid = db["participants"].insert_one(p).inserted_id
     if "b" in buoc:
-        db["behavior_answers"].insert_one({"participant_id": pid, "b4_1": 3})
+        db["behavior_answers"].insert_one({"participant_id": pid, "data_label": label, "b4_1": 3})
     if "c" in buoc:
-        db["self_assessment"].insert_one({"participant_id": pid, "c1": 3})
+        db["self_assessment"].insert_one({"participant_id": pid, "data_label": label, "c1": 3})
     for g in game:
-        db["game_responses"].insert_one({"participant_id": pid, "game": g, "submitted_at": utc_now(), "answer": {"ideas": ["ý nội dung riêng"]},
+        db["game_responses"].insert_one({"participant_id": pid, "data_label": label, "game": g, "submitted_at": utc_now(), "answer": {"ideas": ["ý nội dung riêng"]},
                                          **(cot or {"over_time": False, "paste_count": 0, "tab_leave_count": 0})})
     return pid
 
@@ -75,8 +75,8 @@ def test_huong1_so_dem_ban_nguon_dot_va_ngay(db):
 
 def test_an_du_lieu_thu_huong1(db):
     nap_form(db, 4)
-    nap_form(db, 2, nguon="thu")
-    nap_form(db, 1, dot="pilot")
+    nap_form(db, 2, label="thu")
+    nap_form(db, 1, label="pilot")
     assert admin_stats.lay_thong_ke(db, True)["huong1"]["tong"] == 4
     assert admin_stats.lay_thong_ke(db, False)["huong1"]["tong"] == 7
 
@@ -97,8 +97,8 @@ def test_huong2_ma_pheu_va_co(db):
 
 def test_an_du_lieu_thu_huong2(db):
     nap_nguoi(db, "volunteer", buoc=("consent", "b"), game=(1,))
-    nap_nguoi(db, "pilot", buoc=("consent", "b"), game=(1, 2))
-    db["access_codes"].insert_one({"code": "T", "source": "thu", "is_used": False})
+    nap_nguoi(db, "volunteer", buoc=("consent", "b"), game=(1, 2), label="pilot")
+    db["access_codes"].insert_one({"code": "T", "source": "volunteer", "is_used": False, "data_label": "thu"})
     an, hien = admin_stats.lay_thong_ke(db, True)["huong2"], admin_stats.lay_thong_ke(db, False)["huong2"]
     assert an["ma"]["da_tao"] == 1 and hien["ma"]["da_tao"] == 3
     assert {b["khoa"]: b["n"] for b in an["pheu"]}["behavior"] == 1 and {b["khoa"]: b["n"] for b in hien["pheu"]}["behavior"] == 2
@@ -138,7 +138,7 @@ def test_api_stats_quyen_va_khong_lo_thong_tin_ca_nhan(db):
 
 def test_api_stats_cong_tac_ex_test(db):
     nap_form(db, 3)
-    nap_form(db, 2, nguon="thu")
+    nap_form(db, 2, label="thu")
     c = vao(db, "admin")
     assert c.get("/api/admin/stats").json()["huong1"]["tong"] == 3                    # mặc định ẩn dữ liệu thử
     assert c.get("/api/admin/stats?ex_test=false").json()["huong1"]["tong"] == 5

@@ -6,14 +6,25 @@
   var h = SM.h;
   var goc = document.getElementById("goc");
 
-  /* Bảng trang: đường dẫn -> vai trò được vào, biểu tượng, nhãn menu, hàm vẽ. */
+  /* Các trang cố định: đường dẫn, vai trò được vào, biểu tượng, nhóm menu, hàm vẽ. Các bảng dữ liệu được thêm động từ máy chủ. */
   var TRANG = [
-    {duong: "/", vaiTro: ["admin", "viewer"], icon: "home", nhan: "trang_chu", ve: function (g) { SM.trang.tongQuan(g); }},
-    {duong: "/users", vaiTro: ["admin"], icon: "users", nhan: "nguoi_dung", ve: function (g) { SM.trang.nguoiDung(g); }},
-    {duong: "/rate", vaiTro: ["rater"], icon: "rate", nhan: "cham_bai", ve: function (g) { SM.trang.chamBai(g); }},
-    {duong: "/password", vaiTro: ["admin", "viewer", "rater"], icon: "key", nhan: "doi_mat_khau", an: true,
+    {duong: "/", vaiTro: ["admin", "viewer"], icon: "home", ten: function (u) { return u.dieu_huong.trang_chu; }, nhom: "tong_quan", ve: function (g) { SM.trang.tongQuan(g); }},
+    {duong: "/rate", vaiTro: ["rater"], icon: "rate", ten: function (u) { return u.dieu_huong.cham_bai; }, nhom: "cham_bai", ve: function (g) { SM.trang.chamBai(g); }},
+    {duong: "/users", vaiTro: ["admin"], icon: "users", ten: function (u) { return u.dieu_huong.nguoi_dung; }, nhom: "cau_hinh", ve: function (g) { SM.trang.nguoiDung(g); }},
+    {duong: "/cleanup", vaiTro: ["admin"], icon: "trash", ten: function (u) { return u.dieu_huong.don_dep; }, nhom: "he_thong", ve: function (g) { SM.trang.donDep(g); }},
+    {duong: "/password", vaiTro: ["admin", "viewer", "rater"], icon: "key", ten: function (u) { return u.dieu_huong.doi_mat_khau; }, an: true,
       ve: function (g) { SM.trang.doiMatKhau(g, false, function () { alert(SM.ui.doi_mat_khau.da_doi); vaoTrangChu(); }); }}
   ];
+  var NHOM_MENU = ["tong_quan", "cham_bai", "huong1", "huong2", "cau_hinh", "he_thong"];
+  var ICON_NHOM = {huong1: "table", huong2: "table", cau_hinh: "cog", he_thong: "shield"};
+  SM.tables = [];
+
+  /* Mọi mục menu hiện cho vai trò này: trang cố định + các bảng dữ liệu (máy chủ chỉ trả bảng được phép). */
+  function mucMenuDay() {
+    var ui = SM.ui, ds = TRANG.filter(function (t) { return !t.an && t.vaiTro.indexOf(SM.me.role) >= 0; })
+      .map(function (t) { return {duong: t.duong, icon: t.icon, ten: t.ten(ui), nhom: t.nhom}; });
+    return ds.concat(SM.tables.map(function (b) { return {duong: "/data/" + b.khoa, icon: ICON_NHOM[b.nhom] || "table", ten: b.ten, nhom: b.nhom}; }));
+  }
 
   SM.trang = SM.trang || {};
   SM.trang.chamBai = function (g) {
@@ -24,19 +35,26 @@
   function duongHienTai() { return (location.hash || "#/").slice(1) || "/"; }
   function trangMacDinh() { return SM.me.role === "rater" ? "/rate" : "/"; }
   function vaoTrangChu() { location.hash = "#" + trangMacDinh(); }
-  function chop(t) { return TRANG.filter(function (x) { return x.vaiTro.indexOf(SM.me.role) >= 0 && !x.an; }); }
+  /* ---------- Khung có thanh bên (menu nhóm: Tổng quan, Hướng 1, Hướng 2, Cấu hình, Hệ thống) ---------- */
+  function mucMenu(m) {
+    return h("a", {href: "#" + m.duong, class: "muc-menu", "data-duong": m.duong, title: m.ten}, SM.icon(m.icon), h("span", {class: "chu-menu"}, m.ten));
+  }
 
-  /* ---------- Khung có thanh bên ---------- */
-  function mucMenu(t, ui) {
-    var a = h("a", {href: "#" + t.duong, class: "muc-menu", "data-duong": t.duong, title: ui.dieu_huong[t.nhan]},
-      SM.icon(t.icon), h("span", {class: "chu-menu"}, ui.dieu_huong[t.nhan]));
-    return a;
+  function menuNhom(ui) {
+    var muc = mucMenuDay(), kq = [];
+    NHOM_MENU.forEach(function (n) {
+      var ds = muc.filter(function (m) { return m.nhom === n; });
+      if (!ds.length) return;
+      kq.push(h("p", {class: "tieu-de-nhom chu-menu"}, ui.nhom[n]), h("div", {class: "vach-nhom", "aria-hidden": "true"}));
+      ds.forEach(function (m) { kq.push(mucMenu(m)); });
+    });
+    return kq;
   }
 
   function thanhBen(ui) {
     return h("aside", {class: "thanh-ben", id: "thanh-ben", "aria-label": ui.dieu_huong.menu_chinh},
       h("div", {class: "logo-ben"}, SM.icon("leaf"), h("span", {class: "chu-menu"}, ui.ten_trang)),
-      h("nav", {}, chop().map(function (t) { return mucMenu(t, ui); })),
+      h("nav", {}, menuNhom(ui)),
       h("button", {class: "phu nho nut-thu-gon", type: "button", "aria-label": ui.dieu_huong.thu_gon, title: ui.dieu_huong.thu_gon, onclick: function () {
         var gon = document.body.classList.toggle("thu-gon");
         try { localStorage.setItem("sm_thu_gon", gon ? "1" : "0"); } catch (e) { /* bỏ qua nếu bị chặn */ }
@@ -61,19 +79,30 @@
   }
 
   function danhDauMenu(duong) {
+    var goc2 = duong.replace(/^(\/data\/[a-z_0-9]+).*$/, "$1");   // trang chi tiết thì đánh dấu mục của bảng
     document.querySelectorAll(".muc-menu").forEach(function (a) {
-      a.classList.toggle("dang-chon", a.getAttribute("data-duong") === duong);
-      if (a.getAttribute("data-duong") === duong) a.setAttribute("aria-current", "page"); else a.removeAttribute("aria-current");
+      var chon = a.getAttribute("data-duong") === goc2;
+      a.classList.toggle("dang-chon", chon);
+      if (chon) a.setAttribute("aria-current", "page"); else a.removeAttribute("aria-current");
     });
   }
 
   /* ---------- Bộ định tuyến ---------- */
+  function veTrangBang(noiDung, duong) {
+    var m = /^\/data\/([a-z_0-9]+)(?:\/(.+))?$/.exec(duong);
+    var bang = m && SM.tables.filter(function (b) { return b.khoa === m[1]; })[0];
+    if (!bang) { SM.trang.cam(noiDung, vaoTrangChu); return true; }   // bảng không có trong danh sách của vai trò này
+    if (m[2]) SM.trang.chiTiet(noiDung, bang, decodeURIComponent(m[2])); else SM.trang.duLieu(noiDung, bang);
+    return true;
+  }
+
   function dinhTuyen() {
     var duong = duongHienTai(), noiDung = document.getElementById("noi-dung");
     if (!noiDung) return;
     document.body.classList.remove("mo-ngan-keo");
-    var trang = TRANG.filter(function (t) { return t.duong === duong; })[0];
     danhDauMenu(duong);
+    var trang = TRANG.filter(function (t) { return t.duong === duong; })[0];
+    if (!trang && /^\/data\//.test(duong)) { veTrangBang(noiDung, duong); noiDung.focus(); return; }
     if (!trang) { SM.trang.khongTim(noiDung); return; }
     if (trang.vaiTro.indexOf(SM.me.role) < 0) { SM.trang.cam(noiDung, vaoTrangChu); return; }
     trang.ve(noiDung);
@@ -102,9 +131,13 @@
       SM.trang.doiMatKhau(goc, true, function () { khoiDong(); });
       return;
     }
-    dungKhung();
-    if (!location.hash || location.hash === "#") location.hash = "#" + trangMacDinh();
-    dinhTuyen();
+    var nap = SM.me.role === "rater" ? Promise.resolve({ok: true, data: {bang: []}}) : SM.api("GET", "/api/admin/data");
+    nap.then(function (kq) {
+      SM.tables = kq.ok ? kq.data.bang : [];
+      dungKhung();
+      if (!location.hash || location.hash === "#") location.hash = "#" + trangMacDinh();
+      dinhTuyen();
+    });
   }
 
   function khoiDong() {

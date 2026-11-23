@@ -41,6 +41,7 @@ def nhan_form(db, answers: dict, nguon: str = "google_form") -> dict:
     goc = doc_tho_tu_dict(chuan_hoa_tra_loi(answers), nguon)
     db[config.COL_RAW].replace_one({"_id": goc["_id"]}, goc, upsert=True)
     sach = df_sang_docs(clean(pd.DataFrame([goc])))[0]
+    sach["data_label"] = config.NHAN_MAC_DINH   # form hướng 1 mới là dữ liệu thật; nhãn nằm ở bản sạch, không đụng bản gốc
     db[config.COL_CLEAN].replace_one({"_id": sach["_id"]}, sach, upsert=True)
     return {"id": goc["_id"], "dot": sach["dot"], "dung_ai": sach["dung_ai"],
             "in_chinh": sach["in_chinh"], "in_chat": sach["in_chat"], "in_rat_chat": sach["in_rat_chat"]}

@@ -19,6 +19,36 @@ Dự đoán năng lực tư duy sáng tạo (tự nhận thức) của học sin
 | `tests/` | Kiểm tra tự động (chạy `python -m pytest tests -q`) |
 | `docs/` | Tài liệu: luồng dữ liệu, ghi chú quyết định |
 
+## Thêm một bảng vào trang dữ liệu quản trị
+
+Chỉ cần thêm **một mục** vào `BANG` trong `src/sparkmind/admin_registry.py` (không viết route, không sửa giao diện):
+
+```python
+"ten_collection": {
+    "nhom": "huong2",                 # menu: huong1 | huong2 | cau_hinh | he_thong
+    "ten": "Tên hiển thị",
+    "che_do": "readonly",             # readonly = chỉ xem; crud = thêm/sửa/xóa (phải có thêm khóa "ghi")
+    "co_nhan": True,                  # bảng có trường data_label (thu | pilot | that)?
+    "cot": [("truong", "Nhãn cột", "text")],   # kiểu: text int float bool datetime id email hash nhan bi_mat
+    "chi_tiet": {},                   # nhãn tiếng Việt thêm cho trang chi tiết
+    "tim": ["truong"],                # trường tìm kiếm chữ
+    "loc": [("truong", "Nhãn", "text", None)], # bộ lọc: enum | text | bool | int
+    "sap_xep": ["truong"], "mac_dinh": ("truong", -1),
+    "quyen": {"doc": XEM, "xuat": XEM, "ghi": KHONG, "xoa": ADMIN},
+},
+```
+
+Rồi chạy `python -m pytest tests -q`: test kiểm tra registry và route (bảng readonly không được có PATCH, mọi route phải có kiểm tra quyền).
+Dữ liệu nghiên cứu luôn để `readonly`; xóa chỉ cho admin và gõ lại ID.
+
+## Gán nhãn dữ liệu thử / thật
+
+```bash
+python scripts/make_codes.py --n 5 --source volunteer --data-label thu   # mã dùng thử (mặc định là that)
+python scripts/migrate_data_label.py            # chỉ xem (dry-run): số bản ghi cũ sẽ được gán nhãn
+python scripts/migrate_data_label.py --apply    # ghi thật (phải gõ GAN NHAN); chạy lại nhiều lần vẫn an toàn
+```
+
 ## Cài đặt lần đầu (Git Bash)
 
 ```bash
@@ -57,7 +87,7 @@ Biến môi trường (đặt ở tab Environment của Render, **không** commi
 | Biến | Ý nghĩa |
 |---|---|
 | `MONGODB_URI` | Chuỗi kết nối MongoDB Atlas |
-| `MONGODB_DB` | Tên database (`spark_mind`) |
+| `MONGODB_DB` | Tên database (`spark-mind`, có gạch ngang) |
 | `INGEST_SECRET` | Khóa bí mật Apps Script gửi kèm (header `X-API-Key`) |
 | `PYTHON_VERSION` | `3.12.10` |
 

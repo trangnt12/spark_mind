@@ -11,6 +11,7 @@ from datetime import date
 from pathlib import Path
 
 import _boot  # noqa: F401  (cho phép import sparkmind)
+from sparkmind import config
 from sparkmind.db import lay_db
 from sparkmind.research_store import COL_MA, NGUON_HOP_LE, tao_chi_muc, tao_ma_moi
 
@@ -31,6 +32,8 @@ def doc_tham_so(argv=None) -> argparse.Namespace:
     p = argparse.ArgumentParser(description="Tạo mã tham gia ngẫu nhiên 8 ký tự")
     p.add_argument("--n", type=so_luong, required=True, help=f"số mã cần tạo (tối đa {N_TOI_DA})")
     p.add_argument("--source", choices=NGUON_HOP_LE, required=True, help="nguồn người tham gia")
+    p.add_argument("--data-label", choices=config.NHAN_HOP_LE, default=config.NHAN_MAC_DINH,
+                   help="nhãn dữ liệu: that (mặc định, mã thật) | thu (dùng thử) | pilot (thử nghiệm 30/11)")
     p.add_argument("--label", default="", help="nhãn ghi vào CSV (vd tên người nhận mã), không ghi email")
     p.add_argument("--out", default=None, help="file CSV (mặc định outputs/codes_<ngày>.csv)")
     return p.parse_args(argv)
@@ -60,11 +63,11 @@ def main() -> None:
     tham_so = doc_tham_so()
     db = lay_db()
     tao_chi_muc(db)  # bảo đảm mã không trùng (code unique)
-    cac_ma = tao_ma_moi(db, tham_so.n, tham_so.source)
+    cac_ma = tao_ma_moi(db, tham_so.n, tham_so.source, tham_so.data_label)
     out = Path(tham_so.out) if tham_so.out else THU_MUC_RA / f"codes_{date.today().isoformat()}.csv"
     ghi_csv(db, cac_ma, tham_so.source, tham_so.label, out)
     print("\n".join(cac_ma))
-    print(f"Đã ghi {len(cac_ma)} mã vào {out}")
+    print(f"Đã ghi {len(cac_ma)} mã (nhãn dữ liệu: {tham_so.data_label}) vào {out}")
 
 
 if __name__ == "__main__":

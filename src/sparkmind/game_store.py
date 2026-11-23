@@ -7,7 +7,7 @@ from datetime import datetime
 
 from pymongo.errors import DuplicateKeyError
 
-from sparkmind import research_store as kho
+from sparkmind import config, research_store as kho
 
 COL_GAME = "game_responses"
 SO_Y_TOI_DA = 50
@@ -49,7 +49,7 @@ def _tim_bai(db, nguoi: dict):
 
 def _tao_bai(db, nguoi: dict, do_vat: dict) -> dict:
     """Ghi bài mới với started_at do SERVER đặt. Hai yêu cầu cùng lúc thì lấy bài đã có."""
-    bai = {"participant_id": nguoi["_id"], "game": 1, "prompt_id": do_vat["id"],
+    bai = {"participant_id": nguoi["_id"], "game": 1, "data_label": nguoi.get("data_label", config.NHAN_MAC_DINH), "prompt_id": do_vat["id"],
            "started_at": bay_gio(), "submitted_at": None}
     try:
         db[COL_GAME].insert_one(bai)

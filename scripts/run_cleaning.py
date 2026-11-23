@@ -9,10 +9,16 @@ Cách dùng:
 import argparse
 
 import _boot  # noqa: F401
-from sparkmind import config
+from sparkmind import config, data_label
 from sparkmind.cleaning import bang_loc_form, clean, lay_ban
 from sparkmind.db import df_sang_docs, ghi_nhieu, lay_db
 from sparkmind.loaders import doc_excel, doc_goc_mongo
+
+
+def ghi_ban_sach(db, sach, gop: bool = True) -> int:
+    """Ghi survey_clean, GIỮ data_label hiện có của từng bản ghi (làm sạch lại không làm mất nhãn). Trả số form."""
+    docs = data_label.giu_nhan_hien_co(db, config.COL_CLEAN, df_sang_docs(sach))
+    return ghi_nhieu(db[config.COL_CLEAN], docs, gop)
 
 
 def main() -> None:
@@ -34,7 +40,7 @@ def main() -> None:
     print("\nSố form mỗi đợt:\n" + sach["dot"].value_counts().to_string())
 
     if db is not None:
-        n = ghi_nhieu(db[config.COL_CLEAN], df_sang_docs(sach))
+        n = ghi_ban_sach(db, sach)
         print(f"\nĐã ghi {n} form vào {config.MONGODB_DB}.{config.COL_CLEAN}")
     if a.csv or a.tu_excel:
         config.PROCESSED.mkdir(parents=True, exist_ok=True)

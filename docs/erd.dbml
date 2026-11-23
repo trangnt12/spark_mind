@@ -1,5 +1,5 @@
 // ERD for dbdiagram.io (final 19/11/2026). Source of truth for the MongoDB collections.
-Project spark_mind {
+Project spark_mind {  // project name only; the real MongoDB database on Atlas is named "spark-mind" (hyphen)
   database_type: 'MongoDB'
 }
 
@@ -45,6 +45,7 @@ Table survey_raw {
 Table survey_clean {
   id varchar [pk, note: 'same id as survey_raw']
   batch varchar
+  data_label varchar [note: 'thu | pilot | that. Missing is treated as that (safe: never deleted by the test-data cleanup). Set by make_codes.py --data-label, copied access_codes -> participants -> child tables']
   creativity_score float [note: '0-100']
   behavior_score float
   level varchar [note: 'Thap / Trung_binh / Cao']
@@ -64,6 +65,7 @@ Table access_codes {
   id objectid [pk]
   code varchar [unique, not null]
   source varchar [note: 'hired_team | volunteer']
+  data_label varchar [note: 'thu | pilot | that. Missing is treated as that (safe: never deleted by the test-data cleanup). Set by make_codes.py --data-label, copied access_codes -> participants -> child tables']
   is_used boolean [default: false]
   used_at datetime
   created_at datetime
@@ -73,6 +75,7 @@ Table participants {
   id objectid [pk]
   code_id objectid [not null]
   source varchar [note: 'hired_team | volunteer']
+  data_label varchar [note: 'thu | pilot | that. Missing is treated as that (safe: never deleted by the test-data cleanup). Set by make_codes.py --data-label, copied access_codes -> participants -> child tables']
   email varchar [not null, note: 'normalized, NOT unique, used to count submissions per email']
   grade varchar
   gender varchar
@@ -98,6 +101,7 @@ Table participants {
 Table behavior_answers {
   id objectid [pk]
   participant_id objectid [unique, not null]
+  data_label varchar [note: 'thu | pilot | that. Missing is treated as that (safe: never deleted by the test-data cleanup). Set by make_codes.py --data-label, copied access_codes -> participants -> child tables']
   a4 varchar [note: 'uses_ai: 1-4; 4 = Chưa bao giờ sử dụng thì B1-B7 có thể trống']
   b1 varchar [note: 'chọn nhiều, dạng "1,3"']
   b1_other varchar [note: 'chữ gõ ở "Mục khác:" của B1; trống nếu không chọn']
@@ -123,6 +127,7 @@ Table behavior_answers {
 Table self_assessment {
   id objectid [pk]
   participant_id objectid [unique, not null]
+  data_label varchar [note: 'thu | pilot | that. Missing is treated as that (safe: never deleted by the test-data cleanup). Set by make_codes.py --data-label, copied access_codes -> participants -> child tables']
   c1 int
   c2 int
   c3 int
@@ -137,6 +142,7 @@ Table self_assessment {
 Table game_responses {
   id objectid [pk]
   participant_id objectid [not null]
+  data_label varchar [note: 'thu | pilot | that. Missing is treated as that (safe: never deleted by the test-data cleanup). Set by make_codes.py --data-label, copied access_codes -> participants -> child tables']
   game int [not null, note: '1 | 2 | 3']
   prompt_id varchar
   answer json
@@ -153,6 +159,7 @@ Table game_responses {
 Table scores {
   id objectid [pk]
   response_id objectid [not null]
+  data_label varchar [note: 'thu | pilot | that. Missing is treated as that (safe: never deleted by the test-data cleanup). Set by make_codes.py --data-label, copied access_codes -> participants -> child tables']
   rater varchar [note: 'auto | model name | human_1 | human_2']
   criteria json [note: 'score per criterion']
   total float
@@ -204,7 +211,7 @@ Table audit_log {
   user_id objectid
   username varchar
   role varchar
-  action varchar [note: 'login | login_failed | logout | change_password | user_create | user_create_script | user_reset_password | user_lock | user_unlock']
+  action varchar [note: 'login | login_failed | logout | change_password | user_create | user_create_script | user_reset_password | user_lock | user_unlock | data_create | data_update | data_delete | data_export | test_data_delete']
   collection varchar
   doc_id varchar
   detail json [note: 'never contains passwords, hashes or tokens (filtered)']

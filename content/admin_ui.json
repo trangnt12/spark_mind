@@ -2,7 +2,11 @@
   "ten_trang": "SparkMind · Quản trị",
   "dang_tai": "Đang tải…",
   "thu_lai": "Thử lại",
-  "vai_tro": {"admin": "Quản trị viên", "viewer": "Người xem", "rater": "Người chấm"},
+  "vai_tro": {
+    "admin": "Quản trị viên",
+    "viewer": "Người xem",
+    "rater": "Người chấm"
+  },
   "dang_nhap": {
     "tieu_de": "Đăng nhập quản trị",
     "mo_ta": "Dành cho đội nghiên cứu SparkMind.",
@@ -31,7 +35,8 @@
     "thu_gon": "Thu gọn / mở rộng thanh bên",
     "mo_menu": "Mở menu",
     "dong_menu": "Đóng menu",
-    "menu_chinh": "Menu chính"
+    "menu_chinh": "Menu chính",
+    "don_dep": "Dọn dữ liệu thử"
   },
   "loi": {
     "bad_credentials": "Tên đăng nhập hoặc mật khẩu không đúng.",
@@ -53,14 +58,25 @@
     "cannot_lock_self": "Bạn không thể tự khóa tài khoản của mình.",
     "last_admin": "Không thể khóa quản trị viên cuối cùng.",
     "mang": "Không kết nối được máy chủ. Kiểm tra mạng rồi thử lại.",
-    "khac": "Có lỗi xảy ra. Vui lòng thử lại."
+    "khac": "Có lỗi xảy ra. Vui lòng thử lại.",
+    "ban_ghi_khong_ton_tai": "Không tìm thấy bản ghi này (có thể đã bị xóa).",
+    "truong_khong_hop_le": "Có trường không hợp lệ hoặc không được phép sửa.",
+    "thieu_truong": "Thiếu thông tin bắt buộc.",
+    "xac_nhan_sai": "Chữ xác nhận chưa đúng, chưa xóa gì.",
+    "ma_trung": "Mã này đã tồn tại.",
+    "ma_da_dung": "Mã đã được người tham gia dùng, không thể sửa hoặc xóa.",
+    "khong_co_thay_doi": "Không có gì thay đổi.",
+    "bo_loc_sai": "Bộ lọc hoặc cách sắp xếp không hợp lệ."
   },
   "403": {
     "tieu_de": "Không có quyền truy cập",
     "mo_ta": "Tài khoản của bạn không được xem trang này.",
     "nut": "Về trang của tôi"
   },
-  "khong_tim_thay": {"tieu_de": "Không tìm thấy trang", "nut": "Về trang chủ"},
+  "khong_tim_thay": {
+    "tieu_de": "Không tìm thấy trang",
+    "nut": "Về trang chủ"
+  },
   "cham_bai": {
     "tieu_de": "Chấm bài",
     "mo_ta": "Trang chấm bài của người chấm sẽ có ở bước sau. Tài khoản của bạn đã sẵn sàng."
@@ -81,7 +97,11 @@
       "theo_nguon": "Theo nguồn",
       "theo_dot": "Theo đợt thu",
       "cac_ban": "Số form theo bản dữ liệu",
-      "ban": {"chinh": "Bản rộng (khóa chinh)", "chat": "Bản chính (khóa chat)", "rat_chat": "Bản rất chặt (khóa rat_chat)"},
+      "ban": {
+        "chinh": "Bản rộng (khóa chinh)",
+        "chat": "Bản chính (khóa chat)",
+        "rat_chat": "Bản rất chặt (khóa rat_chat)"
+      },
       "theo_ngay": "Form mới mỗi ngày (30 ngày)",
       "moi_nhat": "Form mới nhất lúc"
     },
@@ -91,7 +111,16 @@
       "ma_da_dung": "Mã đã dùng",
       "ma_chua_dung": "Mã chưa dùng",
       "pheu": "Phễu tham gia (so với mục tiêu hoàn thành)",
-      "buoc": {"consent": "Đồng ý", "info": "Thông tin", "behavior": "Form B", "self_assessment": "Form C", "game1": "Game 1", "game2": "Game 2", "game3": "Game 3", "completed": "Hoàn thành"},
+      "buoc": {
+        "consent": "Đồng ý",
+        "info": "Thông tin",
+        "behavior": "Form B",
+        "self_assessment": "Form C",
+        "game1": "Game 1",
+        "game2": "Game 2",
+        "game3": "Game 3",
+        "completed": "Hoàn thành"
+      },
       "nguoi_moi": "Người mới mỗi ngày (30 ngày)",
       "co": "Cờ chất lượng ở bài game đã nộp",
       "co_da_nop": "Bài đã nộp",
@@ -135,5 +164,64 @@
     "da_sao_chep": "Đã sao chép",
     "dong": "Xong",
     "trong": "Chưa có tài khoản nào."
+  },
+  "nhom": {
+    "tong_quan": "Tổng quan",
+    "huong1": "Hướng 1",
+    "huong2": "Hướng 2",
+    "cau_hinh": "Cấu hình",
+    "he_thong": "Hệ thống",
+    "cham_bai": "Chấm bài"
+  },
+  "du_lieu": {
+    "tim": "Tìm kiếm…",
+    "tat_ca": "Tất cả",
+    "co": "Có",
+    "khong": "Không",
+    "an_thu": "Ẩn dữ liệu thử (thu, pilot)",
+    "kich_thuoc": "Dòng mỗi trang",
+    "xuat_csv": "Xuất CSV",
+    "xuat_ghi_chu": "Tối đa {n} dòng, theo bộ lọc hiện tại, không có email.",
+    "them": "Thêm mới",
+    "tong": "{n} bản ghi",
+    "trang": "Trang {a} / {b}",
+    "truoc": "Trước",
+    "sau": "Sau",
+    "rong": "Không có bản ghi nào khớp.",
+    "quay_lai": "← Quay lại danh sách",
+    "chi_tiet": "Chi tiết bản ghi",
+    "json_tho": "Xem JSON thô (đã che thông tin nhận dạng)",
+    "sua": "Sửa",
+    "luu": "Lưu",
+    "huy": "Hủy",
+    "tao": "Tạo",
+    "xoa": "Xóa bản ghi",
+    "xoa_huong_dan": "Xóa không hoàn tác được. Để xác nhận, gõ lại đúng ID của bản ghi: {id}",
+    "xoa_nut": "Xóa vĩnh viễn (kèm dữ liệu liên quan)",
+    "da_luu": "Đã lưu.",
+    "da_xoa": "Đã xóa bản ghi.",
+    "da_tao": "Đã tạo.",
+    "chi_xem": "Bảng này chỉ để xem: dữ liệu nghiên cứu không được sửa trên web.",
+    "ghi_chu_che": "Email, IP và mã tham gia được che bớt.",
+    "nhan": {
+      "thu": "Thử",
+      "pilot": "Pilot",
+      "that": "Thật"
+    },
+    "lop_loc": "Bộ lọc",
+    "xoa_con": "Xóa người này sẽ xóa luôn dữ liệu của họ ở các bảng sau (số bản ghi sẽ bị xóa):"
+  },
+  "don_dep": {
+    "tieu_de": "Dọn dữ liệu thử",
+    "mo_ta": "Xóa các bản ghi có nhãn thu hoặc pilot. Bản ghi nhãn that và dữ liệu gốc của form hướng 1 không bao giờ bị xóa.",
+    "xem_truoc": "Sẽ xóa (xem trước, chưa xóa gì)",
+    "bang": "Bảng",
+    "so": "Số bản ghi",
+    "tong": "Tổng cộng",
+    "khong_co": "Không có dữ liệu thử nào để xóa.",
+    "go_xac_nhan": "Gõ chữ {chu} để xác nhận",
+    "nut": "Xóa dữ liệu thử",
+    "lam_moi": "Làm mới số liệu",
+    "xong": "Đã xóa xong. Số bản ghi đã xóa:"
   }
 }
