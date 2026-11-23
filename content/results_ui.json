@@ -1,0 +1,47 @@
+{
+  "_ghi_chu": "Chữ cho trang kết quả và thông báo lỗi của /api/predict/demo, /api/research/result. Giữ giọng trung tính: chỉ nói về 'mức tự đánh giá sáng tạo', không khen chê, không khuyên theo kiểu nguyên nhân. {cau} và {giay} được code thay vào.",
+  "tieu_de": "Kết quả ước lượng mức tự đánh giá sáng tạo",
+  "ten_muc": {
+    "Thap": "Mức thấp",
+    "Trung_binh": "Mức trung bình",
+    "Cao": "Mức cao"
+  },
+  "mo_ta_muc": {
+    "Thap": "Dựa trên các câu trả lời, mô hình ước lượng bạn nhiều khả năng thuộc nhóm tự đánh giá sáng tạo ở mức thấp trong dữ liệu khảo sát.",
+    "Trung_binh": "Dựa trên các câu trả lời, mô hình ước lượng bạn nhiều khả năng thuộc nhóm tự đánh giá sáng tạo ở mức trung bình trong dữ liệu khảo sát.",
+    "Cao": "Dựa trên các câu trả lời, mô hình ước lượng bạn nhiều khả năng thuộc nhóm tự đánh giá sáng tạo ở mức cao trong dữ liệu khảo sát."
+  },
+  "nhan_diem": "Điểm ước lượng (thang 0–100)",
+  "nhan_xac_suat": "Khả năng của từng mức theo mô hình",
+  "nhan_dong_gop": "Những câu trả lời ảnh hưởng nhiều nhất đến ước lượng này",
+  "chieu": {
+    "tang": "kéo ước lượng về phía mức này",
+    "giam": "kéo ước lượng ra xa mức này"
+  },
+  "do_lon": {
+    "nho": "ảnh hưởng nhỏ",
+    "vua": "ảnh hưởng vừa",
+    "lon": "ảnh hưởng lớn"
+  },
+  "gioi_han": {
+    "tieu_de": "Cần hiểu đúng kết quả này",
+    "doan": [
+      "Đây là ước lượng thống kê từ khảo sát tự đánh giá, không phải đánh giá con người hay năng lực thật của bạn.",
+      "Phiên bản demo chỉ dựa trên 7 câu về cách dùng AI mà bạn vừa trả lời.",
+      "Trong thử nghiệm của nghiên cứu, mô hình đoán đúng mức khoảng 6 trên 10 trường hợp.",
+      "Phần 'ảnh hưởng' chỉ mô tả cách mô hình đưa ra ước lượng, không có nghĩa là nguyên nhân."
+    ]
+  },
+  "loi_demo": {
+    "body_sai": "Dữ liệu gửi lên không đúng dạng. Cần gửi mục \"answers\" gồm 7 câu từ B4_1 đến B4_7, mỗi câu là số nguyên từ 1 đến 5.",
+    "thieu_cau": "Thiếu câu trả lời: {cau}. Cần trả lời đủ 7 câu từ B4_1 đến B4_7.",
+    "cau_la": "Có câu không hợp lệ: {cau}. Chỉ nhận các câu từ B4_1 đến B4_7.",
+    "sai_kieu": "Câu {cau} phải là một số nguyên từ 1 đến 5.",
+    "ngoai_khoang": "Câu {cau} phải nằm trong khoảng từ 1 đến 5.",
+    "qua_nhieu_lan": "Bạn thử quá nhiều lần trong một phút, vui lòng đợi {giay} giây rồi thử lại."
+  },
+  "loi_research": {
+    "chua_xong": "Bạn cần hoàn thành cả 3 trò chơi trước khi xem kết quả.",
+    "thieu_b4": "Chưa có đủ câu trả lời phần B4 để ước lượng kết quả."
+  }
+}

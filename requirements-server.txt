@@ -1,9 +1,11 @@
 # Thư viện tối thiểu để chạy server trên Render (gói miễn phí 512MB RAM).
-# Không có jupyter, shap, matplotlib, scikit-learn, scipy, openpyxl:
-# server chỉ import fastapi, pymongo, pandas, numpy, python-dotenv (đã kiểm tra).
+# Không có jupyter, shap, matplotlib, scikit-learn, openpyxl:
+# server chỉ import fastapi, pymongo, pandas, numpy, python-dotenv, xgboost (đã kiểm tra).
+# xgboost ghim ĐÚNG bản đã huấn luyện (models/model_meta.json, phien_ban.xgboost); đổi bản thì phải kiểm tra lại mô hình.
 fastapi
 uvicorn
 pymongo[srv]
 pandas
 numpy
 python-dotenv
+xgboost==3.4.1

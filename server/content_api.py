@@ -35,6 +35,12 @@ def giao_dien():
     return doc_noi_dung("research_ui.json")
 
 
+@router.get("/results-ui")
+def chu_ket_qua():
+    """Chữ cho trang kết quả (tên mức, lời nói rõ giới hạn)."""
+    return doc_noi_dung("results_ui.json")
+
+
 @router.get("/game1")
 def game1():
     """Chữ hướng dẫn và ví dụ của game 1. Không trả danh sách đồ vật (đồ vật do /game1/start chọn theo mã)."""

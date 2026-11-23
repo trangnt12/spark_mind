@@ -1,4 +1,4 @@
-# Quyết định đã chốt (cập nhật 19/11/2026)
+# Quyết định đã chốt (cập nhật 23/11/2026)
 
 Tài liệu này để Claude Code (và người mới vào dự án) hiểu bối cảnh mà không cần đọc lại các cuộc trao đổi cũ.
 Sơ đồ cơ sở dữ liệu: `docs/erd.dbml`. Luồng dữ liệu: `docs/data_flow.md`.
@@ -84,6 +84,15 @@ Chi tiết từng chữ đổi: `docs/form_changes_log.md`. Nguyên tắc: code 
 - **Kiểm tra bắt buộc (có test, `tests/test_explain.py`):** tổng SHAP + giá trị nền = đầu ra mô hình (sai số < 1e-4); SHAP của TreeExplainer trùng `pred_contribs` của XGBoost (< 1e-4). Riêng hồi quy điểm 0–100, sai số làm tròn float32 của XGBoost cỡ 1.0e-4, nên ngưỡng là tương đối 1e-5 x điểm lớn nhất (khoảng 9e-4). Lệch thực tế 1.01e-4, chính `pred_contribs` của XGBoost cũng lệch `predict()` cùng mức đó.
 - **Lưu mô hình:** chỉ XGBoost, dạng JSON gốc (`models/xgb_clf.json`, `models/xgb_reg.json`) cùng `models/model_meta.json` (thứ tự cột, trung vị điền thiếu, các cấp học, ánh xạ mức, phiên bản, macro-F1 CV). Server đọc bằng `xgboost.Booster`, không cần sklearn. **Không lưu Random Forest dạng pickle:** pickle phụ thuộc phiên bản thư viện, nạp file lạ có thể chạy mã tùy ý, và RF 500 cây rất nặng. RF chỉ dùng để đối chiếu thứ hạng biến. Thư mục `models/` (khoảng 1.3 MB, dưới 5 MB) được commit để server chạy `/api/predict`; đóng băng lại khi chốt dữ liệu (khoảng 22/12).
 - **Kết quả (bản chính 297):** nhóm B4 (7 câu) cộng "Lớp" chiếm 8 hạng đầu ở cả hai mô hình. B4_3, B4_6 là câu tiêu cực nhưng giá trị cao vẫn đẩy dự đoán lên mức Cao (Spearman giá trị gốc với SHAP: +0.90 và +0.69), phù hợp giả thuyết xu hướng trả lời chung. Không diễn giải từng biến ngoài B4 (hạng dao động mạnh qua 50 lần chia). Tên bảng: `T10_shap_*` (bảng dot1 của G3 đã đổi tên thành `T9b_dot1_*` để khỏi trùng), `T11_*`.
+
+## API dự đoán (23/11/2026, `src/sparkmind/predict.py`, `server/predict_api.py`)
+- **Demo (`POST /api/predict/demo`):** chỉ dùng **7 câu B4** (bắt buộc đủ, số nguyên 1–5, sai thì 422 tiếng Việt). **Không ghi MongoDB, không ghi nội dung request vào log.** Giới hạn 30 lần/phút/IP. Các biến khác điền bằng trung vị trong `model_meta.json` (lớp 12, THPT...), giống pipeline huấn luyện. Trả `muc`, `xac_suat` (tổng 1), `diem_du_doan` (kẹp 0–100), tối đa 4 câu ảnh hưởng nhiều nhất (`chieu` tăng/giảm, `do_lon` nhỏ/vừa/lớn; không lộ số SHAP thô), `model_version`, `che_do`.
+- **Kết quả nghiên cứu (`GET /api/research/result`):** chỉ trả khi người tham gia đã **hoàn thành cả 3 game** (`completed_at`), chưa xong thì 409. Dùng B4 gốc trong `behavior_answers` (không đảo chiều), cũng chỉ 7 câu B4 như demo. Không lưu thêm gì. Token gửi bằng header `X-Session-Token` (query cũng nhận nhưng lọt vào log truy cập). Hiện chưa có code nào gán `completed_at`; phải làm khi xong game 3.
+- **`pred_contribs` thay `shap` trên server:** server chỉ cần `xgboost` (ghim `xgboost==3.4.1`, đúng bản trong meta) và numpy; không shap, sklearn, pickle. Giải thích từng người = `pred_contribs` của mô hình phân loại, cột của đúng mức được dự đoán. Test kiểm tra: đóng góp + nền = margin; dự đoán trùng mô hình nạp từ JSON.
+- **Ngưỡng nhỏ/vừa/lớn:** `models/do_lon.json`, là phân vị 33.3% và 66.7% của |`pred_contribs`| (mức dự đoán) của 7 câu B4 trên bản `chat` 297 (tái lập: `python scripts/make_contrib_thresholds.py`). Phải tính lại khi đóng băng lại mô hình (khoảng 22/12).
+- **Chữ giao diện kết quả:** `content/results_ui.json`; giọng trung tính ("mức tự đánh giá sáng tạo"), nói rõ: ước lượng thống kê từ tự đánh giá, dựa trên 7 câu, đúng khoảng 6/10 trường hợp trong thử nghiệm, không phải đánh giá con người hay năng lực thật. "6/10" khớp macro-F1 CV 0.63–0.66 của bản 297; đổi chữ này nếu số của báo cáo đổi.
+- **Thư mục `models/` không được phục vụ ra ngoài:** web chỉ mount `web/` ở `/play`; có test kiểm tra.
+- **RAM (đo trên Windows, `python scripts/measure_memory.py`):** khoảng 254MB nếu chỉ nạp predict, khoảng 274MB cả server sau lần dự đoán đầu; dưới ngưỡng 300MB nhưng sát. Cần đo lại trên Render.
 
 ## Hạn chế đã biết
 - **Xu hướng trả lời chung:** B4 và điểm sáng tạo (C1–C5) cùng là tự đánh giá, cùng một lần trả lời; B4_3 và B4_6 (câu tiêu cực) vẫn tương quan dương với điểm. Có thể một phần tín hiệu là cách trả lời chung. Chỉ nói về liên hệ dự đoán, không nói về nguyên nhân.

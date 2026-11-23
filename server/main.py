@@ -12,14 +12,17 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
-from fastapi import Depends, FastAPI, Header, HTTPException  # noqa: E402
+from fastapi import Depends, FastAPI, Header, HTTPException, Request  # noqa: E402
+from fastapi.exception_handlers import request_validation_exception_handler  # noqa: E402
+from fastapi.exceptions import RequestValidationError  # noqa: E402
+from fastapi.responses import JSONResponse  # noqa: E402
 from fastapi.staticfiles import StaticFiles  # noqa: E402
 from sparkmind import config  # noqa: E402
 from sparkmind.db import lay_db  # noqa: E402
 from sparkmind.ingest import nhan_form  # noqa: E402
 from sparkmind.game_store import tao_chi_muc_game  # noqa: E402
 from sparkmind.research_store import tao_chi_muc  # noqa: E402
-from server import content_api, game1, research  # noqa: E402
+from server import content_api, game1, predict_api, research  # noqa: E402
 
 @lru_cache
 def lay_db_dung_chung():
@@ -42,6 +45,15 @@ app = FastAPI(title="SparkMind", lifespan=vong_doi)
 app.include_router(research.router)
 app.include_router(game1.router)
 app.include_router(content_api.router)
+app.include_router(predict_api.router)
+
+
+@app.exception_handler(RequestValidationError)
+async def loi_dinh_dang(request: Request, loi: RequestValidationError):
+    """Demo: JSON hỏng cũng báo tiếng Việt (không trả lại nội dung người dùng gửi). Đường khác giữ mặc định."""
+    if request.url.path == "/api/predict/demo":
+        return JSONResponse(status_code=422, content={"detail": predict_api.chu("loi_demo", "body_sai")})
+    return await request_validation_exception_handler(request, loi)
 
 
 def kiem_tra_khoa(x_api_key: str = Header(default="")) -> None:
