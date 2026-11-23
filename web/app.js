@@ -6,11 +6,12 @@
 
 const KHOA_TOKEN = "sparkmind_session_token";
 const TONG_BUOC = 6;
+const TONG_BUOC_DEMO = 3;     // bản demo: giới thiệu, 7 câu, kết quả
 const LOP_CAN_NGUOI_LON = 7;   // mã A1 từ 1 đến 7 là lớp 6–12 (dưới 18 tuổi)
 const CHUA_TUNG_DUNG = 4;      // mã A4 "Chưa bao giờ sử dụng"
 
 // Trạng thái trong bộ nhớ: nội dung, mã, token, câu trả lời, giờ bắt đầu phần B
-const tt = { ui: null, fb: null, ma: "", token: "", tl: {}, batDauB: 0, truong: [], daNop: { B: false, C: false } };
+const tt = { ui: null, fb: null, kq: null, demo: false, ma: "", token: "", tl: {}, batDauB: 0, truong: [], daNop: { B: false, C: false } };
 const goc = document.getElementById("man-hinh");
 
 // ---------- Hàm nhỏ dùng chung ----------
@@ -26,11 +27,11 @@ function h(ten, thuocTinh = {}, ...con) {
   return e;
 }
 
-/** Gọi API. Mất mạng thì trả status 0 (không ném lỗi). */
-async function goiApi(duongDan, thanBody) {
+/** Gọi API (dauTrang: header thêm, vd. X-Session-Token). Mất mạng thì trả status 0 (không ném lỗi). */
+async function goiApi(duongDan, thanBody, dauTrang = {}) {
   try {
-    const kq = await fetch(duongDan, thanBody === undefined ? {} : {
-      method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(thanBody),
+    const kq = await fetch(duongDan, thanBody === undefined ? { headers: dauTrang } : {
+      method: "POST", headers: { "Content-Type": "application/json", ...dauTrang }, body: JSON.stringify(thanBody),
     });
     const du_lieu = await kq.json().catch(() => ({}));
     return { status: kq.status, du_lieu };
@@ -67,11 +68,12 @@ function hienThi(buoc, ...nodes) {
   goc.classList.remove("vao");
   void goc.offsetWidth;                       // buộc trình duyệt chạy lại hiệu ứng
   goc.classList.add("vao");
-  const phanTram = Math.round((buoc / TONG_BUOC) * 100);
+  const tong = tt.demo ? TONG_BUOC_DEMO : TONG_BUOC;
+  const phanTram = Math.round((buoc / tong) * 100);
   document.getElementById("thanh").style.width = phanTram + "%";
   document.querySelector(".tien-do").setAttribute("aria-valuenow", phanTram);
   document.getElementById("nhan-tien-do").textContent =
-    tt.ui.chung.tien_do.replace("{b}", buoc).replace("{t}", TONG_BUOC);
+    (tt.demo ? tt.ui.demo.nhan_tien_do : tt.ui.chung.tien_do).replace("{b}", buoc).replace("{t}", tong);
   window.scrollTo(0, 0);
   goc.focus({ preventScroll: true });         // để người dùng bàn phím / đọc màn hình bắt đầu từ đầu màn mới
 }
@@ -320,6 +322,7 @@ function nutGui(chu, xuLy, hopLoi) {
 // ---------- Màn 1: chào và nhập mã ----------
 
 function manMa() {
+  tt.demo = false; tt.tl = {};                   // rời bản demo: bỏ câu trả lời demo, không để lẫn vào form nghiên cứu
   const u = tt.ui.chao;
   const o = h("input", { type: "text", id: "o-ma", autocomplete: "off", autocapitalize: "characters", maxlength: 32 });
   const loi = h("div", { class: "loi an", role: "alert" });
@@ -335,7 +338,8 @@ function manMa() {
   }, loi);
   hienThi(1, banner(bieuTuong("bd-logo", "logo logo-lon"), u.tieu_de),
     h("div", { class: "the the-chao" }, cacDoan(u.mo_ta), h("hr"),
-      h("label", { class: "cau-hoi", for: "o-ma" }, u.nhan_o_ma), o, loi), khungNut(nut));
+      h("label", { class: "cau-hoi", for: "o-ma" }, u.nhan_o_ma), o, loi),
+    khungNut(nut, h("button", { type: "button", class: "phu", onclick: manDemoGioiThieu }, u.nut_demo)));
   danhDauGioiThieu();
 }
 
@@ -652,13 +656,15 @@ function boDauLoi(e) {
 }
 
 async function khoiDong() {
-  const [ui, fb, tr] = await Promise.all([goiApi("/api/content/ui"), goiApi("/api/content/form-b"), goiApi("/api/content/schools")]);
-  if (ui.status !== 200 || fb.status !== 200 || tr.status !== 200) {
+  const [ui, fb, tr, kq] = await Promise.all([goiApi("/api/content/ui"), goiApi("/api/content/form-b"),
+    goiApi("/api/content/schools"), goiApi("/api/content/results-ui")]);
+  if (ui.status !== 200 || fb.status !== 200 || tr.status !== 200 || kq.status !== 200) {
     goc.textContent = "Không tải được nội dung. Bạn tải lại trang sau vài giây.";  // chưa có chữ từ máy chủ nên chỉ dòng này viết sẵn
     return;
   }
   tt.ui = ui.du_lieu;
   tt.fb = fb.du_lieu;
+  tt.kq = kq.du_lieu;
   tt.truong = tr.du_lieu;
   document.title = tt.ui.ten_he_thong;
   document.getElementById("ten-he-thong").textContent = tt.ui.ten_he_thong;

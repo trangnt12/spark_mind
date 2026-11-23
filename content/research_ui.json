@@ -4,7 +4,15 @@
     "tieu_de": "Chào bạn, cảm ơn bạn đã tham gia!",
     "mo_ta": "🎓 Đây là nghiên cứu cho đề án thạc sĩ về cách học sinh, sinh viên dùng AI và tư duy sáng tạo.\n📝 Bạn sẽ trả lời một khảo sát ngắn và chơi 3 trò chơi nhỏ, tổng cộng khoảng 20–25 phút.\n🔑 Bạn cần mã tham gia do người nghiên cứu gửi.",
     "nhan_o_ma": "Nhập mã tham gia của bạn",
-    "nut": "Tiếp tục"
+    "nut": "Tiếp tục",
+    "nut_demo": "Chưa có mã? Thử bản demo"
+  },
+  "demo": {
+    "tieu_de": "Thử bản demo",
+    "mo_ta": "🧪 Đây là bản thử: chỉ có 7 câu, mất khoảng 1 phút.\n🔒 Câu trả lời của bạn không được lưu lại.\n📊 Cuối cùng bạn sẽ thấy một ước lượng thống kê về mức tự đánh giá sáng tạo, không phải đánh giá về con người bạn.",
+    "nut_bat_dau": "Bắt đầu",
+    "nut_xem": "Xem kết quả",
+    "nhan_tien_do": "Bản demo: bước {b} trên {t}"
   },
   "dong_y": {
     "tieu_de": "Thông tin nghiên cứu",
@@ -99,7 +107,9 @@
       "dong_y": "📝",
       "game": "🎮",
       "chua_xong": "🌱",
-      "hoan_thanh": "🎉"
+      "hoan_thanh": "🎉",
+      "ket_qua": "📊",
+      "demo": "🧪"
     },
     "nut_quay_lai": "Quay lại",
     "nut_luu": "Lưu và tiếp tục",

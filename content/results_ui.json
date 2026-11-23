@@ -1,5 +1,5 @@
 {
-  "_ghi_chu": "Chữ cho trang kết quả và thông báo lỗi của /api/predict/demo, /api/research/result. Giữ giọng trung tính: chỉ nói về 'mức tự đánh giá sáng tạo', không khen chê, không khuyên theo kiểu nguyên nhân. {cau} và {giay} được code thay vào.",
+  "_ghi_chu": "Chữ cho trang kết quả (web/result.js) và thông báo lỗi của /api/predict/demo, /api/research/result. Giữ giọng trung tính: chỉ nói về 'mức tự đánh giá sáng tạo', không khen chê, không khuyên theo kiểu nguyên nhân. {cau} và {giay} do server thay vào; {tu}, {den}, {p}, {gia_tri} do trang web thay vào.",
   "tieu_de": "Kết quả ước lượng mức tự đánh giá sáng tạo",
   "ten_muc": {
     "Thap": "Mức thấp",
@@ -11,12 +11,28 @@
     "Trung_binh": "Dựa trên các câu trả lời, mô hình ước lượng bạn nhiều khả năng thuộc nhóm tự đánh giá sáng tạo ở mức trung bình trong dữ liệu khảo sát.",
     "Cao": "Dựa trên các câu trả lời, mô hình ước lượng bạn nhiều khả năng thuộc nhóm tự đánh giá sáng tạo ở mức cao trong dữ liệu khảo sát."
   },
+  "nhan_muc": "Mức tự đánh giá dự đoán",
   "nhan_diem": "Điểm ước lượng (thang 0–100)",
+  "diem": {
+    "sai_so": 10.5,
+    "khoang": "Khoảng {tu} đến {den} điểm",
+    "ghi_chu": "Sai số trung bình khoảng 10 điểm, nên chỉ nên xem đây là một khoảng, không phải một con số chính xác."
+  },
   "nhan_xac_suat": "Khả năng của từng mức theo mô hình",
-  "nhan_dong_gop": "Những câu trả lời ảnh hưởng nhiều nhất đến ước lượng này",
+  "xac_suat": {
+    "khoang": "khoảng {p}%",
+    "duoi_5": "dưới 5%",
+    "ghi_chu": "Các tỉ lệ được làm tròn tới 5%."
+  },
+  "nhan_dong_gop": "Mô hình đã dựa vào đâu?",
+  "dong_gop": {
+    "mo_ta": "Bấm để xem những câu trả lời ảnh hưởng nhiều nhất đến ước lượng này.",
+    "canh_bao": "Lưu ý: với hai câu phát biểu tiêu cực (B4.3 và B4.6), mô hình học được chiều ngược với điều ta kỳ vọng, có thể do xu hướng trả lời chung trong dữ liệu khảo sát. Đây là mô tả dữ liệu, không phải lời khuyên hay đánh giá về bạn.",
+    "ban_chon": "Bạn chọn: {gia_tri}"
+  },
   "chieu": {
-    "tang": "kéo điểm dự đoán lên",
-    "giam": "kéo điểm dự đoán xuống"
+    "tang": "kéo điểm lên",
+    "giam": "kéo điểm xuống"
   },
   "do_lon": {
     "nho": "ảnh hưởng nhỏ",
@@ -24,13 +40,22 @@
     "lon": "ảnh hưởng lớn"
   },
   "gioi_han": {
-    "tieu_de": "Cần hiểu đúng kết quả này",
+    "tieu_de": "Cần lưu ý",
     "doan": [
       "Đây là ước lượng thống kê từ khảo sát tự đánh giá, không phải đánh giá con người hay năng lực thật của bạn.",
-      "Phiên bản demo chỉ dựa trên 7 câu về cách dùng AI mà bạn vừa trả lời.",
+      "Ước lượng chỉ dựa trên 7 câu về cách dùng AI mà bạn vừa trả lời.",
       "Trong thử nghiệm của nghiên cứu, mô hình đoán đúng mức khoảng 6/10 trường hợp.",
       "Phần 'ảnh hưởng' chỉ mô tả cách mô hình đưa ra ước lượng, không có nghĩa là nguyên nhân."
     ]
+  },
+  "nut": {
+    "lam_lai": "Làm lại",
+    "hoan_thanh": "Hoàn thành"
+  },
+  "chua_xong_giao_dien": "Hoàn thành các phần còn lại để xem kết quả.",
+  "dang_tinh": "Đang tính kết quả...",
+  "loi_giao_dien": {
+    "dau_vao_sai": "Có câu trả lời chưa hợp lệ. Bạn kiểm tra lại cả 7 câu rồi thử lại nhé."
   },
   "loi_demo": {
     "body_sai": "Dữ liệu gửi lên không đúng dạng. Cần gửi mục \"answers\" gồm 7 câu từ B4_1 đến B4_7, mỗi câu là số nguyên từ 1 đến 5.",
