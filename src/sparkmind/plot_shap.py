@@ -3,6 +3,8 @@
 Mọi hình dùng nhãn tiếng Việt (content/feature_labels.json) và giá trị GỐC của biến (thang 1–5 cho B4, không đảo chiều).
 Mỗi hình có 1 dòng chú thích cách đọc ở dưới.
 """
+import re
+
 import matplotlib
 matplotlib.use("Agg")   # vẽ ra file, không cần cửa sổ
 import matplotlib.pyplot as plt
@@ -27,13 +29,24 @@ def ve_cot_ngang(cac_bang: list, nhan: dict, chu_thich: str, duong_dan, top: int
     _luu(fig, chu_thich, duong_dan)
 
 
+def _viet_hoa_beeswarm(fig):
+    """Đổi chữ tiếng Anh shap tự sinh: thanh màu (Feature value, High, Low) và dòng 'Sum of N other features'."""
+    ax, *phu = fig.axes
+    nhan = [t.get_text() for t in ax.get_yticklabels()]
+    ax.set_yticks(ax.get_yticks(), [re.sub(r"Sum of (\d+) other features", r"Tổng của \1 biến còn lại", t) for t in nhan])
+    for cb in phu:                                   # thanh màu bên phải
+        cb.set_ylabel("Giá trị câu trả lời (thấp → cao)")
+        cb.set_yticks([cb.get_ylim()[0], cb.get_ylim()[1]], ["Thấp", "Cao"])
+
+
 def ve_beeswarm(sv: np.ndarray, Xm: pd.DataFrame, nhan: dict, tieu_de: str, chu_thich: str, duong_dan, top: int = 15):
     """Beeswarm: mỗi chấm là một người; trục ngang là SHAP (phải = đẩy dự đoán lên), màu là giá trị gốc của biến."""
     ten = [nhan.get(c, c) for c in Xm.columns]
     ex = shap.Explanation(values=sv, data=Xm.to_numpy(dtype=float), feature_names=ten)
     fig = plt.figure(figsize=(9, 6.5))
     shap.plots.beeswarm(ex, max_display=top, show=False)
-    plt.gca().set_title(tieu_de); plt.xlabel("Giá trị SHAP (phải: đẩy dự đoán lên, trái: đẩy xuống)")
+    plt.gca().set_title(tieu_de); plt.xlabel("Tác động lên dự đoán (phải: đẩy lên, trái: đẩy xuống)")
+    _viet_hoa_beeswarm(plt.gcf())
     _luu(plt.gcf(), chu_thich, duong_dan)
 
 
@@ -47,6 +60,6 @@ def ve_phu_thuoc(sv: np.ndarray, Xm: pd.DataFrame, cac_bien: list, nhan: dict, t
         tb = pd.Series(y).groupby(x).mean()
         ax.plot(tb.index, tb.values, color="#E45756", marker="o", linewidth=1.5)
         ax.axhline(0, color="grey", linewidth=0.7)
-        ax.set(title=nhan.get(b, b), xlabel="Giá trị gốc của biến (B4: 1–5)", ylabel="SHAP")
+        ax.set(title=nhan.get(b, b), xlabel="Giá trị gốc của biến (B4: 1–5)", ylabel="Tác động lên dự đoán (SHAP)")
     fig.suptitle(tieu_de)
     _luu(fig, chu_thich, duong_dan)
