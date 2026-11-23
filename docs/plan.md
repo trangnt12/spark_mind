@@ -24,6 +24,9 @@ Nguồn: bảng `notebook_hang_ngay` của Trang. Mốc đã chốt: code hai h�
 - 22/11: `tests/test_form_text.py` (kiểm tra chữ trên giao diện khớp nội dung form).
 - 22/11: `docs/credits.md` (ghi nguồn, tác giả ảnh game: gạch, chai, ghế).
 
+- 23/11: `docs/rubric_game1.md` và `src/sparkmind/score_game1.py` (lọc ý hợp lệ, đếm fluency; không chấm lúc nộp).
+- **Làm khi phân tích (sau khi thu xong, sau 20/12):** chấm đa dạng (flexibility) và độc đáo (originality) của game 1. AI gán nhóm công dụng cho từng ý hợp lệ và gom ý tương tự; 2 người chấm kiểm tra lại một mẫu (cùng đợt 100–150 bài gửi khoảng 15/12). Độc đáo tính trong cùng đồ vật, ý xuất hiện ở dưới 5% người chơi. Chi tiết: `docs/rubric_game1.md`.
+
 ## Ba game (đã chốt hướng)
 1. Đồ vật bí ẩn (kiểu AUT): số ý, số ý hợp lệ (AI lọc), độ độc đáo theo tần suất.
 2. Soi lỗi AI: chọn nhận xét đúng về lỗi, +1/−1, chấm tự động.
