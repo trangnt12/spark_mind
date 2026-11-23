@@ -1,0 +1,150 @@
+"""Thống kê tổng hợp cho trang chủ quản trị (GET /api/admin/stats).
+
+CHỈ trả số đếm tổng hợp: không email, không tên, không IP, không nội dung trả lời.
+Mọi số đều tính bằng aggregation trong MongoDB; kết quả được nhớ 30 giây.
+"""
+import time
+from datetime import timedelta
+
+from . import config
+from .research_store import COL_HANH_VI, COL_MA, COL_NGUOI, COL_TU_DANH_GIA
+from .game_store import COL_GAME
+from .thoi_gian import utc_now
+
+GIAY_NHO_DEM = 30
+SO_NGAY = 30
+_nho = {}   # (id(db), an_thu) -> (thời điểm tính, kết quả)
+
+
+def xoa_cache() -> None:
+    """Xóa bộ nhớ đệm (dùng khi thử)."""
+    _nho.clear()
+
+
+# ---------- Bộ lọc dữ liệu thử ----------
+
+def _loc_form(an_thu: bool) -> dict:
+    """Form hướng 1: bỏ nguon hoặc dot mang nhãn thử."""
+    return {"nguon": {"$nin": list(config.NHAN_DU_LIEU_THU)}, "dot": {"$nin": list(config.NHAN_DU_LIEU_THU)}} if an_thu else {}
+
+
+def _loc_nguon(an_thu: bool) -> dict:
+    """Mã tham gia và người tham gia: bỏ source mang nhãn thử."""
+    return {"source": {"$nin": list(config.NHAN_DU_LIEU_THU)}} if an_thu else {}
+
+
+def _id_thu(db, an_thu: bool) -> list:
+    """Danh sách participant_id thuộc dữ liệu thử (để loại khỏi các bảng con)."""
+    if not an_thu:
+        return []
+    return [p["_id"] for p in db[COL_NGUOI].find({"source": {"$in": list(config.NHAN_DU_LIEU_THU)}}, {"_id": 1})]
+
+
+def _loc_con(ids_thu: list, them: dict = None) -> dict:
+    loc = {"participant_id": {"$nin": ids_thu}} if ids_thu else {}
+    return {**loc, **(them or {})}
+
+
+# ---------- Khối đếm dùng chung ----------
+
+def _nhom(db, bang: str, loc: dict, truong: str) -> dict:
+    """Đếm số tài liệu theo từng giá trị của một trường: {giá trị: số}."""
+    kq = db[bang].aggregate([{"$match": loc}, {"$group": {"_id": "$" + truong, "n": {"$sum": 1}}}])
+    return {str(d["_id"]) if d["_id"] is not None else "khac": d["n"] for d in kq}
+
+
+def _theo_ngay(db, bang: str, loc: dict, truong: str) -> list:
+    """Số tài liệu mỗi ngày trong 30 ngày gần nhất (ngày không có thì 0), theo giờ UTC."""
+    hom_nay = utc_now().replace(hour=0, minute=0, second=0, microsecond=0)
+    dau = hom_nay - timedelta(days=SO_NGAY - 1)
+    kq = db[bang].aggregate([
+        {"$match": {**loc, truong: {"$gte": dau}}},
+        {"$group": {"_id": {"$dateToString": {"format": "%Y-%m-%d", "date": "$" + truong}}, "n": {"$sum": 1}}}])
+    dem = {d["_id"]: d["n"] for d in kq}
+    ngay = [(dau + timedelta(days=i)).strftime("%Y-%m-%d") for i in range(SO_NGAY)]
+    return [{"ngay": n, "n": dem.get(n, 0)} for n in ngay]
+
+
+def _tong_dieu_kien(db, bang: str, loc: dict, dieu_kien: dict) -> dict:
+    """Một aggregation đếm nhiều điều kiện cùng lúc: {tên: số}. dieu_kien = {tên: biểu thức $cond}."""
+    nhom = {"_id": None, **{ten: {"$sum": {"$cond": [bt, 1, 0]}} for ten, bt in dieu_kien.items()}}
+    kq = list(db[bang].aggregate([{"$match": loc}, {"$group": nhom}]))
+    return {ten: (kq[0][ten] if kq else 0) for ten in dieu_kien}
+
+
+# ---------- Hướng 1 ----------
+
+def _ngay_moi_nhat(db, loc: dict):
+    kq = list(db[config.COL_CLEAN].aggregate([{"$match": loc}, {"$group": {"_id": None, "t": {"$max": "$thoi_gian"}}}]))
+    return kq[0]["t"].isoformat() if kq and kq[0]["t"] else None
+
+
+def thong_ke_huong1(db, an_thu: bool) -> dict:
+    loc, bang = _loc_form(an_thu), config.COL_CLEAN
+    ban = _tong_dieu_kien(db, bang, loc, {k: {"$eq": ["$in_" + k, True]} for k in ("chinh", "chat", "rat_chat")})
+    return {"tong": db[bang].count_documents(loc), "muc_tieu": config.MUC_TIEU_HUONG1,
+            "theo_nguon": _nhom(db, bang, loc, "nguon"), "theo_dot": _nhom(db, bang, loc, "dot"),
+            "ban": ban, "theo_ngay": _theo_ngay(db, bang, loc, "thoi_gian"),
+            "moi_nhat": _ngay_moi_nhat(db, loc)}
+
+
+# ---------- Hướng 2 ----------
+
+def _thong_ke_ma(db, an_thu: bool) -> dict:
+    loc = _loc_nguon(an_thu)
+    dung = db[COL_MA].count_documents({**loc, "is_used": True})
+    tong = db[COL_MA].count_documents(loc)
+    return {"da_tao": tong, "da_dung": dung, "chua_dung": tong - dung, "theo_nguon": _nhom(db, COL_MA, loc, "source")}
+
+
+def _pheu(db, loc_nguoi: dict, ids_thu: list) -> list:
+    """Phễu từ đồng ý đến hoàn thành: [{"khoa", "n"}]. Mỗi bước đếm số người (mỗi bảng con chỉ một dòng/người/game)."""
+    con = lambda them=None: _loc_con(ids_thu, them)   # noqa: E731
+    buoc = [("consent", db[COL_NGUOI].count_documents({**loc_nguoi, "consent": True})),
+            ("info", db[COL_NGUOI].count_documents({**loc_nguoi, "grade": {"$ne": None}, "school_name": {"$ne": None}})),
+            ("behavior", db[COL_HANH_VI].count_documents(con())),
+            ("self_assessment", db[COL_TU_DANH_GIA].count_documents(con()))]
+    for g in (1, 2, 3):
+        buoc.append((f"game{g}", db[COL_GAME].count_documents(con({"game": g, "submitted_at": {"$ne": None}}))))
+    buoc.append(("completed", db[COL_NGUOI].count_documents({**loc_nguoi, "completed_at": {"$ne": None}})))
+    return [{"khoa": k, "n": n} for k, n in buoc]
+
+
+def _co_gian_lan(db, ids_thu: list) -> dict:
+    """Số bài game đã nộp và số bài bị gắn cờ (nộp trễ, có dán, có rời tab)."""
+    loc = _loc_con(ids_thu, {"submitted_at": {"$ne": None}})
+    return _tong_dieu_kien(db, COL_GAME, loc, {
+        "da_nop": {"$eq": [1, 1]}, "over_time": {"$eq": ["$over_time", True]},
+        "paste": {"$gt": ["$paste_count", 0]}, "tab_leave": {"$gt": ["$tab_leave_count", 0]}})
+
+
+def thong_ke_huong2(db, an_thu: bool) -> dict:
+    loc_nguoi, ids_thu = _loc_nguon(an_thu), _id_thu(db, an_thu)
+    return {"ma": _thong_ke_ma(db, an_thu), "muc_tieu": config.MUC_TIEU_HUONG2,
+            "pheu": _pheu(db, loc_nguoi, ids_thu),
+            "nguoi_moi_theo_ngay": _theo_ngay(db, COL_NGUOI, loc_nguoi, "started_at"),
+            "co": _co_gian_lan(db, ids_thu)}
+
+
+# ---------- Hệ thống và hàm chính ----------
+
+def thong_ke_he_thong(db) -> dict | None:
+    """Dung lượng database (MB) từ dbStats. Không lấy được (vd khi thử) thì None."""
+    try:
+        s = db.command("dbStats")
+    except Exception:   # noqa: BLE001 - môi trường không hỗ trợ dbStats thì bỏ qua phần này
+        return None
+    mb = lambda x: round(x / 1048576, 1)   # noqa: E731
+    return {"du_lieu_mb": mb(s.get("dataSize", 0)), "luu_tru_mb": mb(s.get("storageSize", 0)),
+            "chi_muc_mb": mb(s.get("indexSize", 0)), "gioi_han_mb": config.ATLAS_GIOI_HAN_MB}
+
+
+def lay_thong_ke(db, an_thu: bool = True) -> dict:
+    """Thống kê đầy đủ, nhớ 30 giây theo (db, an_thu)."""
+    khoa, bay_gio = (id(db), bool(an_thu)), time.monotonic()
+    if khoa in _nho and bay_gio - _nho[khoa][0] < GIAY_NHO_DEM:
+        return _nho[khoa][1]
+    kq = {"an_du_lieu_thu": bool(an_thu), "tao_luc": utc_now().isoformat(), "huong1": thong_ke_huong1(db, an_thu),
+          "huong2": thong_ke_huong2(db, an_thu), "he_thong": thong_ke_he_thong(db)}
+    _nho[khoa] = (bay_gio, kq)
+    return kq

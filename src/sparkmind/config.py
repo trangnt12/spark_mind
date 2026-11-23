@@ -16,7 +16,13 @@ INGEST_SECRET = os.environ.get("INGEST_SECRET", "")  # khóa bí mật để App
 
 IP_HASH_SECRET = os.environ.get("IP_HASH_SECRET", "")  # khóa HMAC để băm IP, không bao giờ lưu IP thô
 
-RAW_EXCEL = ROOT / "data" / "raw" / "data_raw.xlsx"
+# Trang quản trị (thống kê)
+NHAN_DU_LIEU_THU = ("thu", "pilot")   # giá trị nguon/dot/source đánh dấu dữ liệu thử; công tắc "ẩn dữ liệu thử" loại chúng ra
+MUC_TIEU_HUONG1 = 1000                # số form mục tiêu của hướng 1
+MUC_TIEU_HUONG2 = 300                 # số người hoàn thành mục tiêu của hướng 2
+ATLAS_GIOI_HAN_MB = 512               # dung lượng gói Atlas M0
+
+RAW_EXCEL =ROOT / "data" / "raw" / "data_raw.xlsx"
 PROCESSED = ROOT / "data" / "processed"
 
 COL_RAW = "survey_form1"     # dữ liệu gốc, không sửa

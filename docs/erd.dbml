@@ -163,6 +163,58 @@ Table scores {
   indexes { (response_id, rater) [unique] }
 }
 
+Table users {
+  id objectid [pk]
+  username varchar [unique, not null, note: 'lowercase, 3-32 chars (a-z 0-9 . _ -)']
+  display_name varchar
+  role varchar [not null, note: 'admin | viewer | rater']
+  password_hash varchar [not null, note: 'scrypt$n$r$p$salt_hex$hash_hex (hashlib.scrypt, random salt, params stored). NEVER returned by any API']
+  must_change_password boolean [note: 'true for temp passwords: only change-password works until it is changed']
+  is_active boolean [default: true, note: 'false = locked by admin']
+  created_at datetime [note: 'UTC']
+  created_by varchar [note: 'username of the admin, or "script"']
+  last_login_at datetime
+  failed_attempts int [note: 'wrong passwords since last success; display only']
+  locked_until datetime [note: 'last throttle lock; display only, the lock itself lives in login_attempts']
+  indexes { username [unique] }
+}
+
+Table admin_sessions {
+  id varchar [pk, note: 'SHA-256 of the random cookie token (the raw token is never stored)']
+  user_id objectid [not null]
+  csrf_token varchar [note: 'returned by GET /api/auth/me, must be sent as X-CSRF-Token on POST/PUT/PATCH/DELETE']
+  created_at datetime
+  last_seen_at datetime [note: 'idle timeout 2 hours']
+  expires_at datetime [note: 'min(last_seen_at + 2h, created_at + 12h); TTL index (expireAfterSeconds=0)']
+  indexes { expires_at [note: 'TTL'] user_id }
+}
+
+Table login_attempts {
+  id varchar [pk, note: 'SHA-256 of "username|IP" (raw IP never stored; works for unknown usernames too)']
+  count int [note: 'wrong passwords in the current 15-minute window']
+  window_start datetime
+  locked_until datetime [note: '5 wrong in 15 minutes -> locked 15 minutes']
+  user_id objectid [note: 'null if the username does not exist']
+  expires_at datetime [note: 'TTL index (expireAfterSeconds=0)']
+}
+
+Table audit_log {
+  id objectid [pk]
+  at datetime [note: 'UTC. Append-only: the code has no update/delete function']
+  user_id objectid
+  username varchar
+  role varchar
+  action varchar [note: 'login | login_failed | logout | change_password | user_create | user_create_script | user_reset_password | user_lock | user_unlock']
+  collection varchar
+  doc_id varchar
+  detail json [note: 'never contains passwords, hashes or tokens (filtered)']
+  indexes { at }
+}
+
+Ref: users.id < admin_sessions.user_id
+Ref: users.id < audit_log.user_id
+Ref: users.id < login_attempts.user_id
+
 Ref: access_codes.id - participants.code_id
 Ref: participants.id - behavior_answers.participant_id
 Ref: participants.id - self_assessment.participant_id

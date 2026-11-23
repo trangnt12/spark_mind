@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="referrer" content="no-referrer">
+  <title>SparkMind · Quản trị</title>
+  <!-- Phông Nunito (có tiếng Việt), giống web người chơi; chưa tải được thì dùng phông hệ thống -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito:wght@500;700;800&display=swap">
+  <link rel="stylesheet" href="admin.css">
+</head>
+<body>
+  <!-- Mọi chữ do JS lấy từ content/admin_ui.json qua /api/auth/ui; không có script chạy ngay trong trang (CSP chỉ cho 'self') -->
+  <div id="goc"></div>
+  <noscript>Cần bật JavaScript để dùng trang quản trị.</noscript>
+  <script src="js/dom.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/charts.js"></script>
+  <script src="js/page-auth.js"></script>
+  <script src="js/page-dashboard.js"></script>
+  <script src="js/page-users.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
