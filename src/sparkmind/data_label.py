@@ -1,8 +1,8 @@
 """Nhãn dữ liệu (trường data_label: thu | pilot | that) và migration gán nhãn cho bản ghi cũ.
 
-Quy tắc gán cho bản ghi CHƯA có nhãn (đã chốt 27/11/2026):
+Quy tắc gán cho bản ghi CHƯA có nhãn (dự kiến chốt trước khi tạo mã thật, khoảng 27/11/2026; chưa phải đã chốt):
 - Hướng 2 (access_codes, participants, behavior_answers, self_assessment, game_responses, scores): "thu"
-  (thu dữ liệu thật chỉ bắt đầu từ 7/12, nên mọi bản ghi đang có là dữ liệu thử).
+  (thu dữ liệu thật chỉ bắt đầu từ 1/12, nên mọi bản ghi đang có trước đó là dữ liệu thử).
 - survey_clean (hướng 1): "that". survey_form1 (dữ liệu gốc) KHÔNG BAO GIỜ bị đụng tới.
 Chạy lại không đổi gì thêm (chỉ gán cho bản ghi chưa có nhãn; bản ghi đã có nhãn giữ nguyên).
 """

@@ -399,6 +399,33 @@ def test_script_migration_dry_run_mac_dinh_khong_ghi(db, monkeypatch, capsys):
     assert db["access_codes"].find_one()["data_label"] == "thu"
 
 
+def test_migration_khong_bao_gio_dung_survey_form1(db, monkeypatch):
+    """Cả dry-run lẫn --apply đều không đổi một chữ nào của survey_form1 (kể cả bản ghi lạ có sẵn chữ data_label)."""
+    import migrate_data_label
+    nap_cu(db)
+    db["survey_form1"].insert_one({"_id": "c", "nguon": "web", "data_label": "thu", "A1": "Lớp 9"})
+    truoc = sorted(db["survey_form1"].find(), key=lambda d: d["_id"])
+    assert "survey_form1" not in data_label.QUY_TAC and "survey_form1" not in data_label.BANG_CO_NHAN
+    monkeypatch.setattr(migrate_data_label, "lay_db", lambda: db)
+    migrate_data_label.main([])
+    monkeypatch.setattr("builtins.input", lambda *_: "GAN NHAN")
+    migrate_data_label.main(["--apply"])
+    assert db["access_codes"].find_one()["data_label"] == "thu"                      # --apply có chạy thật ở bảng khác
+    assert sorted(db["survey_form1"].find(), key=lambda d: d["_id"]) == truoc        # nhưng survey_form1 giữ nguyên 100%
+
+
+@pytest.mark.parametrize("sai", ["", "gan nhan", "GAN", "YES", "xoa"])
+def test_apply_phai_go_dung_gan_nhan_sai_thi_khong_ghi(db, monkeypatch, sai):
+    import migrate_data_label
+    nap_cu(db)
+    truoc = {b: sorted(db[b].find(), key=lambda d: str(d["_id"])) for b in db.list_collection_names()}
+    monkeypatch.setattr(migrate_data_label, "lay_db", lambda: db)
+    monkeypatch.setattr("builtins.input", lambda *_: sai)
+    with pytest.raises(SystemExit):
+        migrate_data_label.main(["--apply"])
+    assert {b: sorted(db[b].find(), key=lambda d: str(d["_id"])) for b in db.list_collection_names()} == truoc   # không ghi gì
+
+
 # ---------- Xóa dữ liệu thử ----------
 
 def nap_hon_hop(db):
@@ -438,6 +465,23 @@ def test_xoa_du_lieu_thu_khong_dung_nhan_that(db, admin):
     assert all(a["username"] == "admin1" for a in log)
     r = admin.post("/api/admin/test-data/delete", json={"confirm": "XOA"}, headers=GOC)   # chạy lại: không còn gì để xóa
     assert r.json()["tong"] == 0 and any(a["collection"] is None for a in nhat_ky(db, "test_data_delete"))
+
+
+def test_xoa_thu_voi_ban_ghi_con_mo_coi_khong_xoa_nham_nhan_that(db, admin):
+    """Người nhãn thu nhưng có bản ghi con nhãn that (mồ côi nhãn): dọn dữ liệu thử chỉ xóa theo nhãn từng bản ghi."""
+    pid, rs = nap_nguoi_day_du(db, "thu")
+    db["behavior_answers"].update_one({"participant_id": pid}, {"$set": {"data_label": "that"}})
+    db["game_responses"].update_one({"_id": rs[0]}, {"$set": {"data_label": "that"}})
+    db["scores"].update_one({"response_id": rs[0]}, {"$set": {"data_label": "that"}})
+    d = admin.get("/api/admin/test-data").json()["bang"]                              # dry-run: chỉ đếm bản ghi nhãn thu
+    assert d["participants"] == 1 and d["behavior_answers"] == 0 and d["self_assessment"] == 1
+    assert d["game_responses"] == 1 and d["scores"] == 1
+    assert dem(db) == {"participants": 1, "behavior_answers": 1, "self_assessment": 1, "game_responses": 2, "scores": 2}   # dry-run không xóa
+    r = admin.post("/api/admin/test-data/delete", json={"confirm": "XOA"}, headers=GOC)
+    assert r.json()["da_xoa"]["behavior_answers"] == 0 and r.json()["da_xoa"]["participants"] == 1
+    assert dem(db) == {"participants": 0, "behavior_answers": 1, "self_assessment": 0, "game_responses": 1, "scores": 1}
+    for b in ("behavior_answers", "game_responses", "scores"):
+        assert {x["data_label"] for x in db[b].find()} == {"that"}, b                 # chỉ còn bản ghi nhãn that, không bản nào bị xóa nhầm
 
 
 def test_bo_loc_xoa_thu_khong_bao_gio_chua_that(monkeypatch):
