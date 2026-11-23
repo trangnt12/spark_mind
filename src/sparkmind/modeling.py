@@ -73,14 +73,14 @@ def tao_nhan(ban: pd.DataFrame):
     return y_lop, ban["diem_sang_tao"].to_numpy(dtype=float)
 
 
-def _tien_xu_ly(cot_so, chuan_hoa: bool) -> ColumnTransformer:
+def _tien_xu_ly(cot_so, chuan_hoa: bool, cot_chu=COT_PHAN_LOAI) -> ColumnTransformer:
     """Điền thiếu (trung vị), chuẩn hóa (nếu cần) cho cột số; one-hot cho cột chữ. Học trên train."""
     buoc = [("dien", SimpleImputer(strategy="median"))]
     if chuan_hoa:
         buoc.append(("chuan", StandardScaler()))
     return ColumnTransformer([
         ("so", Pipeline(buoc), list(cot_so)),
-        ("chu", OneHotEncoder(handle_unknown="ignore", sparse_output=False), COT_PHAN_LOAI)])
+        ("chu", OneHotEncoder(handle_unknown="ignore", sparse_output=False), list(cot_chu))])
 
 
 class XGBCanBangLop(XGBClassifier):
@@ -90,11 +90,11 @@ class XGBCanBangLop(XGBClassifier):
         return super().fit(X, y, sample_weight=compute_sample_weight("balanced", y), **kw)
 
 
-def _pipe(cot_so, mo_hinh, chuan_hoa=False) -> Pipeline:
-    return Pipeline([("tien_xu_ly", _tien_xu_ly(cot_so, chuan_hoa)), ("mo_hinh", mo_hinh)])
+def _pipe(cot_so, mo_hinh, chuan_hoa=False, cot_chu=COT_PHAN_LOAI) -> Pipeline:
+    return Pipeline([("tien_xu_ly", _tien_xu_ly(cot_so, chuan_hoa, cot_chu)), ("mo_hinh", mo_hinh)])
 
 
-def tao_mo_hinh_phan_loai(cot_so) -> dict:
+def tao_mo_hinh_phan_loai(cot_so, cot_chu=COT_PHAN_LOAI) -> dict:
     """5 mô hình phân loại, tham số cố định (không dò)."""
     rs = RANDOM_STATE
     xgb = XGBCanBangLop(max_depth=3, learning_rate=0.05, n_estimators=300, subsample=0.8,
@@ -102,23 +102,23 @@ def tao_mo_hinh_phan_loai(cot_so) -> dict:
     rf = RandomForestClassifier(n_estimators=500, min_samples_leaf=3,
                                 class_weight="balanced_subsample", random_state=rs, n_jobs=-1)
     lr = LogisticRegression(class_weight="balanced", max_iter=2000, random_state=rs)
-    return {"Dummy phổ biến nhất": _pipe(cot_so, DummyClassifier(strategy="most_frequent")),
-            "Dummy theo tỉ lệ": _pipe(cot_so, DummyClassifier(strategy="stratified", random_state=rs)),
-            "Logistic": _pipe(cot_so, lr, chuan_hoa=True),
-            "Random Forest": _pipe(cot_so, rf),
-            "XGBoost": _pipe(cot_so, xgb)}
+    return {"Dummy phổ biến nhất": _pipe(cot_so, DummyClassifier(strategy="most_frequent"), cot_chu=cot_chu),
+            "Dummy theo tỉ lệ": _pipe(cot_so, DummyClassifier(strategy="stratified", random_state=rs), cot_chu=cot_chu),
+            "Logistic": _pipe(cot_so, lr, chuan_hoa=True, cot_chu=cot_chu),
+            "Random Forest": _pipe(cot_so, rf, cot_chu=cot_chu),
+            "XGBoost": _pipe(cot_so, xgb, cot_chu=cot_chu)}
 
 
-def tao_mo_hinh_hoi_quy(cot_so) -> dict:
+def tao_mo_hinh_hoi_quy(cot_so, cot_chu=COT_PHAN_LOAI) -> dict:
     """4 mô hình hồi quy (phụ), cùng tinh thần, không dò tham số."""
     rs = RANDOM_STATE
     xgb = XGBRegressor(max_depth=3, learning_rate=0.05, n_estimators=300, subsample=0.8,
                        colsample_bytree=0.8, random_state=rs, n_jobs=1)
     rf = RandomForestRegressor(n_estimators=500, min_samples_leaf=3, random_state=rs, n_jobs=-1)
-    return {"Dummy trung bình": _pipe(cot_so, DummyRegressor(strategy="mean")),
-            "Ridge": _pipe(cot_so, Ridge(alpha=1.0), chuan_hoa=True),
-            "Random Forest": _pipe(cot_so, rf),
-            "XGBoost": _pipe(cot_so, xgb)}
+    return {"Dummy trung bình": _pipe(cot_so, DummyRegressor(strategy="mean"), cot_chu=cot_chu),
+            "Ridge": _pipe(cot_so, Ridge(alpha=1.0), chuan_hoa=True, cot_chu=cot_chu),
+            "Random Forest": _pipe(cot_so, rf, cot_chu=cot_chu),
+            "XGBoost": _pipe(cot_so, xgb, cot_chu=cot_chu)}
 
 
 def _cot_so(X: pd.DataFrame) -> list:
@@ -256,3 +256,49 @@ def phien_ban_thu_vien() -> pd.DataFrame:
     return pd.DataFrame({"thu_vien": ["python", "numpy", "pandas", "scikit-learn", "xgboost", "random_state"],
                          "phien_ban": [platform.python_version(), np.__version__, pd.__version__,
                                        sklearn.__version__, xgboost.__version__, RANDOM_STATE]})
+
+
+# --- G2: bỏ từng nhóm biến (ablation) ---
+NHOM_NEN = ["lop_so", "A2_nu", "A2_khac", "cap_hoc"]            # thông tin nền: lớp, giới, cấp học
+NHOM_B2_B5 = ["B2_so", "B5_so"]
+NHOM_B1367 = [c for c in DAC_TRUNG if c.startswith(("B1_", "B3_", "B6_", "B7_"))]
+
+
+def cau_hinh_ablation() -> dict:
+    """Tên cấu hình -> danh sách cột đặc trưng. Cấu hình 'bỏ nhóm' không chứa cột của nhóm đã bỏ."""
+    bo = lambda nhom: [c for c in DAC_TRUNG if c not in nhom]
+    return {"Đủ biến": list(DAC_TRUNG), "Bỏ B4": bo(B4), "Chỉ có B4": list(B4),
+            "Bỏ B1/B3/B6/B7": bo(NHOM_B1367), "Chỉ thông tin nền": list(NHOM_NEN),
+            "Bỏ B2 và B5": bo(NHOM_B2_B5)}
+
+
+def chay_ablation(ban: pd.DataFrame, chia: list, ten_mo_hinh=("Logistic", "Random Forest", "XGBoost")):
+    """Chạy CV (cùng các lần chia) cho từng cấu hình. Trả (bảng fold phân loại, bảng fold hồi quy) có cột 'cau_hinh'."""
+    y_lop, y_diem = tao_nhan(ban)
+    lop, diem = [], []
+    for ten, cot in cau_hinh_ablation().items():
+        X = tao_dac_trung(ban)[cot]                              # tao_dac_trung đã kiểm tra cột cấm; chay_cv kiểm lại
+        chu = [c for c in COT_PHAN_LOAI if c in cot]
+        pl = {k: v for k, v in tao_mo_hinh_phan_loai(_cot_so(X), chu).items() if k in ten_mo_hinh}
+        hq = {k: v for k, v in tao_mo_hinh_hoi_quy(_cot_so(X), chu).items() if k in ("Ridge", "Random Forest", "XGBoost")}
+        lop.append(chay_cv(X, y_lop, pl, chia, "lop").assign(cau_hinh=ten))
+        diem.append(chay_cv(X, y_diem, hq, chia, "diem").assign(cau_hinh=ten))
+    return pd.concat(lop, ignore_index=True), pd.concat(diem, ignore_index=True)
+
+
+# --- G3: chẩn đoán một đợt nhỏ (dot1) ---
+def chan_doan_dot(ban: pd.DataFrame, X: pd.DataFrame, dot_giu: str, n_hat: int = 200) -> dict:
+    """Giữ lại một đợt làm tập thử (như LOBO). Trả: phân bố mức, ma trận nhầm lẫn RF, macro-F1 các mô hình,
+    macro-F1 dummy theo tỉ lệ (lần chạy trong LOBO và trung bình n_hat hạt giống khác nhau)."""
+    from sklearn.metrics import confusion_matrix
+    y, _ = tao_nhan(ban); te = (ban["dot"] == dot_giu).to_numpy()
+    ct = tao_mo_hinh_phan_loai(_cot_so(X))
+    rf = clone(ct["Random Forest"]).fit(X[~te], y[~te])
+    mt = pd.DataFrame(confusion_matrix(y[te], rf.predict(X[te]), labels=[0, 1, 2]),
+                      index=[f"that_{m}" for m in MUC_THU_TU], columns=[f"doan_{m}" for m in MUC_THU_TU])
+    f1 = lambda m: f1_score(y[te], m.predict(X[te]), average="macro")
+    dummy = [f1(clone(ct["Dummy theo tỉ lệ"]).set_params(mo_hinh__random_state=s).fit(X[~te], y[~te]))
+             for s in range(n_hat)]
+    return {"nhan_thu": y[te], "ma_tran": mt, "dummy_lan_lobo": f1(clone(ct["Dummy theo tỉ lệ"]).fit(X[~te], y[~te])),
+            "dummy_tb": float(np.mean(dummy)), "dummy_sd": float(np.std(dummy)),
+            "f1_rf": f1(rf), "n_thu": int(te.sum())}

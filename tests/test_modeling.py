@@ -113,3 +113,30 @@ def test_lobo_bo_qua_dot_it_dong():
     assert t.loc[t["dot_thu"] == "d3", "n_thu"].iloc[0] == 6
     assert t.loc[t["dot_thu"] == "d3", "macro_f1"].isna().all()    # đợt ít dòng: chỉ báo số dòng
     assert t.loc[t["dot_thu"] == "d1", "macro_f1"].notna().all()
+
+
+def test_ablation_bo_nhom_khong_chua_cot_da_bo():
+    cau_hinh = M.cau_hinh_ablation()
+    assert not set(M.B4) & set(cau_hinh["Bỏ B4"])
+    assert not set(M.NHOM_B1367) & set(cau_hinh["Bỏ B1/B3/B6/B7"])
+    assert not set(M.NHOM_B2_B5) & set(cau_hinh["Bỏ B2 và B5"])
+    assert set(cau_hinh["Chỉ có B4"]) == set(M.B4)
+    assert set(cau_hinh["Chỉ thông tin nền"]) == {"lop_so", "A2_nu", "A2_khac", "cap_hoc"}
+    assert cau_hinh["Đủ biến"] == M.DAC_TRUNG
+    for cot in cau_hinh.values():
+        M.kiem_tra_cot_cam(cot)                                    # mọi cấu hình đều qua kiểm tra cột cấm
+
+
+def test_ablation_chay_duoc_ke_ca_khi_khong_co_cap_hoc():
+    df = du_lieu_gia(60)
+    yl, _ = M.tao_nhan(df)
+    fl, fd = M.chay_ablation(df, M.tao_cac_lan_chia(yl, 1), ("Logistic",))
+    assert set(fl["cau_hinh"]) == set(M.cau_hinh_ablation()) == set(fd["cau_hinh"])
+    assert fl["macro_f1"].between(0, 1).all()                        # "Chỉ có B4" không có cap_hoc vẫn chạy
+
+
+def test_chan_doan_dot_tra_ma_tran_3x3():
+    df = du_lieu_gia(100)
+    df["dot"] = ["d1"] * 30 + ["d2"] * 70
+    r = M.chan_doan_dot(df, M.tao_dac_trung(df), "d1", n_hat=3)
+    assert r["ma_tran"].shape == (3, 3) and r["ma_tran"].to_numpy().sum() == 30 == r["n_thu"]

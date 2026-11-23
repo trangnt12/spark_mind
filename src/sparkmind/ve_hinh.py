@@ -89,3 +89,22 @@ def ve_cot_lobo(t7: pd.DataFrame, tieu_de: str, duong_dan):
     ax.set(title=tieu_de, ylabel="Macro-F1 trên đợt bị giữ lại")
     ax.legend(fontsize=7, ncol=2)
     fig.tight_layout(); fig.savefig(duong_dan, dpi=150); plt.close(fig)
+
+
+def ve_cot_ablation(tom_tat: pd.DataFrame, chi_so: str, tieu_de: str, duong_dan):
+    """Hình cột ngang: chỉ số (macro_f1 hoặc r2) theo cấu hình bỏ nhóm biến, mỗi mô hình một màu.
+
+    tom_tat: cột cau_hinh, mo_hinh, <chi_so>_tb. Số ghi ở đầu cột để đọc trực tiếp.
+    """
+    ch = list(dict.fromkeys(tom_tat["cau_hinh"])); mh = list(dict.fromkeys(tom_tat["mo_hinh"]))
+    fig, ax = plt.subplots(figsize=(8, 5)); rong = 0.8 / len(mh)
+    for k, m in enumerate(mh):
+        v = tom_tat[tom_tat["mo_hinh"] == m].set_index("cau_hinh").reindex(ch)[f"{chi_so}_tb"]
+        y = np.arange(len(ch)) + k * rong
+        ax.barh(y, v, rong, label=m, color=MAU_MO_HINH[1 + k])
+        for yi, x in zip(y, v):
+            ax.text(x + 0.005 if x >= 0 else 0.005, yi, f"{x:.2f}", va="center", fontsize=7)
+    ax.set_yticks(np.arange(len(ch)) + rong * (len(mh) - 1) / 2, ch); ax.invert_yaxis()
+    ax.axvline(0, color="black", linewidth=0.8)
+    ax.set(title=tieu_de, xlabel=chi_so); ax.legend(fontsize=8)
+    fig.tight_layout(); fig.savefig(duong_dan, dpi=150); plt.close(fig)
