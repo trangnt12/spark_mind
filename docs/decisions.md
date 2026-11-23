@@ -4,8 +4,8 @@ Tài liệu này để Claude Code (và người mới vào dự án) hiểu b�
 Sơ đồ cơ sở dữ liệu: `docs/erd.dbml`. Luồng dữ liệu: `docs/data_flow.md`.
 
 ## Phạm vi và lịch
-- Hạn nộp: tháng 1/2027 (chưa rõ ngày). Code hai hướng xong trong tuần đầu tháng 12 (dự phòng 5–6/12).
-- Hướng 1 cần khoảng 1000 form (hiện 460; Google Form thu đến hết tháng 12). Hướng 2: 300 người, thu từ 7/12 đến khoảng 20/12.
+- Hạn nộp: tháng 1/2027 (chưa rõ ngày). Code hai hướng xong trước 30/11 (xem lịch mới 23/11 bên dưới).
+- Hướng 1 cần khoảng 1000 form (hiện 460; Google Form thu đến hết tháng 12). Hướng 2: 300 người, thu từ 1/12 đến 20/12.
 - Cuối tháng 12 viết báo cáo. Đầu tháng 1 gửi file cho 2 người chấm / nộp.
 
 ## Một web, hai chế độ
@@ -49,14 +49,21 @@ Chi tiết từng chữ đổi: `docs/form_changes_log.md`. Nguyên tắc: code 
 
 ## Cập nhật 21/11/2026
 - **Hạn nộp:** đề án nộp về trường ngày 11/1/2027. Thầy chấm qua sau tuần 1 tháng 1 rồi mới nộp, nên cần gửi thầy bản gần hoàn chỉnh khoảng 2–3/1.
-- **Người chấm:** đã có đủ 2 người. Gửi file 100–150 bài (chọn ngẫu nhiên) khoảng 15/12, nhận kết quả trước 24/12.
-- **Lịch thu:** hướng 2 đóng thu 20/12; hướng 1 đóng thu và đóng băng dữ liệu khoảng 22/12; chạy lại mô hình 23–27/12.
+- **Người chấm:** đã có đủ 2 người. (Lịch cũ 15/12 và 24/12 đã đổi, xem mục 23/11/2026.)
+- **Lịch thu:** (đã thay bằng lịch 23/11 bên dưới)
 - **Đồng ý tham gia:** chỉ cần tích ô (người chơi, và thêm ô của người lớn với lớp 6–12); không cần giấy.
 - **Mã tham gia:** mã dùng một lần được giữ; phát theo lô cho đội thuê và tình nguyện viên; chế độ demo cho người ngoài.
 - **Giới hạn tốc độ:** chỉ đếm mã sai (10 lần mỗi phút theo IP). IP có thể bị giả qua header: hạn chế đã biết, chỉ dùng để gắn cờ.
 - **Dữ liệu hướng 2:** lưu riêng (`participants`, `behavior_answers`, `self_assessment`...), không vào `survey_form1`.
 - **Form v2 (đổi chữ 20/11):** 460 form cũ được đánh dấu `nguon="excel_import"`.
 
+
+## Lịch mới (23/11/2026)
+- **24–27/11:** game 2 + `completed_at`; chống gian lận + 2 câu kiểm tra chú ý; tạo mã hàng loạt; game 3. **28/11:** thử điện thoại + script sao lưu MongoDB. **29/11:** thử nghiệm ~20 người (nhãn `pilot`). **30/11:** sửa lỗi, xóa dữ liệu pilot, chạy thử script chấm AI.
+- **1/12:** mở thu hướng 2. **20/12:** đóng thu. Web quản trị chấm (phiên 3) xong trước 10/12; phiên 4 trước 15/12.
+- **Người chấm:** rút mẫu khoảng 12–15/12; người chấm chỉ kiểm chứng điểm AI trên một mẫu (không chấm toàn bộ). Hạn chót chấm 23/12.
+- **22/12:** chốt dữ liệu. 23–27/12 chạy lại mô hình, SHAP, Kappa. 24/12–2/1 viết. Gửi thầy 2–3/1. Nộp điện tử 11/1/2027.
+- **Lý do đổi:** thu dữ liệu hướng 2 dài hơn (1/12–20/12 thay vì 7/12–20/12) để đủ 300 người.
 
 ## Nút Quay lại (22/11/2026)
 - Người chơi được quay lại sửa phần A, B, C trước khi vào game 1 (trong game thì không). Sửa ghi đè câu trả lời cũ (vẫn một tài liệu mỗi người), ghi `edited_at` và `edit_count` (hoặc `info_edited_at` ở participants). Email và đồng ý ban đầu không sửa được. Không có `edit` thì nộp lại vẫn trả 409.
@@ -113,7 +120,7 @@ Chi tiết từng chữ đổi: `docs/form_changes_log.md`. Nguyên tắc: code 
 - **Nhật ký:** mọi tạo/sửa/xóa ghi `data_create|data_update|data_delete` với bảng, ID, trường cũ và mới (không ghi mã tham gia hay bí mật); xóa lưu tóm tắt đã che. Xuất CSV ghi `data_export`.
 - **Nhãn dữ liệu `data_label` (thu | pilot | that):** nằm ở `access_codes`, `participants`, `behavior_answers`, `self_assessment`, `game_responses`, `scores`, `survey_clean`; KHÔNG ở `survey_form1`. Mã tạo bằng `make_codes.py` mặc định `that` (`--data-label thu|pilot` cho mã thử; pilot ngày 30/11); nhãn được chép từ mã sang người tham gia và sang các bảng con. Form hướng 1 mới nhận nhãn `that` ở bản sạch. **Bản ghi thiếu nhãn được coi là `that`** (an toàn). `scripts/run_cleaning.py` khi ghi lại `survey_clean` GIỮ `data_label` hiện có của từng bản ghi (`data_label.giu_nhan_hien_co`, có test); bản ghi chưa có nhãn vẫn chưa có (coi là `that`).
 - **Thay quy ước phiên 1:** "dữ liệu thử" nay là `data_label` thuộc `config.NHAN_DU_LIEU_THU = ("thu", "pilot")`, không còn dựa vào `nguon`, `dot` hay `source`. Công tắc "ẩn dữ liệu thử" ở trang Tổng quan và mọi danh sách lọc theo trường này (mặc định bật).
-- **Migration (`scripts/migrate_data_label.py`, chốt 27/11):** hướng 2 (mọi bản ghi hiện có, vì thu dữ liệu thật chỉ bắt đầu 7/12) gán `thu`; `survey_clean` gán `that` (gồm `web`, `google_form`, `excel_import`); `survey_form1` không đụng. Chỉ gán cho bản ghi chưa có nhãn nên chạy lại không đổi gì. Mặc định chỉ xem (dry-run); `--apply` phải gõ `GAN NHAN`. Dry-run trên Atlas ngày 23/11 (chỉ đọc): `access_codes` 1, `survey_clean` 460, các bảng khác 0. CHƯA chạy `--apply`.
+- **Migration (`scripts/migrate_data_label.py`, chốt 27/11):** hướng 2 (mọi bản ghi hiện có, vì thu dữ liệu thật chỉ bắt đầu 1/12) gán `thu`; `survey_clean` gán `that` (gồm `web`, `google_form`, `excel_import`); `survey_form1` không đụng. Chỉ gán cho bản ghi chưa có nhãn nên chạy lại không đổi gì. Mặc định chỉ xem (dry-run); `--apply` phải gõ `GAN NHAN`. Dry-run trên Atlas ngày 23/11 (chỉ đọc): `access_codes` 1, `survey_clean` 460, các bảng khác 0. CHƯA chạy `--apply`.
 - **Xóa dữ liệu thử (`/#/cleanup`, `GET/POST /api/admin/test-data`):** chỉ admin; xem trước số bản ghi theo bảng (dry-run), phải gõ `XOA`, ghi `audit_log` theo bảng. Chỉ đụng nhãn thu/pilot ở `access_codes`, `participants`, các bảng con, `scores`, `survey_clean`; có `assert` chặn cấu hình làm nhãn `that` lọt vào danh sách xóa. **Xóa một `participants` thì xóa luôn dữ liệu của người đó** ở `behavior_answers`, `self_assessment`, `game_responses` và `scores` (qua game_responses). Màn xác nhận hiện số bản ghi con sẽ bị xóa theo từng bảng (`GET /api/admin/data/participants/{id}/lien-quan`, chỉ đọc); số đã xóa ghi vào `audit_log` (`da_xoa_bang_con`). Mã trong `access_codes` của người đó vẫn còn và vẫn ở trạng thái đã dùng. Bộ lọc con được tính hết trước khi xóa (có test, vì `scores` tìm qua `game_responses`).
 - **`schools`:** matching vẫn dùng `content/schools.csv`; muốn đổi danh sách thì sửa CSV rồi chạy `scripts/import_schools.py`.
 
