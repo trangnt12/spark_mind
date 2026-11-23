@@ -19,7 +19,9 @@ from fastapi.responses import JSONResponse  # noqa: E402
 from fastapi.staticfiles import StaticFiles  # noqa: E402
 from sparkmind import config  # noqa: E402
 from sparkmind.db import lay_db  # noqa: E402
+from sparkmind import predict  # noqa: E402
 from sparkmind.ingest import nhan_form  # noqa: E402
+from sparkmind.memory import rss_mb  # noqa: E402
 from sparkmind.game_store import tao_chi_muc_game  # noqa: E402
 from sparkmind.research_store import tao_chi_muc  # noqa: E402
 from server import content_api, game1, predict_api, research  # noqa: E402
@@ -66,6 +68,12 @@ def kiem_tra_khoa(x_api_key: str = Header(default="")) -> None:
 def health():
     """Để cron-job.org ping, giữ server không ngủ."""
     return {"status": "ok"}
+
+
+@app.get("/api/admin/memory", dependencies=[Depends(kiem_tra_khoa)])
+def admin_memory():
+    """Xem bộ nhớ server (cần khóa như ingest). Chỉ trả 2 trường, không lộ thông tin khác."""
+    return {"rss_mb": rss_mb(), "models_loaded": predict.nap_mo_hinh.cache_info().currsize > 0}
 
 
 @app.post("/api/ingest/google-form", dependencies=[Depends(kiem_tra_khoa)])
