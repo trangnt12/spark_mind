@@ -23,7 +23,8 @@ function theMuc(kq) {
     h("span", { class: "do tuong-chay" }), h("small", {}, u.ten_muc[m])));
   return h("div", { class: "the" }, h("h2", {}, u.nhan_muc),
     h("div", { class: "thanh-muc", role: "img", "aria-label": u.ten_muc[kq.muc] }, doan),
-    h("p", { class: "ten-muc" }, u.ten_muc[kq.muc]), h("p", { class: "mo-ta" }, u.mo_ta_muc[kq.muc]));
+    h("p", { class: "mo-ta" }, u.mo_ta_muc[kq.muc]),
+    h("p", { class: "ghi-chu-muc" }, u.ghi_chu_muc));   // dòng nhỏ nhắc đây chỉ là ước lượng
 }
 
 // ---------- b. Điểm ước lượng dưới dạng khoảng ----------
@@ -62,7 +63,7 @@ function theXacSuat(kq) {
 function theLuuY() {
   const u = tt.kq.gioi_han;
   return h("div", { class: "the luu-y", role: "note" }, h("h2", {}, u.tieu_de),
-    u.doan.map((d) => h("p", { class: "mo-ta" }, d)));
+    h("ul", { class: "ds-luu-y" }, u.doan.map((d) => h("li", {}, d))));   // 5 ý dạng danh sách có đầu dòng
 }
 
 // ---------- e. Mô hình đã dựa vào đâu? (thu gọn mặc định) ----------

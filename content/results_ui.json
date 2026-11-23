@@ -11,6 +11,7 @@
     "Trung_binh": "Dựa trên các câu trả lời, mô hình ước lượng bạn nhiều khả năng thuộc nhóm tự đánh giá sáng tạo ở mức trung bình trong dữ liệu khảo sát.",
     "Cao": "Dựa trên các câu trả lời, mô hình ước lượng bạn nhiều khả năng thuộc nhóm tự đánh giá sáng tạo ở mức cao trong dữ liệu khảo sát."
   },
+  "ghi_chu_muc": "Đây chỉ là ước lượng, mô hình có thể sai khá nhiều. Kéo xuống xem phần Cần lưu ý.",
   "nhan_muc": "Mức tự đánh giá dự đoán",
   "nhan_diem": "Điểm ước lượng (thang 0–100)",
   "diem": {

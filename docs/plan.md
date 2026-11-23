@@ -8,7 +8,7 @@ Nguồn: bảng `notebook_hang_ngay` của Trang. Mốc đã chốt: code hai h�
 | 22/11 ✅ | Giao diện nhập mã, đồng ý, thông tin cơ bản, form B, game 1, chữ khớp form, ảnh game, giao diện xanh lá | Game 1 chơi được (đã xong) |
 | 23/11 | Notebook 03: RF, XGBoost, baseline, CV 5 lớp lặp lại trên 3 bản dữ liệu | Bảng so sánh mô hình |
 | 24/11 | Notebook 04: SHAP, kiểm tra `pred_contribs`, lưu mô hình | Biểu đồ SHAP, file mô hình |
-| 25/11 | `/api/predict` và trang kết quả, demo | Mốc: lõi hướng 1 xong |
+| 25/11 ✅ | `/api/predict` (API dự đoán), mô hình B4, demo, trang kết quả, endpoint `/api/admin/memory`, chữ kết quả đã duyệt | Mốc: lõi hướng 1 xong (đã xong; còn "Danh sách đóng băng mô hình ~22/12") |
 | 26/11 | Game 2; `completed_at` khi đủ 3 game | Game 2, ghi nhận hoàn thành |
 | 27/11 | Chống gian lận; 2 câu kiểm tra chú ý (cờ `chu_y_sai`) | Chống gian lận cơ bản |
 | 28/11 | Thử trên điện thoại; sao lưu MongoDB | Danh sách lỗi, bản sao lưu |
