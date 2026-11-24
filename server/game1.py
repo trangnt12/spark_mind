@@ -6,7 +6,7 @@ from fastapi import APIRouter, Depends
 from pydantic import BaseModel, Field
 
 from server.research import chay, lay_db_nghien_cuu
-from sparkmind import config, game_store
+from sparkmind import config, flags_store, game_store
 
 router = APIRouter(prefix="/api/research/game1")
 
@@ -36,4 +36,6 @@ def bat_dau(body: BatDauGameBody, db=Depends(lay_db_nghien_cuu)):
 @router.post("/submit")
 def nop(body: NopGame1Body, db=Depends(lay_db_nghien_cuu)):
     gioi_han = noi_dung_game1()["thoi_gian_giay"]
-    return chay(game_store.nop_game1, db, body.session_token, body.model_dump(), gioi_han)
+    kq = chay(game_store.nop_game1, db, body.session_token, body.model_dump(), gioi_han)
+    flags_store.cap_nhat_co_theo_token(db, body.session_token)   # gắn cờ (nếu có); không báo gì cho người chơi
+    return kq

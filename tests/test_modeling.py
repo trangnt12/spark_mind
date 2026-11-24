@@ -31,6 +31,16 @@ def test_cam_cot_cam_bao_loi():
             M.kiem_tra_cot_cam(M.DAC_TRUNG + [cot_xau])
 
 
+def test_cot_co_va_thoi_gian_bi_cam():
+    """Cờ chống gian lận và các trường đo thời gian (24/11) không bao giờ được vào bảng đặc trưng."""
+    for cot in ["flags", "flag_count", "thoi_gian_cau", "khoang_ms", "sua_cuoi_ms", "an_tab_ms", "tong_ms",
+                "ty_le_cau_nhanh", "lam_qua_nhanh", "mot_dap_an", "bi_gian_doan", "duration_sec", "batch",
+                "flag_xyz", "thoi_gian_moi", "khoang_dai_nhat"]:
+        with pytest.raises(ValueError, match="CẤM"):
+            M.kiem_tra_cot_cam(M.DAC_TRUNG + [cot])
+    assert not set(M.DAC_TRUNG) & {"flags", "flag_count", "thoi_gian_cau", "an_tab_ms", "tong_ms"}
+
+
 def test_cot_la_ngoai_danh_sach_bi_chan():
     with pytest.raises(ValueError, match="ngoài danh sách"):
         M.kiem_tra_cot_cam(M.DAC_TRUNG + ["diem_hanh_vi"])

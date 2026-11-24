@@ -43,7 +43,10 @@ DAC_TRUNG = (["lop_so", "A2_nu", "A2_khac", "cap_hoc", "B2_so", "B5_so"] + B4
 
 # --- Cột TUYỆT ĐỐI KHÔNG được làm đầu vào ---
 CAM_TEN = set(CC) | {"diem_sang_tao", "muc", "C6", "C6_so", "dot", "nguon", "thoi_gian", "id", "_id"}
-CAM_TIEN_TO = ("in_", "co_", "truong", "ten_truong")
+# Cờ chống gian lận và mọi trường đo thời gian (hướng 2): chỉ để gắn cờ chất lượng, KHÔNG được làm biến dự đoán (rò rỉ / nhiễu)
+CAM_TEN |= {"flags", "flag_count", "thoi_gian_cau", "khoang_ms", "sua_cuoi_ms", "an_tab_ms", "tong_ms", "ty_le_cau_nhanh",
+            "lam_qua_nhanh", "mot_dap_an", "bi_gian_doan", "duration_sec", "batch"}
+CAM_TIEN_TO = ("in_", "co_", "truong", "ten_truong", "flag", "thoi_gian", "khoang_", "ty_le_cau")
 
 
 def kiem_tra_cot_cam(cot, cho_phep=()) -> None:

@@ -149,7 +149,8 @@ input[type=search] { min-height: 44px; padding: 8px 12px; font: inherit; color: 
 .phan-trang select { width: auto; min-height: 40px; margin-left: auto; }
 .dau-sap-xep { min-height: 0; padding: 0; font: inherit; font-size: 13px; color: var(--chu-phu); background: none; border: 0; box-shadow: none; white-space: nowrap; border-radius: 6px; }
 .dau-sap-xep:active:not(:disabled) { transform: none; box-shadow: none; }
-.bang td, .bang th { max-width: 320px; overflow-wrap: break-word; }
+.bang td, .bang th { max-width: 320px; overflow-wrap: anywhere; word-break: break-word; }
+.bang td:not(.ngan) { white-space: normal; min-width: 120px; }   /* ô dài thì tự xuống dòng, kể cả chuỗi không có dấu cách */
 .bang td.ngan { white-space: nowrap; }
 .chu-menu { overflow: hidden; text-overflow: ellipsis; }
 .bang a { font-weight: 700; }

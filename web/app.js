@@ -626,6 +626,7 @@ function thuHanhVi() {
   const body = { session_token: tt.token, A4: t.A4, duration_sec: Math.round((Date.now() - tt.batDauB) / 1000) };
   if (!boQuaB) ids.forEach((id) => { body[id] = t[id]; });
   if (!boQuaB) ["B1", "B3", "B6"].forEach((id) => { body[id + "_other"] = (t[id + "_other"] || "").trim(); });  // chữ ở "Mục khác:"
+  if (!tt.daNop.B && tgLay()) body.thoi_gian_cau = tgLay();   // số đo thời gian từng câu (chỉ lần nộp đầu), để gắn cờ ở máy chủ
   return { body };
 }
 
@@ -635,6 +636,7 @@ async function guiHanhVi(kq, hopLoi) {
   if (r.status === 409) { manC(); return 409; }          // đã nộp phần này rồi: đi tiếp
   if (r.status !== 200) { loiPhien(hopLoi, r.status); return r.status; }
   xoaNhap("tl");
+  tgXoa();
   manC();
   if (!tt.daNop.B) chucMung();                           // chỉ khen lần hoàn thành đầu, không khen lúc sửa
   tt.daNop.B = true;
@@ -658,6 +660,7 @@ function manB() {
   const nut = nutGui(u.nut, () => guiHanhVi(thuHanhVi(), loi), loi);
   hienThi(3, h("div", { class: "the" }, cauChon(a4, capNhat), hopB), khungNut(loi, nut, nutQuayLai(() => manThongTin(true))));
   capNhat();
+  tgBat("form_b", ["B4_1", "B4_2", "B4_3", "B4_4", "B4_5", "B4_6", "B4_7"]);   // bắt đầu đo thời gian từng câu Likert
 }
 
 // ---------- Màn 4: form C ----------
@@ -667,6 +670,7 @@ function thuTuDanhGia() {
   if (thieuCau(ids)) return { loi: tt.ui.loi.thieu_cau };
   const body = { session_token: tt.token };
   ids.forEach((id) => { body[id] = tt.tl[id]; });
+  if (!tt.daNop.C && tgLay()) body.thoi_gian_cau = tgLay();   // số đo thời gian từng câu (chỉ lần nộp đầu), để gắn cờ ở máy chủ
   return { body };
 }
 
@@ -675,6 +679,7 @@ async function guiTuDanhGia(kq, hopLoi) {
   const r = await goiApi("/api/research/self-assessment", { ...kq.body, edit: tt.daNop.C });
   if (r.status !== 200 && r.status !== 409) { loiPhien(hopLoi, r.status); return r.status; }
   xoaNhap("tl");
+  tgXoa();
   manGioiThieu();
   if (!tt.daNop.C) chucMung();
   tt.daNop.C = true;
@@ -689,6 +694,7 @@ function manC() {
   hienThi(4, h("div", { class: "the" }, h("h2", {}, tt.fb.tieu_de_phan.C),
     luoi(cauC.filter((c) => c.id !== "C6"), tt.fb.c_luoi),
       cauChon(cauC.find((c) => c.id === "C6"))), khungNut(loi, nut, nutQuayLai(manB)));
+  tgBat("khoi_c", ["C1", "C2", "C3", "C4", "C5"]);   // bắt đầu đo thời gian từng câu C1–C5
 }
 
 // ---------- Màn 5: giới thiệu và game 1 (file game1.js). Màn 6: tạm thời (game 2 và 3 làm sau) ----------
@@ -747,6 +753,7 @@ async function khoiDong() {
   tt.truong = tr.du_lieu;
   document.title = tt.ui.ten_he_thong;
   document.getElementById("ten-he-thong").textContent = tt.ui.ten_he_thong;
+  goc.addEventListener("change", (e) => tgGhi(e.target.name));   // đo thời gian từng câu Likert (thoigian.js)
   goc.addEventListener("change", boDauLoi);
   goc.addEventListener("input", boDauLoi);
   const nhoNhap = (e) => {   // nhớ câu đang gõ dở (kể cả email ở màn đồng ý, trước khi có token)

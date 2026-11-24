@@ -9,7 +9,7 @@ from datetime import datetime
 from .admin_query import id_ung_vien
 from .admin_view import json_an_toan, lam_ve
 from .audit import write_audit
-from .research_store import LoiNghiepVu, chuan_hoa_ma
+from .research_store import LoiNghiepVu, chuan_hoa_ma, kiem_tra_ten_lo
 from .thoi_gian import utc_now
 
 
@@ -55,6 +55,16 @@ def kiem_tra_truong(cfg: dict, body: dict, tao: bool) -> dict:
 
 # ---------- Quy tắc riêng từng bảng (chỉ khi bảng cần) ----------
 
+def _chuan_lo(gia_tri: dict) -> dict:
+    """Tên lô (batch) rỗng thì lưu None; sai dạng thì báo 422."""
+    if "batch" in gia_tri:
+        try:
+            gia_tri = {**gia_tri, "batch": kiem_tra_ten_lo(gia_tri["batch"])}
+        except ValueError:
+            raise LoiNghiepVu(422, "truong_khong_hop_le")
+    return gia_tri
+
+
 def _truoc_tao_access_codes(db, gia_tri: dict) -> dict:
     ma = chuan_hoa_ma(gia_tri["code"])
     if not re.fullmatch(r"[A-Z0-9]{6,32}", ma):
@@ -75,7 +85,7 @@ def _truoc_xoa_access_codes(db, doc: dict) -> None:
 
 
 QUY_TAC = {
-    "access_codes": {"tao": _truoc_tao_access_codes, "sua": _truoc_sua_access_codes, "xoa": _truoc_xoa_access_codes},
+    "access_codes": {"tao": _truoc_tao_access_codes, "dan_xuat": _chuan_lo, "sua": _truoc_sua_access_codes, "xoa": _truoc_xoa_access_codes},
 }
 
 

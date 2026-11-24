@@ -29,3 +29,6 @@ note_private.md
 
 # Mã tham gia là bí mật, không đưa lên GitHub
 outputs/codes_*.csv
+
+# Mã tham gia và mọi file CSV sinh ra trong outputs/ là bí mật/dữ liệu cá nhân, không đưa lên GitHub
+outputs/*.csv

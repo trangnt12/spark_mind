@@ -105,7 +105,9 @@ def cac_truong(doc: dict, cfg: dict, vai_tro: str) -> list:
 
 
 def _chong_cong_thuc(v):
-    """Excel hiểu ô bắt đầu bằng = + - @ là công thức: thêm dấu ' phía trước (giống scripts/make_codes.py)."""
+    """Excel hiểu ô bắt đầu bằng = + - @ là công thức: thêm dấu ' phía trước (giống scripts/make_codes.py). Danh sách (vd cờ) nối bằng "; "."""
+    if isinstance(v, list):
+        v = "; ".join(str(x) for x in v)
     if isinstance(v, str) and v[:1] in ("=", "+", "-", "@"):
         return "'" + v
     return "" if v is None else v

@@ -66,6 +66,7 @@ Table access_codes {
   code varchar [unique, not null]
   source varchar [note: 'hired_team | volunteer']
   data_label varchar [note: 'thu | pilot | that. Missing is treated as that (safe: never deleted by the test-data cleanup). Set by make_codes.py --data-label, copied access_codes -> participants -> child tables']
+  batch varchar [note: 'tên lô tạo mã (make_codes.py --batch, vd lop_khoa_a, nhom_thue_1); null nếu không đặt lô (mã tạo trước 24/11)']
   is_used boolean [default: false]
   used_at datetime
   created_at datetime
@@ -91,6 +92,8 @@ Table participants {
   completed_at datetime [note: 'gán MỘT LẦN (không ghi đè) khi đã nộp đủ mọi game trong config.GAME_BAT_BUOC (hiện 1, 2, 3); trống = chưa hoàn thành']
   sua_luc datetime [note: 'lần sửa phần A gần nhất (nút Quay lại); trống nếu chưa sửa']
   so_lan_sua int [note: 'số lần sửa phần A']
+  flags "varchar[]" [note: 'cờ chống gian lận, mỗi cờ dạng mã:bước. Mã: lam_qua_nhanh | mot_dap_an | bi_gian_doan; bước: form_b | khoi_c | game1 | game2. Chỉ hướng 2. Tính lại toàn bộ mỗi lần nộp một bước (flags_store.py) hoặc bằng scripts/compute_flags.py. KHÔNG được làm biến mô hình']
+  flag_count int [note: 'số cờ KHÔNG tính bi_gian_doan (cờ này chỉ để tham khảo). KHÔNG được làm biến mô hình']
   indexes {
     code_id [unique]
     email
@@ -121,6 +124,7 @@ Table behavior_answers {
   b4_6 int
   b4_7 int
   duration_sec int
+  thoi_gian_cau json [note: 'số đo thời gian từng câu Likert từ trình duyệt (chỉ số): khoang_ms {câu: mili giây từ câu trả lời trước, đã trừ ẩn tab}, sua_cuoi_ms {câu: mốc lần sửa cuối}, an_tab_ms (tổng thời gian ẩn tab), tong_ms (từ lúc hiện trang đến lúc nộp, đã trừ ẩn tab). Các câu: B4_1..B4_7. Chỉ để gắn cờ, KHÔNG được làm biến mô hình. Không ghi đè khi sửa lại']
   sua_luc datetime [note: 'lần sửa gần nhất (nút Quay lại)']
   so_lan_sua int [note: 'số lần sửa']
 }
@@ -136,6 +140,7 @@ Table self_assessment {
   c5 int
   c6 varchar
   creativity_score float
+  thoi_gian_cau json [note: 'số đo thời gian từng câu Likert từ trình duyệt (chỉ số): khoang_ms {câu: mili giây từ câu trả lời trước, đã trừ ẩn tab}, sua_cuoi_ms {câu: mốc lần sửa cuối}, an_tab_ms (tổng thời gian ẩn tab), tong_ms (từ lúc hiện trang đến lúc nộp, đã trừ ẩn tab). Các câu: C1..C5. Chỉ để gắn cờ, KHÔNG được làm biến mô hình. Không ghi đè khi sửa lại']
   sua_luc datetime [note: 'lần sửa gần nhất (nút Quay lại)']
   so_lan_sua int [note: 'số lần sửa']
 }

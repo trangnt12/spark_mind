@@ -18,7 +18,7 @@ Mỗi mục:
   bang_con  (tùy chọn) bảng con bị xóa theo khi xóa một bản ghi (xem participants)
   ghi       (chỉ bảng crud) trường được tạo/sửa: khóa -> {nhan, kieu: text|choice|bool, bat_buoc, lua_chon, sua}
 """
-from . import config
+from . import config, flags
 
 ADMIN = ("admin",)
 XEM = ("admin", "viewer")
@@ -26,6 +26,7 @@ KHONG = ()
 NHAN_LUA_CHON = list(config.NHAN_HOP_LE)
 BAN_NGUON = ["google_form", "excel_import", "web"]
 NGUON_THAM_GIA = ["volunteer", "hired_team"]
+LUA_CHON_CO = flags.tat_ca_co_co_the()   # "mã:bước", ví dụ lam_qua_nhanh:form_b
 CAP_TRUONG = ["THCS", "THPT", "Đại học", "Liên cấp"]
 
 
@@ -67,12 +68,14 @@ BANG = {
         "cot": [("started_at", "Bắt đầu", "datetime"), ("source", "Nguồn", "text"), ("data_label", "Nhãn", "nhan"),
                 ("grade", "Lớp (mã)", "text"), ("gender", "Giới tính (mã)", "text"), ("school_name", "Trường", "text"),
                 ("email", "Email", "email"), ("consent", "Đồng ý", "bool"), ("guardian_consent", "Phụ huynh đồng ý", "bool"),
-                ("ip_hash", "IP (băm)", "hash"), ("completed_at", "Hoàn thành", "datetime")],
+                ("ip_hash", "IP (băm)", "hash"), ("completed_at", "Hoàn thành", "datetime"),
+                ("flag_count", "Số cờ", "int"), ("flags", "Cờ chống gian lận", "ds")],
         "chi_tiet": {"code_id": "Mã tham gia (ID)", "consent_at": "Đồng ý lúc", "sua_luc": "Sửa thông tin lúc"},
         "tim": ["school_name"],
         "loc": [("source", "Nguồn", "enum", NGUON_THAM_GIA), ("consent", "Đồng ý", "bool", None),
-                ("guardian_consent", "Phụ huynh đồng ý", "bool", None), _nhan_loc()],
-        "sap_xep": ["started_at", "completed_at", "source", "school_name"], "mac_dinh": ("started_at", -1),
+                ("guardian_consent", "Phụ huynh đồng ý", "bool", None), ("flag_count", "Số cờ (không tính bi_gian_doan)", "int", None),
+                ("flags", "Cờ", "enum", LUA_CHON_CO), _nhan_loc()],
+        "sap_xep": ["started_at", "completed_at", "source", "school_name", "flag_count"], "mac_dinh": ("started_at", -1),
         "quyen": {"doc": XEM, "xuat": XEM, "ghi": KHONG, "xoa": ADMIN},
         # xóa một người thì xóa luôn dữ liệu của người đó ở các bảng này (scores đi qua game_responses)
         "bang_con": [{"bang": "behavior_answers", "truong": "participant_id"}, {"bang": "self_assessment", "truong": "participant_id"},
@@ -129,15 +132,16 @@ BANG = {
     "access_codes": {
         "nhom": "cau_hinh", "ten": "Mã tham gia", "che_do": "crud", "co_nhan": True,
         "cot": [("code", "Mã", "bi_mat"), ("source", "Nguồn", "text"), ("data_label", "Nhãn", "nhan"),
-                ("is_used", "Đã dùng", "bool"), ("used_at", "Dùng lúc", "datetime"), ("created_at", "Tạo lúc", "datetime")],
+                ("batch", "Lô", "text"), ("is_used", "Đã dùng", "bool"), ("used_at", "Dùng lúc", "datetime"), ("created_at", "Tạo lúc", "datetime")],
         "chi_tiet": {},
         "tim": ["code"],
-        "loc": [("source", "Nguồn", "enum", NGUON_THAM_GIA), ("is_used", "Đã dùng", "bool", None), _nhan_loc()],
-        "sap_xep": ["created_at", "used_at", "source", "is_used"], "mac_dinh": ("created_at", -1),
+        "loc": [("source", "Nguồn", "enum", NGUON_THAM_GIA), ("batch", "Lô", "text", None), ("is_used", "Đã dùng", "bool", None), _nhan_loc()],
+        "sap_xep": ["created_at", "used_at", "source", "is_used", "batch"], "mac_dinh": ("created_at", -1),
         "quyen": {"doc": XEM, "xuat": XEM, "ghi": ADMIN, "xoa": ADMIN},
         "ghi": {"code": {"nhan": "Mã", "kieu": "text", "bat_buoc": True, "sua": False},
                 "source": {"nhan": "Nguồn", "kieu": "choice", "bat_buoc": True, "lua_chon": NGUON_THAM_GIA, "sua": True},
-                "data_label": {"nhan": "Nhãn dữ liệu", "kieu": "choice", "bat_buoc": True, "lua_chon": NHAN_LUA_CHON, "sua": True}},
+                "data_label": {"nhan": "Nhãn dữ liệu", "kieu": "choice", "bat_buoc": True, "lua_chon": NHAN_LUA_CHON, "sua": True},
+                "batch": {"nhan": "Lô (tùy chọn)", "kieu": "text", "bat_buoc": False, "sua": True}},
     },
     "schools": {
         "nhom": "cau_hinh", "ten": "Danh sách trường", "che_do": "readonly", "co_nhan": False,

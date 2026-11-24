@@ -126,7 +126,24 @@
       "co_da_nop": "Bài đã nộp",
       "co_over_time": "Nộp trễ (over_time)",
       "co_paste": "Có dán (paste_count > 0)",
-      "co_tab": "Có rời tab (tab_leave_count > 0)"
+      "co_tab": "Có rời tab (tab_leave_count > 0)",
+      "co_cgl": "Cờ chống gian lận (chỉ gắn cờ, không xóa dữ liệu, người chơi không biết)",
+      "co_cgl_ghi_chu": "Đếm số NGƯỜI. Cờ bi_gian_doan chỉ để tham khảo: không tính vào \"Có ít nhất một cờ\". Ngưỡng tạm, sẽ chỉnh sau pilot 29/11. Số đo thời gian do trình duyệt gửi nên có thể bị giả.",
+      "co_it_nhat_mot": "Có ít nhất một cờ (không tính bi_gian_doan)",
+      "co_khong_co": "Không có cờ",
+      "co_theo_ma": "Số người bị từng loại cờ",
+      "co_theo_buoc": "Số người bị cờ theo bước",
+      "co_ten": {
+        "lam_qua_nhanh": "Làm quá nhanh",
+        "mot_dap_an": "Một đáp án cho cả khối",
+        "bi_gian_doan": "Bị gián đoạn (tham khảo)"
+      },
+      "co_buoc": {
+        "form_b": "Form B",
+        "khoi_c": "Khối C1–C5",
+        "game1": "Game 1",
+        "game2": "Game 2"
+      }
     },
     "he_thong": {
       "tieu_de": "Hệ thống",
@@ -190,6 +207,7 @@
     "rong": "Không có bản ghi nào khớp.",
     "quay_lai": "← Quay lại danh sách",
     "chi_tiet": "Chi tiết bản ghi",
+    "thao_tac": "Thao tác",
     "json_tho": "Xem JSON thô (đã che thông tin nhận dạng)",
     "sua": "Sửa",
     "luu": "Lưu",
@@ -209,7 +227,19 @@
       "that": "Thật"
     },
     "lop_loc": "Bộ lọc",
-    "xoa_con": "Xóa người này sẽ xóa luôn dữ liệu của họ ở các bảng sau (số bản ghi sẽ bị xóa):"
+    "xoa_con": "Xóa người này sẽ xóa luôn dữ liệu của họ ở các bảng sau (số bản ghi sẽ bị xóa):",
+    "lo_tieu_de": "Thống kê theo lô mã",
+    "lo_ghi_chu": "Mỗi dòng là một lô (--batch khi tạo mã) và một nhãn dữ liệu. Chỉ có số đếm, không hiện mã.",
+    "lo_cot": {
+      "batch": "Lô",
+      "nhan": "Nhãn",
+      "tong": "Tổng",
+      "da_dung": "Đã dùng",
+      "chua_dung": "Chưa dùng",
+      "hoan_thanh": "Đã hoàn thành"
+    },
+    "lo_khong_co": "(chưa đặt lô)",
+    "lo_rong": "Chưa có mã nào."
   },
   "don_dep": {
     "tieu_de": "Dọn dữ liệu thử",

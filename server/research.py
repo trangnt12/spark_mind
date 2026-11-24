@@ -4,7 +4,8 @@ from functools import lru_cache
 
 from fastapi import APIRouter, Depends, HTTPException, Request
 from pydantic import BaseModel, Field, field_validator
-from sparkmind import config, research_store as kho
+from server.thoi_gian_cau import CAU_FORM_B, CAU_KHOI_C, ThoiGianCau, de_luu
+from sparkmind import config, flags_store, research_store as kho
 from sparkmind.security import GioiHanTocDo, bam_ip
 
 router = APIRouter(prefix="/api/research")
@@ -69,6 +70,7 @@ class HanhViBody(BaseModel):
     B3_other: str | None = Field(default=None, max_length=200)
     B6_other: str | None = Field(default=None, max_length=200)
     duration_sec: int = Field(ge=0, le=86400)
+    thoi_gian_cau: ThoiGianCau | None = None  # thời gian từng câu B4 (chỉ để gắn cờ); bỏ qua khi đang sửa (edit)
 
 
 class TuDanhGiaBody(BaseModel):
@@ -80,6 +82,7 @@ class TuDanhGiaBody(BaseModel):
     C5: int = Field(ge=1, le=5)
     C6: int
     edit: bool = False                        # true: đang sửa phần đã nộp (Quay lại), ghi đè thay vì báo 409
+    thoi_gian_cau: ThoiGianCau | None = None  # thời gian từng câu C1–C5 (chỉ để gắn cờ); bỏ qua khi đang sửa
 
 
 @lru_cache
@@ -190,7 +193,10 @@ def nop_hanh_vi(body: HanhViBody, db=Depends(lay_db_nghien_cuu)):
                "duration_sec": body.duration_sec}
     tra_loi.update({f"b4_{i}": getattr(body, f"B4_{i}") for i in range(1, 8)})
     tra_loi.update(chu_muc_khac(body))
+    if not body.edit and body.thoi_gian_cau:   # lần sửa không ghi đè số đo của lần làm đầu tiên
+        tra_loi["thoi_gian_cau"] = de_luu(body.thoi_gian_cau, CAU_FORM_B)
     chay(kho.luu_hanh_vi, db, body.session_token, tra_loi, body.edit)
+    flags_store.cap_nhat_co_theo_token(db, body.session_token)
     return {"ok": True}
 
 
@@ -199,5 +205,8 @@ def nop_tu_danh_gia(body: TuDanhGiaBody, db=Depends(lay_db_nghien_cuu)):
     kiem_tra_lua_chon("C6", body.C6)
     tra_loi = {f"c{i}": getattr(body, f"C{i}") for i in range(1, 6)}
     tra_loi["c6"] = str(body.C6)
+    if not body.edit and body.thoi_gian_cau:
+        tra_loi["thoi_gian_cau"] = de_luu(body.thoi_gian_cau, CAU_KHOI_C)
     chay(kho.luu_tu_danh_gia, db, body.session_token, tra_loi, body.edit)
+    flags_store.cap_nhat_co_theo_token(db, body.session_token)
     return {"ok": True}  # không trả điểm để người chơi không bị ảnh hưởng ở phần game

@@ -6,7 +6,7 @@ Mọi số đều tính bằng aggregation trong MongoDB; kết quả được n
 import time
 from datetime import timedelta
 
-from . import config
+from . import config, flags
 from .research_store import COL_HANH_VI, COL_MA, COL_NGUOI, COL_TU_DANH_GIA
 from .game_store import COL_GAME
 from .thoi_gian import utc_now
@@ -101,12 +101,33 @@ def _co_gian_lan(db, loc_nguoi: dict) -> dict:
         "paste": {"$gt": ["$paste_count", 0]}, "tab_leave": {"$gt": ["$tab_leave_count", 0]}})
 
 
+def thong_ke_co(db, loc_nguoi: dict) -> dict:
+    """Số NGƯỜI bị từng cờ chống gian lận (participants.flags). Chỉ số đếm, không thông tin cá nhân.
+
+    theo_co: {"mã:bước": số người}; theo_ma: {"mã": số người bị cờ đó ở ít nhất một bước};
+    co_it_nhat_mot: số người có flag_count > 0 (KHÔNG tính bi_gian_doan, vì cờ này chỉ để tham khảo);
+    khong_co: số người flag_count = 0 hoặc chưa tính cờ (người chưa nộp bước nào cũng vào đây).
+    Đọc từng người (chỉ trường flags) vì cần đếm người chứ không đếm cờ; số người hướng 2 chỉ vài trăm.
+    """
+    theo_co, theo_ma, tong, co_cho_so_sanh = {}, {}, 0, 0
+    for nguoi in db[COL_NGUOI].find(loc_nguoi, {"flags": 1}):
+        tong += 1
+        cac_co = nguoi.get("flags") or []
+        co_cho_so_sanh += flags.dem_co(cac_co) > 0
+        for co in cac_co:
+            theo_co[co] = theo_co.get(co, 0) + 1
+        for ma in {flags.ma_co(c) for c in cac_co}:
+            theo_ma[ma] = theo_ma.get(ma, 0) + 1
+    return {"tong": tong, "theo_co": theo_co, "theo_ma": theo_ma, "co_it_nhat_mot": co_cho_so_sanh,
+            "khong_co": tong - co_cho_so_sanh, "tham_khao": list(config.CO_THAM_KHAO)}
+
+
 def thong_ke_huong2(db, an_thu: bool) -> dict:
     loc_nguoi = loc_an_thu(an_thu)
     return {"ma": _thong_ke_ma(db, an_thu), "muc_tieu": config.MUC_TIEU_HUONG2,
             "pheu": _pheu(db, loc_nguoi),
             "nguoi_moi_theo_ngay": _theo_ngay(db, COL_NGUOI, loc_nguoi, "started_at"),
-            "co": _co_gian_lan(db, loc_nguoi)}
+            "co": _co_gian_lan(db, loc_nguoi), "co_chong_gian_lan": thong_ke_co(db, loc_nguoi)}
 
 
 # ---------- Hệ thống và hàm chính ----------

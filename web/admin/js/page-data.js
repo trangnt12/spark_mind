@@ -15,6 +15,7 @@
     if (kieu === "nhan") return h("span", {class: "nhan nhan-" + v}, t.nhan[v] || v);
     if (kieu === "datetime") return SM.gio(v);
     if (kieu === "float") return String(Math.round(v * 10) / 10);
+    if (Array.isArray(v)) return v.join(", ");   // danh sách (vd. cờ chống gian lận)
     if (kieu === "json" || typeof v === "object") return h("pre", {class: "json-nho"}, JSON.stringify(v, null, 2));
     return String(v);
   }
@@ -73,7 +74,7 @@
     var link = "#/data/" + b.khoa + "/" + encodeURIComponent(d._id);
     return h("tr", {}, b.cot.map(function (c, i) {
       var noi = hienGiaTri(c.kieu, d[c.khoa]);
-      var ngan = ["text", "email", "json"].indexOf(c.kieu) < 0;   // cột ngắn (ngày, số, nhãn, ID) không xuống dòng giữa chừng
+      var ngan = ["text", "email", "json"].indexOf(c.kieu) < 0 && !Array.isArray(d[c.khoa]);   // danh sách (cờ) có thể rất dài nên cho xuống dòng   // cột ngắn (ngày, số, nhãn, ID) không xuống dòng giữa chừng
       return h("td", {class: ngan ? "ngan" : null}, i === 0 ? h("a", {href: link}, noi) : noi);
     }), h("td", {}, h("a", {href: link, class: "xem"}, SM.ui.du_lieu.chi_tiet)));
   }
@@ -137,7 +138,7 @@
         if (!kq.ok) { noi.replaceChildren(h("p", {class: "loi"}, SM.chuLoi(kq.ma))); return; }
         tt.page = kq.data.trang;
         noi.replaceChildren(kq.data.dong.length ? h("div", {class: "cuon-ngang"}, h("table", {class: "bang"},
-          h("thead", {}, h("tr", {}, b.cot.map(function (c) { return dauCot(c, b, tt, tai); }), h("th", {}))),
+          h("thead", {}, h("tr", {}, b.cot.map(function (c) { return dauCot(c, b, tt, tai); }), h("th", {}, t.thao_tac))),
           h("tbody", {}, kq.data.dong.map(function (d) { return bangDong(b, d); })))) : h("p", {class: "mo-ta"}, t.rong), phanTrang(kq.data, tt, tai));
       });
     }
@@ -145,6 +146,7 @@
     goc.replaceChildren(h("section", {class: "trang"}, h("div", {class: "dong-tieu-de"}, h("h1", {}, b.ten),
       h("div", {class: "cong-cu"}, b.quyen.xuat ? [csv, h("span", {class: "mo-ta", title: t.ghi_chu_che}, SM.thayThe(t.xuat_ghi_chu, {n: SM.so(b.toi_da_xuat)}))] : null)),
       b.ghi_chu ? h("p", {class: "mo-ta"}, b.ghi_chu) : (b.che_do === "readonly" ? h("p", {class: "mo-ta"}, t.chi_xem + " " + t.ghi_chu_che) : null), them,
+      b.khoa === "access_codes" && SM.trang.thongKeLo ? SM.trang.thongKeLo(function () { return tt.anThu; }) : null,
       h("section", {class: "the"}, thanhCongCu(b, tt, tai), noi)));
     veThem();
     tai();

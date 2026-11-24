@@ -45,6 +45,8 @@ Dữ liệu nghiên cứu luôn để `readonly`; xóa chỉ cho admin và gõ l
 
 ```bash
 python scripts/make_codes.py --n 5 --source volunteer --data-label thu   # mã dùng thử (mặc định là that)
+python scripts/make_codes.py --n 300 --source hired_team --batch nhom_thue_1   # mã hàng loạt theo lô (CSV ở outputs/)
+python scripts/compute_flags.py --dry-run   # tính lại cờ chống gian lận sau khi đổi ngưỡng (bỏ --dry-run để ghi)
 python scripts/migrate_data_label.py            # chỉ xem (dry-run): số bản ghi cũ sẽ được gán nhãn
 python scripts/migrate_data_label.py --apply    # ghi thật (phải gõ GAN NHAN); chạy lại nhiều lần vẫn an toàn
 ```

@@ -24,6 +24,17 @@ NHAN_DU_LIEU_THU = ("thu", "pilot")       # các nhãn bị ẩn bởi công t�
 # Game 3 chưa có nên hiện chưa ai hoàn thành; trong lúc chờ, GET /api/research/result vẫn trả 409.
 GAME_BAT_BUOC = (1, 2, 3)
 GAME_DA_CO = (1, 2)   # game đã có màn chơi, theo thứ tự chơi; làm xong game 3 thì thêm 3 vào đây (endpoint tiến độ dùng để chỉ bước kế tiếp)
+# ---- Cờ chống gian lận hướng 2 (CHỈ GẮN CỜ, không xóa, không báo người chơi). Giá trị TẠM, chỉnh lại sau pilot 29/11 ----
+# Đổi ngưỡng ở đây rồi chạy lại: python scripts/compute_flags.py (xem docs/decisions.md, mục "Cờ chống gian lận")
+CO_NGUONG_CAU_NHANH_MS = 1000        # khoảng cách tới câu trước dưới số này (mili giây) = "câu nhanh"
+CO_TI_LE_CAU_NHANH = 0.6             # tỉ lệ câu nhanh từ mức này trở lên = lam_qua_nhanh
+CO_SO_CAU_TOI_THIEU = 3              # có ít hơn số câu đo được này thì không xét tỉ lệ câu nhanh (không đủ dữ liệu)
+CO_TONG_GIAY_TOI_THIEU = {"form_b": 40, "khoi_c": 15, "game1": 20, "game2": 20}   # tổng thời gian một bước dưới số giây này = lam_qua_nhanh
+CO_KHOANG_GIAN_DOAN_MS = 180_000     # một khoảng cách (đã trừ thời gian ẩn tab) dài hơn 3 phút = bi_gian_doan
+CO_AN_TAB_GIAN_DOAN_MS = 120_000     # tổng thời gian ẩn tab của một bước dài hơn 2 phút = bi_gian_doan
+CO_THAM_KHAO = ("bi_gian_doan",)     # cờ chỉ để tham khảo: KHÔNG tính vào flag_count
+THOI_GIAN_CAU_TOI_DA_MS = 86_400_000 # chặn số vô lý từ trình duyệt (1 ngày)
+
 MUC_TIEU_HUONG1 = 1000                # số form mục tiêu của hướng 1
 MUC_TIEU_HUONG2 = 300                 # số người hoàn thành mục tiêu của hướng 2
 ATLAS_GIOI_HAN_MB = 512               # dung lượng gói Atlas M0

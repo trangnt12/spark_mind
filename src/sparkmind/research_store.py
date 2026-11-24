@@ -15,8 +15,10 @@ COL_NGUOI = "participants"
 COL_HANH_VI = "behavior_answers"
 COL_TU_DANH_GIA = "self_assessment"
 
-# Bảng chữ cho mã tham gia: bỏ O, 0, I, 1 để khỏi nhầm khi đọc/gõ
+# Bảng chữ cho mã tham gia: bỏ O, 0, I, 1 (và chữ l thường: mã luôn viết HOA) để khỏi nhầm khi đọc/gõ
 BANG_CHU = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"
+KY_TU_CAM_TRONG_MA = "0O1Il"
+TEN_LO_HOP_LE = re.compile(r"[A-Za-z0-9][A-Za-z0-9_-]{0,39}")   # tên lô: chữ không dấu, số, _ và -; không bắt đầu bằng - (tránh Excel hiểu là công thức)
 NGUON_HOP_LE = ("volunteer", "hired_team")
 LOP_DUOI_18 = 7  # mã A1 từ 1 đến 7 là lớp 6–12 (dưới 18 tuổi)
 
@@ -51,21 +53,37 @@ def chuan_hoa_email(email: str) -> str:
     return re.sub(r"\s+", "", email or "").lower()
 
 
-def tao_ma_moi(db, n: int, nguon: str, data_label: str = config.NHAN_MAC_DINH) -> list:
-    """Tạo n mã ngẫu nhiên 8 ký tự, ghi vào access_codes (kèm nhãn dữ liệu), trả về danh sách mã."""
+def kiem_tra_ten_lo(batch: str | None) -> str | None:
+    """Tên lô hợp lệ (ví dụ lop_khoa_a) hoặc None. Sai thì báo ValueError."""
+    if batch is None or batch == "":
+        return None
+    if not TEN_LO_HOP_LE.fullmatch(batch):
+        raise ValueError("batch chỉ gồm chữ không dấu, số, _ và -, tối đa 40 ký tự, không bắt đầu bằng - hoặc _")
+    return batch
+
+
+def _ma_ngau_nhien() -> str:
+    return "".join(secrets.choice(BANG_CHU) for _ in range(8))
+
+
+def tao_ma_moi(db, n: int, nguon: str, data_label: str = config.NHAN_MAC_DINH, batch: str | None = None) -> list:
+    """Tạo n mã ngẫu nhiên 8 ký tự KHÔNG trùng mã đã có, ghi vào access_codes (kèm nhãn dữ liệu và tên lô), trả về danh sách mã."""
     if nguon not in NGUON_HOP_LE:
         raise ValueError(f"source phải là một trong {NGUON_HOP_LE}")
     if data_label not in config.NHAN_HOP_LE:
         raise ValueError(f"data_label phải là một trong {config.NHAN_HOP_LE}")
+    batch = kiem_tra_ten_lo(batch)
     ket_qua = []
     while len(ket_qua) < n:
-        ma = "".join(secrets.choice(BANG_CHU) for _ in range(8))
+        ma = _ma_ngau_nhien()
+        if db[COL_MA].find_one({"code": ma}):   # kiểm tra trước, ngoài chỉ mục unique (an toàn kể cả khi chưa tạo chỉ mục)
+            continue
         try:
-            db[COL_MA].insert_one({"code": ma, "source": nguon, "is_used": False,
-                                   "used_at": None, "created_at": datetime.now(), "data_label": data_label})
+            db[COL_MA].insert_one({"code": ma, "source": nguon, "is_used": False, "used_at": None,
+                                   "created_at": datetime.now(), "data_label": data_label, "batch": batch})
             ket_qua.append(ma)
         except DuplicateKeyError:
-            continue  # trùng mã cũ (rất hiếm): thử mã khác
+            continue  # trùng do tranh nhau với tiến trình khác: thử mã khác
     return ket_qua
 
 

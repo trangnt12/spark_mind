@@ -34,6 +34,19 @@
       h("h3", {}, x.theo_ngay), SM.bieuDoCot(d.theo_ngay, x.theo_ngay), h("p", {class: "mo-ta"}, t.ngay_utc));
   }
 
+  /* Thẻ cờ chống gian lận: số người bị từng cờ (chỉ số đếm). */
+  function coChongGianLan(c, x) {
+    var theoMa = Object.keys(x.co_ten).map(function (k) { return o(x.co_ten[k], SM.so(c.theo_ma[k] || 0), k === "bi_gian_doan" ? "tham khảo" : null); });
+    var theoCo = Object.keys(c.theo_co).sort().map(function (k) {
+      var p = k.split(":");
+      return h("tr", {}, h("td", {}, (x.co_ten[p[0]] || p[0]) + " · " + (x.co_buoc[p[1]] || p[1])), h("td", {class: "so"}, SM.so(c.theo_co[k])));
+    });
+    return h("div", {}, h("h3", {}, x.co_cgl), h("p", {class: "mo-ta"}, x.co_cgl_ghi_chu),
+      h("div", {class: "luoi-o"}, o(x.co_it_nhat_mot, SM.so(c.co_it_nhat_mot), SM.so(c.tong) + " người"), o(x.co_khong_co, SM.so(c.khong_co))),
+      h("h3", {}, x.co_theo_ma), h("div", {class: "luoi-o"}, theoMa),
+      h("h3", {}, x.co_theo_buoc), theoCo.length ? h("table", {class: "bang bang-nho"}, h("tbody", {}, theoCo)) : h("p", {class: "mo-ta"}, SM.ui.tong_quan.chua_co));
+  }
+
   function huong2(d, t) {
     var x = t.huong2, ma = d.ma, c = d.co;
     var buoc = d.pheu.map(function (b) { return {nhan: x.buoc[b.khoa], n: b.n}; });
@@ -43,7 +56,8 @@
       h("h3", {}, x.nguoi_moi), SM.bieuDoCot(d.nguoi_moi_theo_ngay, x.nguoi_moi),
       h("h3", {}, x.co),
       h("div", {class: "luoi-o"}, o(x.co_da_nop, SM.so(c.da_nop)), o(x.co_over_time, SM.so(c.over_time)),
-        o(x.co_paste, SM.so(c.paste)), o(x.co_tab, SM.so(c.tab_leave))));
+        o(x.co_paste, SM.so(c.paste)), o(x.co_tab, SM.so(c.tab_leave))),
+      coChongGianLan(d.co_chong_gian_lan, x));
   }
 
   function heThong(d, t) {
