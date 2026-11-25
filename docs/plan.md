@@ -10,7 +10,7 @@ Nguồn: bảng `notebook_hang_ngay` của Trang. Mốc đã chốt (đổi 23/1
 | 24/11 | Notebook 04: SHAP, kiểm tra `pred_contribs`, lưu mô hình | Biểu đồ SHAP, file mô hình |
 | 25/11 ✅ | `/api/predict` (API dự đoán), mô hình B4, demo, trang kết quả, endpoint `/api/admin/memory`, chữ kết quả đã duyệt | Mốc: lõi hướng 1 xong (đã xong; còn "Danh sách đóng băng mô hình ~22/12") |
 | 24–27/11 | Game 2 + `completed_at` khi đủ 3 game (✅ đã xong 24/11, game 3 ✅ xong 25/11); cờ chống gian lận bản gọn (đo thời gian từng câu, không có câu kiểm tra chú ý; ✅ xong 24/11); tạo mã hàng loạt theo lô (✅ xong 24/11); game 3 | Cả 3 game chơi được, cờ chống gian lận, mã theo lô (✅ game 3 và luồng hoàn thành xong 25/11) |
-| 28/11 | Thử trên điện thoại; script sao lưu MongoDB | Danh sách lỗi, bản sao lưu |
+| 28/11 | Thử trên điện thoại; script sao lưu MongoDB (✅ script xong 25/11, còn chạy thử thật) | Danh sách lỗi, bản sao lưu |
 | 29/11 | Thử nghiệm ~20 người (gắn nhãn `pilot`) | Danh sách lỗi từ người thử |
 | 30/11 | Sửa lỗi; xóa dữ liệu pilot; chạy thử script chấm AI | Bản ổn định, sẵn sàng mở thu |
 | 1/12 | MỞ THU HƯỚNG 2 (đến 20/12) | Thu thập đang chạy |
@@ -18,6 +18,7 @@ Nguồn: bảng `notebook_hang_ngay` của Trang. Mốc đã chốt (đổi 23/1
 | trước 15/12 | Phiên 4 xong | |
 
 ## Việc phát sinh
+- 25/11 (sao lưu MongoDB): `scripts/backup_mongo.py`, `scripts/restore_mongo.py`, `src/sparkmind/backup.py`, `tests/test_backup.py`; sao lưu chỉ đọc, khôi phục chỉ vào database mới. Việc còn lại: chạy sao lưu thật hằng ngày từ 28/11 và thử khôi phục vào database tạm một lần. Xem `docs/decisions.md` mục cuối.
 - 24/11 (cờ và lô mã): `src/sparkmind/flags.py`, `flags_store.py`, `scripts/compute_flags.py`, `web/thoigian.js` (đo thời gian từng câu), cờ `lam_qua_nhanh`, `mot_dap_an`, `bi_gian_doan` ở `participants.flags`; `make_codes.py --batch`; trang quản trị có cột/lọc cờ, thống kê cờ ở Tổng quan, thống kê theo lô mã. Quyết định của Trang: KHÔNG thêm câu kiểm tra chú ý. Việc còn lại: chỉnh ngưỡng `config.CO_*` sau pilot 29/11 rồi chạy `python scripts/compute_flags.py`.
 - 22/11: `tests/test_form_text.py` (kiểm tra chữ trên giao diện khớp nội dung form).
 - 22/11: `docs/credits.md` (ghi nguồn, tác giả ảnh game: gạch, chai, ghế).

@@ -51,6 +51,20 @@ python scripts/migrate_data_label.py            # chỉ xem (dry-run): số bả
 python scripts/migrate_data_label.py --apply    # ghi thật (phải gõ GAN NHAN); chạy lại nhiều lần vẫn an toàn
 ```
 
+## Sao lưu và khôi phục MongoDB
+
+```bash
+python scripts/backup_mongo.py              # sao lưu hằng ngày bằng một lệnh (chỉ ĐỌC từ Atlas), giữ 14 bản mới nhất
+python scripts/backup_mongo.py --keep 30    # giữ 30 bản
+# Thử khôi phục vào database TẠM (không bao giờ vào spark-mind):
+python scripts/restore_mongo.py backups/<ngày_giờ> --into spark-mind-restore-test            # chỉ xem số bản ghi (dry-run)
+python scripts/restore_mongo.py backups/<ngày_giờ> --into spark-mind-restore-test --apply    # ghi thật, gõ KHOI PHUC
+```
+
+Sao lưu nằm ở `backups/<ngày_giờ>/` (mỗi collection một file `.jsonl.gz` + `manifest.json`); không có `admin_sessions` và `login_attempts`. Khôi phục xong script so số bản ghi với manifest và báo khớp hay không. Thử xong, xóa database tạm bằng tay trên Atlas (script không có lệnh xóa).
+
+**An toàn:** `backups/` có email người tham gia và băm mật khẩu quản trị, đã nằm trong `.gitignore`. Chỉ lưu ở nơi an toàn (máy cá nhân có khóa, ổ mã hóa), không gửi, không chia sẻ, không commit.
+
 ## Cài đặt lần đầu (Git Bash)
 
 ```bash

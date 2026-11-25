@@ -32,3 +32,6 @@ outputs/codes_*.csv
 
 # Mã tham gia và mọi file CSV sinh ra trong outputs/ là bí mật/dữ liệu cá nhân, không đưa lên GitHub
 outputs/*.csv
+
+# Sao lưu MongoDB: có email người tham gia và băm mật khẩu, không bao giờ commit
+backups/
