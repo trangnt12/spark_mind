@@ -27,8 +27,7 @@ def test_game2_12_y_5_loi():
 
 def test_game1_va_game3_co_noi_dung():
     assert len(doc("games/game1.json")["do_vat"]) == 3
-    g3 = doc("games/game3.json")
-    assert set(g3["rubric"]) == {"them_y_moi", "khac_goc", "kha_thi"}
+    assert len(doc("games/game3.json")["tinh_huong"]) == 2   # chi tiết game 3: tests/test_game3.py
 
 
 def test_game1_noi_dung_cho_trinh_duyet():

@@ -86,13 +86,12 @@ def test_content_api_khong_lo_game2(client):
     assert c.get("/api/content/game2").status_code in (404, 405)
 
 
-def test_nop_xong_moi_co_ket_qua(client):
+def test_nop_chi_tra_ok_khong_diem_khong_dap_an(client):
     c, db = client
-    r = nop(c, nguoi_moi(c, db), SAI[:2]).json()
-    assert r["ok"] and len(r["ket_qua"]) == 12 and "loai_loi" not in str(r) and "la_loi" not in r["tinh_huong"]
-    assert r["diem"] == 2 and (r["n_correct"], r["n_wrong"]) == (2, 0)
-    assert [k["da_chon"] for k in r["ket_qua"] if k["la_loi"]].count(True) == 2
-    assert all(k["giai_thich"] for k in r["ket_qua"])
+    r = nop(c, nguoi_moi(c, db), SAI[:2])
+    assert r.status_code == 200 and r.json() == {"ok": True}   # đúng một khóa: không điểm, không đúng/sai, không đáp án
+    for tu in ("ket_qua", "diem", "la_loi", "loai_loi", "giai_thich", "n_correct", "score"):
+        assert tu not in r.text
 
 
 # ---------- Lưu ----------
@@ -122,16 +121,19 @@ def test_nop_trung_khong_doi_ket_qua(client):
     nop(c, t, SAI)
     luu = db["game_responses"].find_one({"game": 2})
     r = c.post(f"{B}/submit", json={"session_token": t, "chon": []})   # lần hai chọn khác hẳn
-    assert r.status_code == 200 and all(k["da_chon"] == k["la_loi"] for k in r.json()["ket_qua"])
+    assert r.status_code == 200 and r.json() == {"ok": True}
     assert db["game_responses"].find_one({"game": 2}) == luu and db["game_responses"].count_documents({"game": 2}) == 1
 
 
-def test_start_sau_khi_nop_tra_ket_qua(client):
+def test_start_sau_khi_nop_chi_tra_lua_chon_cua_minh(client):
     c, db = client
     t = nguoi_moi(c, db)
-    nop(c, t, SAI[:1])
-    d = c.post(f"{B}/start", json={"session_token": t}).json()
-    assert d["submitted"] is True and len(d["ket_qua"]) == 12
+    nop(c, t, SAI[:1] + DUNG[:1])
+    r = c.post(f"{B}/start", json={"session_token": t})
+    d = r.json()
+    assert d["submitted"] is True and set(d["da_chon"]) == {SAI[0], DUNG[0]}      # chính các ý mình đã chọn (để hiện bản khóa)
+    for tu in ("ket_qua", "diem", "la_loi", "loai_loi", "giai_thich", "n_correct", "score"):
+        assert tu not in r.text                                                   # nhưng không có đáp án hay điểm
 
 
 def test_nop_khi_chua_bat_dau(client):
@@ -155,7 +157,7 @@ def test_token_nguoi_khac_khong_xem_bai_nhau(client):
     t1, t2 = nguoi_moi(c, db), nguoi_moi(c, db)
     nop(c, t1, SAI)
     d2 = c.post(f"{B}/start", json={"session_token": t2}).json()
-    assert d2["submitted"] is False and "ket_qua" not in d2
+    assert d2["submitted"] is False and "ket_qua" not in d2 and "da_chon" not in d2
 
 
 # ---------- completed_at ----------

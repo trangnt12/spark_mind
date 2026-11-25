@@ -6,6 +6,7 @@ Chỉ ghi hai trường flags và flag_count của participants; không đụng 
 import logging
 
 from . import flags
+from .game3_store import ai_goc_theo_id
 from .game_store import COL_GAME
 from .research_store import COL_HANH_VI, COL_NGUOI, COL_TU_DANH_GIA
 
@@ -16,9 +17,9 @@ def tinh_cho_nguoi(db, participant_id) -> list:
     """Danh sách cờ của một người, tính từ behavior_answers, self_assessment và game_responses."""
     hanh_vi = db[COL_HANH_VI].find_one({"participant_id": participant_id})
     tu_danh_gia = db[COL_TU_DANH_GIA].find_one({"participant_id": participant_id})
-    da_nop = db[COL_GAME].find({"participant_id": participant_id, "game": {"$in": [1, 2]}, "submitted_at": {"$ne": None}})
+    da_nop = db[COL_GAME].find({"participant_id": participant_id, "game": {"$in": [1, 2, 3]}, "submitted_at": {"$ne": None}})
     game = {b["game"]: b for b in da_nop}   # chỉ game đã nộp
-    return flags.tinh_co(hanh_vi, tu_danh_gia, game)
+    return flags.tinh_co(hanh_vi, tu_danh_gia, game, ai_goc_theo_id())
 
 
 def cap_nhat_co(db, participant_id) -> dict:

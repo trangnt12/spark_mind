@@ -21,17 +21,20 @@ NHAN_HOP_LE = ("thu", "pilot", "that")   # nhãn dữ liệu (trường data_lab
 NHAN_MAC_DINH = "that"                    # bản ghi chưa có data_label được coi là "that" (an toàn: không bao giờ bị xóa nhầm)
 NHAN_DU_LIEU_THU = ("thu", "pilot")       # các nhãn bị ẩn bởi công tắc "ẩn dữ liệu thử" và bị "xóa dữ liệu thử" xóa
 # Các game bắt buộc để được coi là hoàn thành (gán participants.completed_at). Thêm game mới: thêm số vào đây.
-# Game 3 chưa có nên hiện chưa ai hoàn thành; trong lúc chờ, GET /api/research/result vẫn trả 409.
+# Nộp xong cả 3 game thì participants.completed_at được gán và GET /api/research/result mới trả kết quả (chưa xong thì 409).
 GAME_BAT_BUOC = (1, 2, 3)
-GAME_DA_CO = (1, 2)   # game đã có màn chơi, theo thứ tự chơi; làm xong game 3 thì thêm 3 vào đây (endpoint tiến độ dùng để chỉ bước kế tiếp)
+GAME_DA_CO = (1, 2, 3)   # game đã có màn chơi, theo thứ tự chơi (endpoint tiến độ dùng để chỉ bước kế tiếp)
 # ---- Cờ chống gian lận hướng 2 (CHỈ GẮN CỜ, không xóa, không báo người chơi). Giá trị TẠM, chỉnh lại sau pilot 29/11 ----
 # Đổi ngưỡng ở đây rồi chạy lại: python scripts/compute_flags.py (xem docs/decisions.md, mục "Cờ chống gian lận")
 CO_NGUONG_CAU_NHANH_MS = 1000        # khoảng cách tới câu trước dưới số này (mili giây) = "câu nhanh"
 CO_TI_LE_CAU_NHANH = 0.6             # tỉ lệ câu nhanh từ mức này trở lên = lam_qua_nhanh
 CO_SO_CAU_TOI_THIEU = 3              # có ít hơn số câu đo được này thì không xét tỉ lệ câu nhanh (không đủ dữ liệu)
-CO_TONG_GIAY_TOI_THIEU = {"form_b": 40, "khoi_c": 15, "game1": 20, "game2": 20}   # tổng thời gian một bước dưới số giây này = lam_qua_nhanh
+CO_TONG_GIAY_TOI_THIEU = {"form_b": 40, "khoi_c": 15, "game1": 20, "game2": 20, "game3": 30}   # tổng thời gian một bước dưới số giây này = lam_qua_nhanh (game3: tính cho MỖI tình huống, theo thời gian dùng ô nhập)
+CO_GAME3_TONG_GIAY_TOI_THIEU = 60    # game 3: cả game (server tính từ lúc bắt đầu đến lúc nộp) dưới số giây này cũng = lam_qua_nhanh (NGƯỠNG TẠM, chỉnh lại sau pilot 29/11)
 CO_KHOANG_GIAN_DOAN_MS = 180_000     # một khoảng cách (đã trừ thời gian ẩn tab) dài hơn 3 phút = bi_gian_doan
 CO_AN_TAB_GIAN_DOAN_MS = 120_000     # tổng thời gian ẩn tab của một bước dài hơn 2 phút = bi_gian_doan
+CO_COPY_GIU_TU_GOC = 0.8             # copy_ai_goc (game 3): tỉ lệ từ của câu gốc AI còn trong bài >= mức này ...
+CO_COPY_TU_MOI_TOI_DA = 0.4          # ... VÀ tỉ lệ từ mới (không có trong câu gốc) < mức này. Ngưỡng TẠM, chỉnh sau pilot 29/11
 CO_THAM_KHAO = ("bi_gian_doan",)     # cờ chỉ để tham khảo: KHÔNG tính vào flag_count
 THOI_GIAN_CAU_TOI_DA_MS = 86_400_000 # chặn số vô lý từ trình duyệt (1 ngày)
 

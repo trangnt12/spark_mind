@@ -14,7 +14,7 @@ function manDemoGioiThieu() {
   tt.demo = true; tt.tl = {};                      // bắt đầu mới: xóa câu trả lời cũ (làm lại cũng vào đây)
   const u = tt.ui.demo;
   hienThi(1, tieuDe("demo", u.tieu_de), h("div", { class: "the" }, cacDoan(u.mo_ta)),
-    khungNut(h("button", { type: "button", onclick: manDemoCauHoi }, u.nut_bat_dau),
+    khungNut(h("button", { type: "button", onclick: manDemoCauHoi }, tt.ui.chung.nut_tiep_tuc),
              nutQuayLai(manMa)));
   danhDauGioiThieu();
 }
@@ -53,7 +53,7 @@ async function guiDemo(hopLoi) {
 function manDemoCauHoi() {
   const b4 = cauB4();
   const loi = h("div", { class: "loi an", role: "alert" });
-  const nut = nutGui(tt.ui.demo.nut_xem, () => guiDemo(loi), loi);
+  const nut = nutGui(tt.ui.chung.nut_tiep_tuc, () => guiDemo(loi), loi);
   hienThi(2, h("div", { class: "the" }, luoi(b4.cac_dong, b4)),
     khungNut(loi, nut, nutQuayLai(manDemoGioiThieu)));
 }

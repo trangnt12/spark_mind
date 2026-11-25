@@ -3,9 +3,9 @@ import csv
 import json
 from functools import lru_cache
 
-from fastapi import APIRouter
+from fastapi import APIRouter, HTTPException
 
-from sparkmind import config
+from sparkmind import config, game3_store
 
 router = APIRouter(prefix="/api/content")
 
@@ -45,7 +45,22 @@ def chu_ket_qua():
 def game1():
     """Chữ hướng dẫn và ví dụ của game 1. Không trả danh sách đồ vật (đồ vật do /game1/start chọn theo mã)."""
     d = doc_noi_dung("games/game1.json")
-    return {k: d[k] for k in ("ten", "thoi_gian_giay", "huong_dan", "vi_du", "gioi_han_ky_tu_moi_y")}
+    return {k: d[k] for k in ("ten", "thoi_gian_giay", "gioi_thieu", "vi_du", "gioi_han_ky_tu_moi_y")}
+
+
+@router.get("/gioi-thieu/{so}")
+def gioi_thieu_game(so: int):
+    """Chỉ tên và khối hướng dẫn của game 1, 2 hoặc 3 (cho trang giới thiệu riêng của từng game). Không có đề hay đáp án."""
+    if so not in (1, 2, 3):
+        raise HTTPException(404, "Không có game này.")
+    d = doc_noi_dung(f"games/game{so}.json")
+    return {"so": so, "ten": d["ten"], "gioi_thieu": d["gioi_thieu"]}
+
+
+@router.get("/game3")
+def game3():
+    """Đề game 3 cho giao diện: tên, lời dẫn, hai tình huống kèm ý tưởng của AI, giới hạn từ/ký tự. Không có trường nào khác."""
+    return game3_store.noi_dung_cho_trinh_duyet(doc_noi_dung("games/game3.json"))
 
 
 @lru_cache

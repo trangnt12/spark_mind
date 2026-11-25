@@ -4,14 +4,11 @@
     "tieu_de": "Chào bạn, cảm ơn bạn đã tham gia!",
     "mo_ta": "🎓 Đây là nghiên cứu cho đề án thạc sĩ về cách học sinh, sinh viên dùng AI và tư duy sáng tạo.\n📝 Bạn sẽ trả lời một khảo sát ngắn và chơi 3 trò chơi nhỏ, tổng cộng khoảng 20–25 phút.\n🔑 Bạn cần mã tham gia do người nghiên cứu gửi.",
     "nhan_o_ma": "Nhập mã tham gia của bạn",
-    "nut": "Tiếp tục",
     "nut_demo": "Chưa có mã? Thử bản demo"
   },
   "demo": {
     "tieu_de": "Thử bản demo",
     "mo_ta": "🧪 Đây là bản thử: chỉ có 7 câu, mất khoảng 1 phút.\n🔒 Câu trả lời của bạn không được lưu lại.\n📊 Cuối cùng bạn sẽ thấy một ước lượng thống kê về mức tự đánh giá sáng tạo, không phải đánh giá về con người bạn.",
-    "nut_bat_dau": "Bắt đầu",
-    "nut_xem": "Xem kết quả",
     "nhan_tien_do": "Bản demo: bước {b} trên {t}"
   },
   "dong_y": {
@@ -25,8 +22,7 @@
       "🙌 Tham gia là tự nguyện. Bạn có thể dừng bất cứ lúc nào bằng cách đóng trang. Nếu muốn xóa dữ liệu của mình, hãy liên hệ nguyenthitrang.ttd@gmail.com kèm email bạn đã dùng để tham gia."
     ],
     "o_dong_y": "Tôi đã đọc và đồng ý tham gia nghiên cứu này.",
-    "o_nguoi_lon": "Tôi dưới 18 tuổi và xác nhận phụ huynh hoặc giáo viên phụ trách của tôi đã biết và đồng ý cho tôi tham gia.",
-    "nut": "Đồng ý và tiếp tục"
+    "o_nguoi_lon": "Tôi dưới 18 tuổi và xác nhận phụ huynh hoặc giáo viên phụ trách của tôi đã biết và đồng ý cho tôi tham gia."
   },
   "thong_tin": {
     "nhan_email": "Email của bạn",
@@ -38,52 +34,38 @@
     "chon_lop_truoc": "Hãy chọn lớp hoặc năm học ở trên trước",
     "quay_lai_ds": "Chọn lại từ danh sách"
   },
-  "form_b": {
-    "nut": "Tiếp tục"
-  },
-  "form_c": {
-    "nut": "Tiếp tục"
-  },
   "game_gioi_thieu": {
     "tieu_de_chung": "Phần chơi: 3 trò chơi ngắn",
-    "mo_ta": "🎮 Bạn sẽ chơi 3 trò chơi, mỗi trò vài phút.\n🌈 Không có đáp án đúng hay sai tuyệt đối ở trò 1 và 3, bạn cứ làm theo cách của mình.\n✋ Vui lòng tự làm, không dùng AI hoặc dán nội dung từ nơi khác.\n⭐ Bạn cần làm đủ cả 3 trò.",
-    "nut_bat_dau": "Bắt đầu"
+    "mo_ta": "🎮 Bạn sẽ chơi 3 trò chơi, mỗi trò vài phút.\n🌈 Không có đáp án đúng hay sai tuyệt đối ở trò 1 và 3, bạn cứ làm theo cách của mình.\n✋ Vui lòng tự làm, không dùng AI hoặc dán nội dung từ nơi khác.\n⭐ Bạn cần làm đủ cả 3 trò."
   },
   "game1": {
     "nhan_do_vat": "Đồ vật của bạn là:",
     "nhan_thong_thuong": "Cách dùng thông thường:",
     "nhan_y_tuong": "Viết một ý tưởng khác, rồi bấm Thêm",
     "nut_them": "Thêm",
-    "nut_nop": "Nộp bài",
     "nhan_da_nop": "Các ý bạn đã nộp",
     "da_nop_khong_sua": "Bài đã nộp nên không sửa được, bạn chỉ xem lại thôi.",
     "hien_thi_gio": "Thời gian còn lại"
   },
   "tieu_game": "Game {so}: {ten}",
   "game2": {
-    "huong_dan": "Chạm vào những ý bạn cho là SAI. Bạn có thể không chọn ý nào, hoặc chọn nhiều ý. Chọn nhầm ý đúng sẽ bị trừ điểm.",
-    "nut_nop": "Nộp bài",
-    "nhan_ket_qua": "Kết quả từng ý",
-    "nhan_ban_chon": "Bạn đã chọn là sai",
     "nhan_tinh_huong": "Tình huống",
-    "danh_dau": "Đánh dấu sai",
-    "da_danh_dau": "Đã đánh dấu sai",
-    "dem_da_danh_dau": "Bạn đã đánh dấu {n} ý",
     "y_so": "Ý {n}",
-    "nut_sang_game2": "Sang Game 2",
-    "tom_tat_dung": "{n} ý bạn nhận định đúng",
-    "tom_tat_sai": "{n} ý cần xem lại",
-    "diem_cua_ban": "Điểm của bạn",
-    "chu_thich_diem": "Mỗi ý sai bạn tìm đúng được +1, mỗi ý đúng bị đánh dấu nhầm bị −1.",
-    "su_that_sai": "Sự thật: ý này SAI",
-    "su_that_dung": "Sự thật: ý này ĐÚNG",
-    "ban_danh_dau": "Bạn: đã đánh dấu là sai",
-    "ban_bo_qua": "Bạn: không đánh dấu",
-    "diem_y": "{d} điểm",
-    "giai_thich_y_dung": "Ý này là thông tin đúng nên không cần đánh dấu.",
-    "bieu_tuong_dung": "Nhận định của bạn đúng",
-    "bieu_tuong_sai": "Nhận định của bạn chưa đúng",
-    "nut_tiep": "Tiếp tục"
+    "da_nop_khong_sua": "Bạn đã làm xong phần này nên không sửa lại được.",
+    "diem": "Điểm: {d}/{tong}",
+    "nhay_toi_y": "Chuyển đến ý",
+    "co_sai": "Ý này sai",
+    "dong_tooltip": "Đóng",
+    "chon_dung": "Bạn chọn đúng ý sai",
+    "chon_nham": "Bạn chọn nhầm ý đúng",
+    "loai_loi": "Loại lỗi: {t}",
+    "ten_loai_loi": {
+      "sai_nam": "sai năm",
+      "sai_so_lieu": "sai số liệu",
+      "sai_so_sanh": "sai so sánh",
+      "khai_quat_vo_can_cu": "khái quát vô căn cứ",
+      "nhan_qua_vo_can_cu": "nhân quả vô căn cứ"
+    }
   },
   "loi": {
     "ma_sai": "Mã không đúng hoặc đã được dùng. Bạn kiểm tra lại, hoặc liên hệ người gửi mã.",
@@ -94,13 +76,23 @@
     "thieu_muc_khac": "Bạn đã chọn \"Mục khác\", vui lòng nhập nội dung vào ô bên cạnh.",
     "mat_ket_noi": "Không kết nối được máy chủ. Bạn thử lại sau vài giây, câu trả lời đã nhập vẫn được giữ."
   },
-  "hoan_thanh": {
-    "tieu_de": "Cảm ơn bạn đã hoàn thành!",
-    "mo_ta": "Câu trả lời của bạn đã được ghi nhận. Nếu có thắc mắc, bạn liên hệ nguyenthitrang.ttd@gmail.com."
+  "game3": {
+    "nhan_y_ai": "💡 Ý tưởng của AI",
+    "nhan_y_ban": "Ý tưởng của riêng bạn",
+    "goi_y_o": "Viết 2–5 câu ý tưởng của bạn ở đây...",
+    "nhan_menu": "Chọn tình huống",
+    "menu_th": "Tình huống {n}",
+    "da_du_tu": "Đã đủ số ký tự",
+    "dem_ky_tu": "{n}/{max} ký tự",
+    "thieu_tu": "Bạn viết thêm một chút nhé: cần ít nhất {min} ký tự ở {ds}.",
+    "da_nop_khong_sua": "Bạn đã nộp bài nên không sửa lại được."
   },
-  "chua_xong": {
-    "tieu_de": "Bạn đã hoàn thành phần này",
-    "mo_ta": "🕹️ Các trò chơi còn lại sẽ có trong thời gian tới.\n🔑 Bạn lưu lại mã tham gia để quay lại làm tiếp."
+  "hoan_thanh": {
+    "bieu_tuong": "💚",
+    "tieu_de": "Cảm ơn bạn đã tham gia!",
+    "mo_ta": "Câu trả lời của bạn giúp tìm hiểu cách học sinh, sinh viên Việt Nam dùng AI và tư duy sáng tạo. Dữ liệu chỉ được dùng cho mục đích nghiên cứu. Nếu có thắc mắc, vui lòng liên hệ:",
+    "email": "nguyenthitrang.ttd@gmail.com",
+    "chuc": "Chúc bạn luôn giữ được tinh thần ham học hỏi, tràn đầy năng lượng và đạt thật nhiều thành tích tốt trong học tập nhé! 🌱"
   },
   "chung": {
     "tien_do": "Bước {b} trên {t}",
@@ -109,12 +101,14 @@
     "email_sai": "Email chưa đúng dạng, ví dụ ten@gmail.com.",
     "phien_het_han": "Phiên làm bài không còn hợp lệ. Bạn nhập lại mã để tiếp tục.",
     "loi_khac": "Có lỗi xảy ra, bạn thử lại sau.",
-    "chon": "Chọn..."
+    "chon": "Chọn...",
+    "nut_tiep_tuc": "Tiếp tục",
+    "nut_nop_bai": "Nộp bài",
+    "_ghi_chu_nut": "Tên nút duy nhất: mọi nút đi tiếp ở luồng người tham gia dùng nut_tiep_tuc; ngoại lệ duy nhất là nút cuối game 3 dùng nut_nop_bai. Đổi chữ ở đây là đổi ở mọi màn."
   },
   "tiep_tuc": {
     "tieu_de": "Tiếp tục bài đang làm?",
     "mo_ta": "📌 Máy này có một bài làm dở.\n🤔 Bạn muốn làm tiếp hay bắt đầu lại bằng một mã khác?",
-    "nut_tiep": "Tiếp tục bài đang làm",
     "nut_moi": "Dùng mã khác"
   },
   "giao_dien": {
@@ -140,7 +134,6 @@
       "demo": "🧪"
     },
     "nut_quay_lai": "Quay lại",
-    "nut_luu": "Tiếp tục",
     "bo_cuc": {
       "_ghi_chu": "Cách xếp đáp án từng câu: hang (thẻ nhỏ xếp ngang), luoi (lưới nhiều cột tự co), cot (mỗi dòng một đáp án), cot2 (2 cột khi màn rộng). Câu không ghi ở đây thì tự chọn theo độ dài đáp án.",
       "A1": "luoi",
@@ -154,6 +147,36 @@
       "B7": "cot",
       "C6": "cot"
     },
-    "chon_lop": "Bấm để chọn hoặc gõ để tìm"
+    "chon_lop": "Bấm để chọn hoặc gõ để tìm",
+    "khoi_gioi_thieu": {
+      "nhiem_vu": {
+        "nhan": "Nhiệm vụ",
+        "bieu_tuong": "🎯"
+      },
+      "cach_choi": {
+        "nhan": "Cách chơi",
+        "bieu_tuong": "🕹️"
+      },
+      "luu_y": {
+        "nhan": "Lưu ý",
+        "bieu_tuong": "⚠️"
+      },
+      "thoi_gian": {
+        "nhan": "Thời gian ước tính",
+        "bieu_tuong": "⏱️"
+      }
+    }
+  },
+  "xem_lai": {
+    "nut_xem_lai": "Xem lại kết quả bài làm",
+    "quay_ket_qua": "Quay lại kết quả",
+    "truoc": "Phần trước",
+    "sau": "Phần sau",
+    "khong_co_cau_tra_loi": "Phần này không có câu trả lời.",
+    "game1_ds": "Các công dụng bạn đã viết",
+    "game1_trong": "Bạn không viết ý nào.",
+    "khong_diem": "Phần này không có điểm.",
+    "game3_y_ban": "Ý tưởng bạn đã viết",
+    "chu_thich": "Thẻ xanh: bạn chọn đúng ý sai. Thẻ đỏ: bạn chọn nhầm ý đúng. Thẻ xám: bạn không chọn. Cờ 🚩 đánh dấu ý thật sự sai; bấm hoặc rê chuột vào cờ để đọc giải thích."
   }
 }

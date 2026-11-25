@@ -64,8 +64,9 @@ function hienThi(buoc, ...nodes) {
   goc.replaceChildren(...cacNode.filter((n) => !nutChan.includes(n)));   // thân trang
   chan.replaceChildren(...nutChan);                                       // chân trang (nút)
   chan.classList.toggle("an", nutChan.length === 0);
-  document.body.classList.remove("man-gioi-thieu");   // chỉ các màn giới thiệu mới bật lại (xem danhDauGioiThieu)
+  document.body.classList.remove("man-gioi-thieu", "man-xem-lai", "man-ket-qua");   // chỉ màn giới thiệu / xem lại / kết quả mới bật lại (xem danhDauGioiThieu, veXemLai, manKetQua)
   g1.dangChoi = false; clearInterval(g1.nhip);        // rời màn game 1 thì dừng đồng hồ và ngừng đếm rời tab
+  g3.dangChoi = false;                                // rời màn game 3 thì ngừng đo thời gian ô và đếm rời tab (xem game3.js)
   goc.classList.remove("vao");
   void goc.offsetWidth;                       // buộc trình duyệt chạy lại hiệu ứng
   goc.classList.add("vao");
@@ -339,7 +340,7 @@ function manMa() {
   const u = tt.ui.chao;
   const o = h("input", { type: "text", id: "o-ma", autocomplete: "off", autocapitalize: "characters", maxlength: 32, value: tt.ma || "" });
   const loi = h("div", { class: "loi an", role: "alert" });
-  const nut = nutGui(u.nut, async () => {
+  const nut = nutGui(tt.ui.chung.nut_tiep_tuc, async () => {
     const ma = o.value.trim();
     if (!ma) return baoLoi(loi, tt.ui.loi.ma_sai);
     const kq = await goiApi("/api/research/code/check", { code: ma });
@@ -369,15 +370,18 @@ function dienSanCauTraLoi(tienDo) {
 }
 
 // Thứ tự các màn của người tham gia (từ trước ra sau). Người chơi được quay lại mọi màn trước và đi tiếp tới màn xa nhất đã tới.
-const THU_TU_MAN = ["sua_thong_tin", "b", "c", "gioi_thieu", "game1", "game2", "chua_xong"];
-const MAN = { sua_thong_tin: () => manThongTin(true), b: manB, c: manC, gioi_thieu: manGioiThieu, game1: manGame1, game2: manGame2, chua_xong: manChuaXong };
+const THU_TU_MAN = ["sua_thong_tin", "b", "c", "gioi_thieu", "game1_gt", "game1", "game2_gt", "game2", "game3_gt", "game3"];
+const MAN = { sua_thong_tin: () => manThongTin(true), b: manB, c: manC, gioi_thieu: manGioiThieu,
+              game1_gt: manGame1GioiThieu, game1: manGame1, game2_gt: manGame2GioiThieu, game2: manGame2, game3_gt: manGame3GioiThieu, game3: manGame3 };
 // Bước kế tiếp máy chủ báo -> { vao: màn mở mặc định, xa: màn xa nhất được phép mở }
 const BUOC_SANG_MAN = { behavior: { vao: "b", xa: "b" }, self_assessment: { vao: "c", xa: "c" }, game1: { vao: "gioi_thieu", xa: "game1" },
-                        game2: { vao: "game2", xa: "game2" }, cho_game_khac: { vao: "game2", xa: "chua_xong" } };
+                        game2: { vao: "game2_gt", xa: "game2" }, game3: { vao: "game3_gt", xa: "game3" },
+                        cho_game_khac: { vao: "game3_gt", xa: "game3" } };   // (chưa dùng: mọi game hiện có đều bắt buộc)
 
 /** Mở màn theo bước máy chủ báo. Nếu tab còn nhớ màn đang xem (vừa tải lại trang) và màn đó không vượt quá bước đã tới thì ở lại màn đó. */
 function diDenBuoc(buoc, giuMan) {
-  if (buoc === "completed") { manHoanThanh(); return; }
+  if (buoc === "completed") { if (laDiaChiXemLai()) manXemLai(xl.phan); else manHoanThanh(); return; }   // #xem-lai: F5 ở lại trang xem lại
+  boDiaChiXemLai();                                                                                          // chưa hoàn thành thì không được ở #xem-lai
   const dich = BUOC_SANG_MAN[buoc] || BUOC_SANG_MAN.cho_game_khac;
   const luu = giuMan ? docMan() : null;
   const hopLe = luu && luu.token === tt.token && THU_TU_MAN.includes(luu.man) && THU_TU_MAN.indexOf(luu.man) <= THU_TU_MAN.indexOf(dich.xa);
@@ -544,7 +548,7 @@ function manThongTin(sua = false) {
   };
   const phanA = [oChonLop(a.A1, capNhatNguoiLon), cauChon(a.A2), truong];
   if (sua) return manSuaThongTin(phanA, hopNguoiLon, loi, hienNguoiLon);
-  const nut = nutGui(u.dong_y.nut, () => guiBatDau(thuThongTin(), loi), loi);
+  const nut = nutGui(tt.ui.chung.nut_tiep_tuc, () => guiBatDau(thuThongTin(), loi), loi);
   hienThi(2, tieuDe("dong_y", u.dong_y.tieu_de),
     h("div", { class: "the" }, u.dong_y.doan.map(dongMoTa)),
     h("div", { class: "the" }, h("h2", {}, tt.fb.tieu_de), h("p", { class: "mo-ta" }, tt.fb.mo_ta),
@@ -557,7 +561,7 @@ function manThongTin(sua = false) {
 
 /** Màn sửa phần A (sau khi bấm Quay lại từ form B): chỉ lớp, giới tính, trường; không hỏi lại email và đồng ý. */
 function manSuaThongTin(phanA, hopNguoiLon, loi, hienNguoiLon) {
-  const nut = nutGui(tt.ui.giao_dien.nut_luu, () => guiSuaThongTin(thuSuaThongTin(), loi), loi);
+  const nut = nutGui(tt.ui.chung.nut_tiep_tuc, () => guiSuaThongTin(thuSuaThongTin(), loi), loi);
   hienThi(2, tieuDe("dong_y", tt.ui.dong_y.tieu_de), h("div", { class: "the" }, tt.ui.dong_y.doan.map(dongMoTa)),   // trang giới thiệu/đồng ý (chỉ đọc, đã đồng ý rồi)
     h("div", { class: "the" }, h("h2", {}, tt.fb.tieu_de_phan.A), phanA, hopNguoiLon), khungNut(loi, nut));
   danhDauGioiThieu();
@@ -657,7 +661,7 @@ function manB() {
   const hopB = phanB(cauB);
   const capNhat = () => hopB.classList.toggle("an", tt.tl.A4 === CHUA_TUNG_DUNG);
   if (!tt.batDauB) tt.batDauB = Date.now();   // bắt đầu tính giờ làm bài
-  const nut = nutGui(u.nut, () => guiHanhVi(thuHanhVi(), loi), loi);
+  const nut = nutGui(tt.ui.chung.nut_tiep_tuc, () => guiHanhVi(thuHanhVi(), loi), loi);
   hienThi(3, h("div", { class: "the" }, cauChon(a4, capNhat), hopB), khungNut(loi, nut, nutQuayLai(() => manThongTin(true))));
   capNhat();
   tgBat("form_b", ["B4_1", "B4_2", "B4_3", "B4_4", "B4_5", "B4_6", "B4_7"]);   // bắt đầu đo thời gian từng câu Likert
@@ -690,28 +694,21 @@ function manC() {
   datMan("c");
   const u = tt.ui.form_c, cauC = tt.fb.phan_c_tu_danh_gia;
   const loi = h("div", { class: "loi an", role: "alert" });
-  const nut = nutGui(u.nut, () => guiTuDanhGia(thuTuDanhGia(), loi), loi);
+  const nut = nutGui(tt.ui.chung.nut_tiep_tuc, () => guiTuDanhGia(thuTuDanhGia(), loi), loi);
   hienThi(4, h("div", { class: "the" }, h("h2", {}, tt.fb.tieu_de_phan.C),
     luoi(cauC.filter((c) => c.id !== "C6"), tt.fb.c_luoi),
       cauChon(cauC.find((c) => c.id === "C6"))), khungNut(loi, nut, nutQuayLai(manB)));
   tgBat("khoi_c", ["C1", "C2", "C3", "C4", "C5"]);   // bắt đầu đo thời gian từng câu C1–C5
 }
 
-// ---------- Màn 5: giới thiệu và game 1 (file game1.js). Màn 6: tạm thời (game 2 và 3 làm sau) ----------
-
-function manChuaXong() {
-  datMan("chua_xong");
-  const u = tt.ui.chua_xong;
-  hienThi(6, tieuDe("chua_xong", u.tieu_de), h("div", { class: "the" }, cacDoan(u.mo_ta)), khungNut(nutQuayLai(manGame2)));
-  danhDauGioiThieu();
-}
+// ---------- Màn 5: giới thiệu và 3 game (game1.js, game2.js, game3.js). Màn 6: trang tổng kết (result.js, manHoanThanh) và xem lại bài (review.js) ----------
 
 // ---------- Vào lại web: hỏi tiếp tục bài cũ hay làm bài mới ----------
 
 /** Máy đã có bài đang làm dở (token trong localStorage) nhưng đây là lần mở mới (không phải tải lại trang): hỏi người dùng. */
 function manTiepTuc() {
   const u = tt.ui.tiep_tuc;
-  const tiep = h("button", { type: "button", onclick: () => diDenBuocDangLam() }, u.nut_tiep);
+  const tiep = h("button", { type: "button", onclick: () => diDenBuocDangLam() }, tt.ui.chung.nut_tiep_tuc);
   const moi = h("button", { type: "button", class: "phu", onclick: thoatPhien }, u.nut_moi);   // chỉ quên trong trình duyệt; bài cũ vẫn ở máy chủ
   hienThi(1, tieuDe("tiep_tuc", u.tieu_de), h("div", { class: "the" }, cacDoan(u.mo_ta)), khungNut(moi, tiep));
   danhDauGioiThieu();
@@ -722,12 +719,12 @@ function batDauTheoTrangThai() {
   const luu = localStorage.getItem(KHOA_TOKEN), man = docMan();
   if (luu) {
     tt.token = luu;
-    if (man && man.token === luu) diDenBuocDangLam(true); else manTiepTuc();
+    if ((man && man.token === luu) || laDiaChiXemLai()) diDenBuocDangLam(true); else manTiepTuc();   // mở thẳng #xem-lai: bỏ qua màn "tiếp tục?"
   } else if (man && man.man === "thong_tin" && man.ma) {   // đang điền thông tin/đồng ý rồi tải lại: giữ nguyên màn, giữ chữ đã gõ
     tt.ma = man.ma;
     tt.tl = docNhap().tl || {};
     manThongTin();
-  } else manMa();
+  } else { boDiaChiXemLai(); manMa(); }   // chưa có mã thì không có gì để xem lại
 }
 
 // ---------- Khởi động ----------

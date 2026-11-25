@@ -1,10 +1,15 @@
 {
-  "_ghi_chu": "Chữ cho trang kết quả (web/result.js) và thông báo lỗi của /api/predict/demo, /api/research/result. Giữ giọng trung tính: chỉ nói về 'mức tự đánh giá sáng tạo', không khen chê, không khuyên theo kiểu nguyên nhân. {cau} và {giay} do server thay vào; {tu}, {den}, {p}, {gia_tri} do trang web thay vào.",
+  "_ghi_chu": "Chữ cho trang kết quả (web/result.js) và thông báo lỗi của /api/predict/demo, /api/research/result. Giữ giọng trung tính: chỉ nói về 'mức tự đánh giá sáng tạo', không khen chê, không khuyên theo kiểu nguyên nhân. {cau} và {giay} do server thay vào; {tu}, {den}, {p}, {gia_tri} do trang web thay vào. {dung} và {sai_so_noi} (xem so_mo_hinh) do trang web thay vào mọi chỗ nhắc số của mô hình.",
   "tieu_de": "Kết quả ước lượng mức tự đánh giá sáng tạo",
   "ten_muc": {
     "Thap": "Mức thấp",
     "Trung_binh": "Mức trung bình",
     "Cao": "Mức cao"
+  },
+  "ten_ngan": {
+    "Thap": "Thấp",
+    "Trung_binh": "Trung bình",
+    "Cao": "Cao"
   },
   "mo_ta_muc": {
     "Thap": "Dựa trên các câu trả lời, mô hình ước lượng bạn nhiều khả năng thuộc nhóm tự đánh giá sáng tạo ở mức thấp trong dữ liệu khảo sát.",
@@ -16,9 +21,16 @@
   "nhan_diem": "Điểm ước lượng (thang 0–100)",
   "diem": {
     "giai_thich": "Điểm này là điểm tự đánh giá sáng tạo, tính từ 5 câu hỏi trong khảo sát của nghiên cứu.",
-    "sai_so": 10.5,
     "khoang": "Khoảng {tu} đến {den} điểm",
-    "ghi_chu": "Sai số trung bình khoảng 10 điểm, nên chỉ nên xem đây là một khoảng, không phải một con số chính xác."
+    "so_lon": "{tu}–{den}",
+    "don_vi": "điểm",
+    "ghi_chu": "Sai số trung bình khoảng {sai_so_noi} điểm, nên chỉ nên xem đây là một khoảng, không phải một con số chính xác."
+  },
+  "so_mo_hinh": {
+    "_ghi_chu": "NƠI DUY NHẤT ghi số của mô hình B4 hiện trên trang kết quả. Khi huấn luyện lại (đóng băng ~22/12) chỉ sửa ở đây; tests/test_result_page.py so với models/model_b4_meta.json.",
+    "dung_tren_10": 6,
+    "sai_so_diem": 10.5,
+    "sai_so_noi": 10
   },
   "nhan_xac_suat": "Khả năng của từng mức theo mô hình",
   "xac_suat": {
@@ -28,18 +40,13 @@
   },
   "nhan_dong_gop": "Mô hình đã dựa vào đâu?",
   "dong_gop": {
-    "mo_ta": "Bấm để xem những câu trả lời ảnh hưởng nhiều nhất đến ước lượng này.",
-    "canh_bao": "Lưu ý: hai câu B4.3 và B4.6 nói về việc dùng AI thiếu kiểm chứng và phụ thuộc vào AI. Trong dữ liệu khảo sát, người đồng ý với hai câu này lại có xu hướng tự đánh giá sáng tạo cao hơn, ngược với điều ta thường nghĩ. Có thể do một số người có xu hướng chọn mức đồng ý cho nhiều câu. Đây là mô tả dữ liệu, không phải lời khuyên hay đánh giá về bạn.",
-    "ban_chon": "Bạn chọn: {gia_tri}"
-  },
-  "chieu": {
-    "tang": "kéo điểm lên",
-    "giam": "kéo điểm xuống"
-  },
-  "do_lon": {
-    "nho": "ảnh hưởng nhỏ",
-    "vua": "ảnh hưởng vừa",
-    "lon": "ảnh hưởng lớn"
+    "mo_ta": "Bấm để xem ngắn gọn mô hình dựa vào đâu.",
+    "gach": [
+      "Dựa trên câu trả lời của hàng trăm bạn học sinh, sinh viên đã tự đánh giá mức sáng tạo của mình.",
+      "Chỉ dùng 7 câu về cách bạn tương tác với AI để ước lượng.",
+      "Đoán đúng nhóm khoảng {dung}/10 lần; điểm có thể lệch khoảng ±{sai_so_noi} điểm.",
+      "Đây là mức sáng tạo bạn tự thấy, chỉ để tham khảo, không phải đánh giá năng lực của bạn."
+    ]
   },
   "gioi_han": {
     "tieu_de": "Cần lưu ý",
@@ -47,13 +54,12 @@
       "Đây là ước lượng thống kê từ khảo sát tự đánh giá, không phải đánh giá con người hay năng lực thật của bạn.",
       "Mức thấp, trung bình, cao được chia theo điểm tự đánh giá sáng tạo trên thang 0–100: dưới 60 là thấp, từ 60 đến dưới 80 là trung bình, từ 80 trở lên là cao. Đây chỉ là cách chia để phân tích, không phải thang đo giá trị của một người.",
       "Ước lượng chỉ dựa trên 7 câu về cách dùng AI mà bạn đã trả lời.",
-      "Trong thử nghiệm của nghiên cứu, mô hình đoán đúng mức khoảng 6/10 trường hợp, tức là vẫn có thể sai khá nhiều.",
+      "Trong thử nghiệm của nghiên cứu, mô hình đoán đúng mức khoảng {dung}/10 trường hợp, tức là vẫn có thể sai khá nhiều.",
       "Phần 'ảnh hưởng' chỉ mô tả cách mô hình đưa ra ước lượng, không có nghĩa là nguyên nhân."
     ]
   },
   "nut": {
-    "lam_lai": "Làm lại",
-    "hoan_thanh": "Hoàn thành"
+    "lam_lai": "Làm lại"
   },
   "chua_xong_giao_dien": "Hoàn thành các phần còn lại để xem kết quả.",
   "dang_tinh": "Đang tính kết quả...",

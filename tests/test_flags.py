@@ -97,8 +97,8 @@ def test_bi_gian_doan_khong_tinh_vao_flag_count():
 
 def test_moi_co_co_the_deu_hop_le():
     tat_ca = flags.tat_ca_co_co_the()
-    assert len(tat_ca) == 8 and len(set(tat_ca)) == 8
-    assert {flags.ma_co(c) for c in tat_ca} == {"lam_qua_nhanh", "mot_dap_an", "bi_gian_doan"}
+    assert len(tat_ca) == 10 and len(set(tat_ca)) == 10
+    assert {flags.ma_co(c) for c in tat_ca} == {"lam_qua_nhanh", "mot_dap_an", "bi_gian_doan", "copy_ai_goc"}
 
 
 # ---------- Qua API: lưu số đo, gắn cờ, không lộ cho người chơi ----------

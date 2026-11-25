@@ -14,7 +14,7 @@ router = APIRouter(prefix="/api/research/game2")
 
 @lru_cache
 def noi_dung_game2() -> dict:
-    """Đề game 2 đọc từ content/games/game2.json (có đáp án: chỉ dùng ở server)."""
+    """Đề game 2 đọc từ content/games/game2.json (có đáp án: chỉ dùng ở server, chỉ lộ qua /review sau khi hoàn thành)."""
     with open(config.ROOT / "content" / "games" / "game2.json", encoding="utf-8") as f:
         return json.load(f)
 

@@ -150,15 +150,15 @@ Table game_responses {
   participant_id objectid [not null]
   data_label varchar [note: 'thu | pilot | that. Missing is treated as that (safe: never deleted by the test-data cleanup). Set by make_codes.py --data-label, copied access_codes -> participants -> child tables']
   game int [not null, note: '1 | 2 | 3']
-  prompt_id varchar [note: 'game 1: id đồ vật; game 2: "game2" (một đề cố định)']
-  answer json [note: 'game 1: {ideas, n_ideas}. game 2: {selected_ids (id các ý chọn là SAI, theo thứ tự hiển thị), score 0-5, n_correct, n_wrong}']
-  duration_sec int
-  paste_count int
-  tab_leave_count int
-  answer_length int
+  prompt_id varchar [note: 'game 1: id đồ vật; game 2: "game2" (một đề cố định); game 3: "game3" (hai tình huống cố định)']
+  answer json [note: 'game 1: {ideas, n_ideas}. game 2: {selected_ids (id các ý chọn là SAI, theo thứ tự hiển thị), score 0-5, n_correct, n_wrong}. game 3 (MỘT bản ghi mỗi người, ghi MỘT lần cho cả hai tình huống khi bấm Nộp bài; mỗi tình huống một mục): {tinh_huong: [{tinh_huong_id "g3_t1"|"g3_t2", noi_dung (đúng văn bản người chơi nhập), so_tu, thoi_gian_lam (giây dùng ô nhập của tình huống đó, TRÌNH DUYỆT đo, trừ lúc ẩn tab; chỉ để gắn cờ), so_lan_dan, so_lan_roi_tab, nop_luc}]}. Điểm AI và điểm người chấm của game 3 KHÔNG nằm ở đây: sẽ thêm sau (1-4/12) ở collection riêng, khóa (participant_id, tinh_huong_id), nên không đổi cấu trúc này']
+  duration_sec int [note: 'game 3: thời gian cả game do SERVER tính (lúc nộp trừ started_at), không phải tổng thoi_gian_lam']
+  paste_count int [note: 'game 3: tổng so_lan_dan']
+  tab_leave_count int [note: 'game 3: tổng so_lan_roi_tab']
+  answer_length int [note: 'game 3: tổng số ký tự các tình huống']
   started_at datetime [note: 'do SERVER ghi khi bắt đầu game']
   over_time bool [note: 'nộp trễ quá 15 giây so với giới hạn']
-  submitted_at datetime [note: 'null = chưa nộp']
+  submitted_at datetime [note: 'null = chưa nộp. Game 3: gán khi nộp bài (một lần, cả 2 tình huống)']
   indexes { (participant_id, game) [unique] }
 }
 

@@ -1,6 +1,12 @@
 {
-  "_ghi_chu": "Game 2 'Soi lỗi AI' (chốt 24/11/2026): 12 ý, 5 ý sai, thứ tự hiển thị cố định như trong file. KHÔNG nói cho người chơi biết có bao nhiêu ý sai. la_loi, loai_loi, giai_thich KHÔNG được trả về trình duyệt trước khi nộp. Chấm: +1 mỗi ý sai chọn đúng, -1 mỗi ý đúng bị chọn nhầm, tối thiểu 0, tối đa 5.",
+  "_ghi_chu": "Game 2 'Soi lỗi AI' (chốt 24/11/2026): 12 ý, 5 ý sai, thứ tự hiển thị cố định như trong file. KHÔNG nói cho người chơi biết có bao nhiêu ý sai. la_loi, loai_loi, giai_thich KHÔNG được trả về trình duyệt cho tới khi người chơi hoàn thành cả 3 game (chỉ qua GET /api/research/review). Chấm: +1 mỗi ý sai chọn đúng, -1 mỗi ý đúng bị chọn nhầm, tối thiểu 0, tối đa 5.",
   "ten": "Soi lỗi AI",
+  "gioi_thieu": {
+    "nhiem_vu": ["AI trả lời một câu hỏi bằng 12 ý, trong đó một số ý sai."],
+    "cach_choi": ["Tích chọn những ý bạn cho là sai.", "Bạn có thể chọn nhiều ý hoặc không chọn ý nào."],
+    "luu_y": ["Hãy đánh dấu cẩn thận, đánh dấu nhầm cũng được tính.", "Sau khi bấm Tiếp tục bạn không sửa lại được phần này."],
+    "thoi_gian": ["Khoảng 3–4 phút."]
+  },
   "tinh_huong": "Bạn nhờ AI: \"Hãy giới thiệu ngắn về Việt Nam cho một bạn học sinh nước ngoài.\" AI trả lời 12 ý dưới đây. Trong đó có một số ý sai. Hãy chọn những ý bạn cho là SAI.",
   "y": [
     {"id": "g2_01", "van_ban": "Hà Nội là thủ đô của Việt Nam.", "la_loi": false, "loai_loi": null, "giai_thich": "Đúng."},

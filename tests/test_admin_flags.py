@@ -31,7 +31,7 @@ def test_registry_hop_le_va_co_cot_loc_co():
     p = reg.BANG["participants"]
     assert {"flag_count", "flags"} <= {k for k, *_ in p["cot"]}
     loc = {k: lc for k, _, _, lc in p["loc"]}
-    assert "flag_count" in loc and set(loc["flags"]) == set(reg.LUA_CHON_CO) and len(loc["flags"]) == 8
+    assert "flag_count" in loc and set(loc["flags"]) == set(reg.LUA_CHON_CO) and len(loc["flags"]) == 10
 
 
 def test_thong_ke_so_nguoi_bi_tung_co_va_gian_doan_khong_vao_so_sanh(db, ba_nguoi):

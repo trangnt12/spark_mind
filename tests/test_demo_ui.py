@@ -77,13 +77,12 @@ def test_chu_giao_dien_co_du_khoa():
     ui = json.loads((GOC / "content" / "research_ui.json").read_text(encoding="utf-8"))
     kq = json.loads((GOC / "content" / "results_ui.json").read_text(encoding="utf-8"))
     assert ui["chao"]["nut_demo"] == "Chưa có mã? Thử bản demo"
-    assert {"tieu_de", "mo_ta", "nut_bat_dau", "nut_xem", "nhan_tien_do"} <= set(ui["demo"])
+    assert {"tieu_de", "mo_ta", "nhan_tien_do"} <= set(ui["demo"]) and "nut_bat_dau" not in ui["demo"]   # nút đi tiếp lấy chữ ở chung.nut_tiep_tuc
     assert {"ket_qua", "demo"} <= set(ui["giao_dien"]["emoji"])
     for k in ("nhan_muc", "diem", "xac_suat", "dong_gop", "nut", "chua_xong_giao_dien", "dang_tinh", "loi_giao_dien"):
         assert k in kq, k
-    assert kq["diem"]["sai_so"] == 10.5 and "khoảng 10 điểm" in kq["diem"]["ghi_chu"]
-    assert "B4.3" in kq["dong_gop"]["canh_bao"] and "B4.6" in kq["dong_gop"]["canh_bao"]
-    assert kq["chieu"] == {"tang": "kéo điểm lên", "giam": "kéo điểm xuống"}
+    assert kq["so_mo_hinh"]["sai_so_diem"] == 10.5 and "{sai_so_noi}" in kq["diem"]["ghi_chu"]   # số nằm ở so_mo_hinh, chữ chỉ có chỗ giữ
+    assert len(kq["dong_gop"]["gach"]) == 4
 
 
 def test_api_noi_dung_tra_chu_ket_qua():

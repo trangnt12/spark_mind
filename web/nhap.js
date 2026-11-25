@@ -13,7 +13,7 @@ function docNhap() {
   } catch { return {}; }
 }
 
-/** Ghi một phần của bản nháp: "tl" (khảo sát), "g1" (game 1), "g2" (game 2). */
+/** Ghi một phần của bản nháp: "tl" (khảo sát), "g1" (game 1), "g2" (game 2), "g3" (game 3: {o: {id tình huống: chữ đang gõ, số lần dán/rời tab, thời gian dùng ô}, xem: tình huống đang chọn}). */
 function ghiNhap(phan, giaTri) {
   if (tt.demo) return;
   try { sessionStorage.setItem(KHOA_NHAP, JSON.stringify({ ...docNhap(), token: tt.token || "", [phan]: giaTri })); } catch { /* đầy bộ nhớ: bỏ qua */ }

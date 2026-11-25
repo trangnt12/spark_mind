@@ -5,22 +5,19 @@
 // Trạng thái game 1: các ý đã thêm, số lần dán thử, số lần rời tab, đồng hồ, đã nộp chưa
 const g1 = { cacY: [], paste: 0, roiTab: 0, conLai: 0, hanChot: 0, nhip: null, daNop: false, dangChoi: false };
 
-/** Dải tên game to, rõ ở đầu mọi màn game: "Game 1" + tên. Tên lấy từ "ten" trong content/games/gameN.json (một chỗ duy nhất),
- *  mẫu chữ "Game {so}: {ten}" lấy từ research_ui.json (đọc màn hình đọc cả câu). */
-function tenGame(so, ten) {
-  const chu = tt.ui.tieu_game.replace("{so}", so).replace("{ten}", ten);
-  return h("div", { class: "ten-game", role: "heading", "aria-level": "1", "aria-label": chu },
-    h("span", { class: "so-game", "aria-hidden": "true" }, "Game " + so), h("span", { class: "ten-game-chu", "aria-hidden": "true" }, ten));
-}
-
 // ---------- Màn giới thiệu chung 3 trò ----------
 
 function manGioiThieu() {
   datMan("gioi_thieu");
   const u = tt.ui.game_gioi_thieu;
   hienThi(5, tieuDe("game", u.tieu_de_chung), h("div", { class: "the" }, cacDoan(u.mo_ta)),
-    khungNut(h("button", { type: "button", onclick: manGame1 }, u.nut_bat_dau), nutQuayLai(manC)));
+    khungNut(h("button", { type: "button", onclick: manGame1GioiThieu }, tt.ui.chung.nut_tiep_tuc), nutQuayLai(manC)));
   danhDauGioiThieu();
+}
+
+/** Trang giới thiệu riêng của game 1 (tab 1). Tiếp tục -> trang làm bài. */
+function manGame1GioiThieu() {
+  manGameGioiThieu(1, manGame1, manGioiThieu);
 }
 
 // ---------- Màn game 1: lấy đề từ máy chủ ----------
@@ -85,8 +82,8 @@ function chayDongHo(dh, conLaiServer, tong, khiHet) {
 // ---------- Chống gian lận: chặn dán, kéo thả, chuột phải; đếm dán thử và rời tab ----------
 
 /** Gắn chặn vào ô nhập; mỗi lần dán thử thì tăng paste_count. */
-function chanOMuc(o) {
-  o.addEventListener("paste", (e) => { e.preventDefault(); g1.paste++; });
+function chanOMuc(o, khiDan = () => { g1.paste++; }) {   // khiDan: việc cần làm mỗi lần dán thử (game 3 đếm riêng từng ô)
+  o.addEventListener("paste", (e) => { e.preventDefault(); khiDan(); });
   for (const ten of ["drop", "dragover", "contextmenu"]) o.addEventListener(ten, (e) => e.preventDefault());
 }
 
@@ -126,7 +123,7 @@ async function nopGame1(hopLoi) {
   if (r.status === 200 || r.status === 409) {     // 409: đã nộp rồi, cứ đi tiếp
     g1.daNop = true; clearInterval(g1.nhip); xoaNhap("g1");
     document.removeEventListener("visibilitychange", demRoiTab);
-    manGame2();
+    manGame2GioiThieu();
     chucMung();
     return 200;
   }
@@ -143,7 +140,7 @@ function veGame1DaNop(bd, nd) {
   hienThi(5, tenGame(1, nd.ten), h("div", { class: "the" }, h("p", { class: "ghi-chu" }, u.nhan_do_vat),
       veAnh(bd.do_vat), h("h2", {}, bd.do_vat.ten)),
     h("div", { class: "the" }, h("h2", {}, u.nhan_da_nop), h("p", { class: "ghi-chu" }, u.da_nop_khong_sua), ds),
-    khungNut(h("button", { type: "button", onclick: manGame2 }, tt.ui.game2.nut_sang_game2), nutQuayLai(manGioiThieu)));
+    khungNut(h("button", { type: "button", onclick: manGame2GioiThieu }, tt.ui.chung.nut_tiep_tuc), nutQuayLai(manGame1GioiThieu)));
 }
 
 // ---------- Vẽ màn game 1 ----------
@@ -165,7 +162,6 @@ function veDeBai(u, dv, nd) {
   return h("div", { class: "the" },
     h("p", { class: "ghi-chu" }, u.nhan_do_vat), veAnh(dv), h("h2", {}, dv.ten),
     h("p", {}, h("b", {}, u.nhan_thong_thuong + " "), dv.cach_dung_thuong),
-    h("p", { class: "mo-ta" }, nd.huong_dan),
     h("p", { class: "ghi-chu" }, `${vd.do_vat} (${vd.cach_dung_thuong}): ` + vd.vi_du_khac.join("; ")));
 }
 
@@ -179,7 +175,7 @@ function veGame1(bd, nd) {
   const o = h("input", { type: "text", maxlength: toiDa, autocomplete: "off", "aria-label": u.nhan_y_tuong });
   const ds = h("ul", { class: "ds-y" });
   // Chữ đang gõ dở trong ô cũng được thêm vào trước khi nộp (kể cả khi hết giờ tự nộp)
-  const nut = nutGui(u.nut_nop, () => { themY(o, ds, toiDa); return nopGame1(loi); }, loi);
+  const nut = nutGui(tt.ui.chung.nut_tiep_tuc, () => { themY(o, ds, toiDa); return nopGame1(loi); }, loi);
   chanOMuc(o);
   o.addEventListener("keydown", (e) => { if (e.key === "Enter") { e.preventDefault(); themY(o, ds, toiDa); } });
   document.addEventListener("visibilitychange", demRoiTab);
@@ -187,7 +183,7 @@ function veGame1(bd, nd) {
     h("div", { class: "the" }, h("p", { class: "cau-hoi" }, u.nhan_y_tuong), o,
       h("button", { type: "button", class: "phu", style: "margin-top:10px", onclick: () => themY(o, ds, toiDa) }, u.nut_them),
       h("p", { class: "so-y", id: "so-y", "aria-live": "polite" }), ds),
-    khungNut(loi, nut, nutQuayLai(manGioiThieu)));
+    khungNut(loi, nut, nutQuayLai(manGame1GioiThieu)));
   g1.dangChoi = true;   // từ đây mới đếm rời tab
   veDanhSachY(ds);
   chayDongHo(dh, bd.remaining_sec, nd.thoi_gian_giay, () => nut.click());   // hết giờ thì tự nộp

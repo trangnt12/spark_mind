@@ -2,7 +2,12 @@
   "_ghi_chu": "NHÁP 20/11. Game 1 'Đồ vật bí ẩn' (kiểu AUT). Chấm: so_y, so_y_hop_le (AI lọc ý vô nghĩa/trùng), diem_doc_dao (tự động theo tần suất trong toàn bộ người chơi). Rubric chi tiết viết 24/11.",
   "ten": "Đồ vật bí ẩn",
   "thoi_gian_giay": 180,
-  "huong_dan": "Bạn sẽ thấy một đồ vật quen thuộc. Hãy nghĩ ra càng nhiều cách dùng KHÁC với cách dùng thông thường của nó càng tốt. Mỗi ý một dòng, viết ngắn gọn. Không cần ý nào cũng nghiêm túc, miễn là có thể thực hiện được.",
+  "gioi_thieu": {
+    "nhiem_vu": ["Bạn sẽ thấy một đồ vật quen thuộc. Hãy nghĩ ra càng nhiều cách dùng KHÁC với cách dùng thông thường của nó càng tốt."],
+    "cach_choi": ["Mỗi ý một dòng, viết ngắn gọn.", "Gõ ý vào ô rồi bấm \"Thêm\"; hết giờ thì bài được nộp tự động."],
+    "luu_y": ["Không cần ý nào cũng nghiêm túc, miễn là có thể thực hiện được."],
+    "thoi_gian": ["3 phút (có đồng hồ đếm ngược)."]
+  },
   "vi_du": {"do_vat": "Cái cốc", "cach_dung_thuong": "Đựng nước uống", "vi_du_khac": ["Úp xuống làm chân đỡ cho cây nhỏ", "Dùng đo lượng gạo"]},
   "do_vat": [
     {"id": "g1_gach", "ten": "Viên gạch", "cach_dung_thuong": "Xây tường", "anh": "/play/assets/game1/gach.png", "mo_ta_anh": "Một viên gạch đỏ", "emoji": "🧱"},

@@ -24,7 +24,7 @@ from sparkmind.ingest import nhan_form  # noqa: E402
 from sparkmind.memory import rss_mb  # noqa: E402
 from sparkmind.game_store import tao_chi_muc_game  # noqa: E402
 from sparkmind.research_store import tao_chi_muc  # noqa: E402
-from server import admin_data_api, admin_stats_api, admin_testdata_api, admin_users, auth, auth_api, content_api, game1, game2, predict_api, progress_api, research  # noqa: E402
+from server import admin_data_api, admin_stats_api, admin_testdata_api, admin_users, auth, auth_api, content_api, game1, game2, game3, predict_api, progress_api, research, review_api  # noqa: E402
 from sparkmind import audit, session_store, user_store  # noqa: E402
 
 @lru_cache
@@ -51,7 +51,9 @@ app = FastAPI(title="SparkMind", lifespan=vong_doi)
 app.include_router(research.router)
 app.include_router(game1.router)
 app.include_router(game2.router)
+app.include_router(game3.router)
 app.include_router(progress_api.router)
+app.include_router(review_api.router)
 app.include_router(content_api.router)
 app.include_router(predict_api.router)
 app.include_router(auth_api.router)

@@ -136,13 +136,15 @@
       "co_ten": {
         "lam_qua_nhanh": "Làm quá nhanh",
         "mot_dap_an": "Một đáp án cho cả khối",
+        "copy_ai_goc": "Giống ý của AI (game 3)",
         "bi_gian_doan": "Bị gián đoạn (tham khảo)"
       },
       "co_buoc": {
         "form_b": "Form B",
         "khoi_c": "Khối C1–C5",
         "game1": "Game 1",
-        "game2": "Game 2"
+        "game2": "Game 2",
+        "game3": "Game 3"
       }
     },
     "he_thong": {
@@ -191,6 +193,7 @@
     "cham_bai": "Chấm bài"
   },
   "du_lieu": {
+    "game3": {"tinh_huong": "Tình huống", "so_tu": "từ", "so_lan_dan": "dán", "so_lan_roi_tab": "rời tab", "thoi_gian_lam": "giây"},
     "tim": "Tìm kiếm…",
     "tat_ca": "Tất cả",
     "co": "Có",

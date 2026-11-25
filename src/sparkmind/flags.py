@@ -1,15 +1,18 @@
 """Luật gắn cờ chống gian lận cho hướng 2 (web). Chỉ tính toán thuần túy, không đọc/ghi database.
 
 CHỈ GẮN CỜ: không xóa dữ liệu, không báo cho người chơi. Mọi ngưỡng nằm ở config.py (CO_*).
-Mỗi cờ là một chuỗi "mã:bước", ví dụ "lam_qua_nhanh:form_b". Ba mã cờ:
+Mỗi cờ là một chuỗi "mã:bước", ví dụ "lam_qua_nhanh:form_b". Bốn mã cờ:
   lam_qua_nhanh : nhiều câu trả lời quá nhanh, hoặc cả bước làm xong quá sớm
   mot_dap_an    : chọn cùng một mức cho mọi câu Likert của khối
   bi_gian_doan  : có khoảng nghỉ dài hoặc ẩn tab lâu (CHỈ THAM KHẢO, không tính vào flag_count)
+  copy_ai_goc   : (chỉ game 3) bài giữ >= 80% từ của câu gốc AI và có < 40% từ mới (config.CO_COPY_*)
 Dữ liệu thời gian do trình duyệt gửi nên có thể bị giả: chỉ dùng để gắn cờ, không để loại người chơi.
 """
+import re
+
 from . import config
 
-BUOC = ("form_b", "khoi_c", "game1", "game2")   # thứ tự cố định để kết quả luôn giống nhau mỗi lần tính
+BUOC = ("form_b", "khoi_c", "game1", "game2", "game3")   # thứ tự cố định để kết quả luôn giống nhau mỗi lần tính
 
 
 def ma_co(co: str) -> str:
@@ -25,7 +28,7 @@ def dem_co(cac_co: list) -> int:
 def tat_ca_co_co_the() -> list:
     """Mọi chuỗi cờ có thể có (dùng cho bộ lọc và thống kê ở trang quản trị)."""
     return ([f"lam_qua_nhanh:{b}" for b in BUOC] + [f"mot_dap_an:{b}" for b in ("form_b", "khoi_c")]
-            + [f"bi_gian_doan:{b}" for b in ("form_b", "khoi_c")])
+            + [f"bi_gian_doan:{b}" for b in ("form_b", "khoi_c")] + ["copy_ai_goc:game3"])
 
 
 def _khoang(tg: dict | None) -> list:
@@ -81,8 +84,45 @@ def co_cua_game(buoc: str, tong_giay: float | None) -> list:
     return [f"lam_qua_nhanh:{buoc}"] if qua_nhanh_tong(buoc, tong_giay) else []
 
 
-def tinh_co(hanh_vi: dict | None, tu_danh_gia: dict | None, game: dict) -> list:
-    """Toàn bộ cờ của một người từ dữ liệu đã lưu. `game` = {1: bản ghi game 1 đã nộp, 2: ...} (chỉ game đã nộp).
+def tach_tu(chu: str) -> list:
+    """Từ đã chuẩn hóa: chữ thường, bỏ dấu câu (giữ chữ có dấu tiếng Việt và số)."""
+    return re.findall(r"\w+", (chu or "").lower())
+
+
+def do_do_copy(bai: str, goc: str) -> tuple:
+    """(ty_le_giu_tu_goc, ty_le_tu_moi). Giữ = tỉ lệ từ của câu gốc AI có trong bài; mới = tỉ lệ từ của bài KHÔNG có trong câu gốc.
+    Thêm chữ cho đủ số từ làm tỉ lệ từ mới tăng nhưng không làm giảm tỉ lệ giữ từ gốc. Rỗng thì (0, 0)."""
+    tu_bai, tu_goc = tach_tu(bai), tach_tu(goc)
+    if not tu_bai or not tu_goc:
+        return 0.0, 0.0
+    giu = sum(1 for t in tu_goc if t in set(tu_bai)) / len(tu_goc)
+    moi = sum(1 for t in tu_bai if t not in set(tu_goc)) / len(tu_bai)
+    return giu, moi
+
+
+def la_copy_ai_goc(bai: str, goc: str) -> bool:
+    """Giữ nhiều từ gốc VÀ ít từ mới (hai ngưỡng ở config.py)."""
+    giu, moi = do_do_copy(bai, goc)
+    return giu >= config.CO_COPY_GIU_TU_GOC and moi < config.CO_COPY_TU_MOI_TOI_DA
+
+
+def co_cua_game3(cac_muc: list, ai_goc: dict | None, tong_giay: float | None = None) -> list:
+    """Cờ game 3. cac_muc = các tình huống đã nộp (answer.tinh_huong); ai_goc = {id tình huống: câu trả lời gốc của AI};
+    tong_giay = thời gian cả game do server tính (duration_sec).
+    lam_qua_nhanh: BẤT KỲ ô nào dùng dưới ngưỡng giây (thoi_gian_lam, trình duyệt đo theo từng ô), HOẶC cả game dưới ngưỡng tổng.
+    copy_ai_goc: BẤT KỲ tình huống nào giống quá ngưỡng. Chỉ gắn cờ."""
+    co = []
+    nhanh_o = any(m.get("thoi_gian_lam") is not None and m["thoi_gian_lam"] < config.CO_TONG_GIAY_TOI_THIEU["game3"] for m in cac_muc)
+    if nhanh_o or (tong_giay is not None and tong_giay < config.CO_GAME3_TONG_GIAY_TOI_THIEU):
+        co.append("lam_qua_nhanh:game3")
+    if ai_goc and any(la_copy_ai_goc(m.get("noi_dung"), ai_goc.get(m.get("tinh_huong_id"))) for m in cac_muc):
+        co.append("copy_ai_goc:game3")
+    return co
+
+
+def tinh_co(hanh_vi: dict | None, tu_danh_gia: dict | None, game: dict, ai_goc: dict | None = None) -> list:
+    """Toàn bộ cờ của một người từ dữ liệu đã lưu. `game` = {1: bản ghi game 1 đã nộp, 2: ..., 3: ...} (chỉ game đã nộp).
+    `ai_goc` = {id tình huống game 3: câu gốc của AI}; không truyền thì bỏ qua cờ copy_ai_goc.
 
     Thuần túy và có thứ tự cố định nên tính lại bao nhiêu lần cũng ra cùng kết quả (idempotent).
     """
@@ -96,6 +136,8 @@ def tinh_co(hanh_vi: dict | None, tu_danh_gia: dict | None, game: dict) -> list:
     for so in (1, 2):
         if so in game:
             co += co_cua_game(f"game{so}", game[so].get("duration_sec"))
+    if 3 in game:
+        co += co_cua_game3((game[3].get("answer") or {}).get("tinh_huong") or [], ai_goc, game[3].get("duration_sec"))
     return co
 
 

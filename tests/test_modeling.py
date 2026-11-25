@@ -41,6 +41,15 @@ def test_cot_co_va_thoi_gian_bi_cam():
     assert not set(M.DAC_TRUNG) & {"flags", "flag_count", "thoi_gian_cau", "an_tab_ms", "tong_ms"}
 
 
+def test_cot_game3_bi_cam():
+    """Các trường mới của game 3 (so_tu, so_lan_dan, thời gian làm, cờ copy_ai_goc...) không bao giờ vào bảng đặc trưng."""
+    for cot in ["so_tu", "so_lan_dan", "so_lan_roi_tab", "thoi_gian_lam", "copy_ai_goc", "noi_dung", "tinh_huong_id",
+                "paste_count", "tab_leave_count", "answer_length", "so_tu_t1", "so_lan_khac"]:
+        with pytest.raises(ValueError, match="CẤM"):
+            M.kiem_tra_cot_cam(M.DAC_TRUNG + [cot])
+    assert not set(M.DAC_TRUNG) & {"so_tu", "so_lan_dan", "so_lan_roi_tab", "thoi_gian_lam", "copy_ai_goc"}
+
+
 def test_cot_la_ngoai_danh_sach_bi_chan():
     with pytest.raises(ValueError, match="ngoài danh sách"):
         M.kiem_tra_cot_cam(M.DAC_TRUNG + ["diem_hanh_vi"])

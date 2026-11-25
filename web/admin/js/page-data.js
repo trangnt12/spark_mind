@@ -8,6 +8,18 @@
   var NHO = {};   // trạng thái từng danh sách (giữ lại khi quay về từ trang chi tiết)
 
   /* ---------- Hiển thị một giá trị theo kiểu cột ---------- */
+  /* Game 3 dạng đọc: mỗi tình huống một khối (id, số từ, số lần dán, rời tab, thời gian) rồi đúng văn bản người chơi nhập. */
+  function hienGame3(cacMuc) {
+    var g = SM.ui.du_lieu.game3;
+    return h("div", {}, cacMuc.map(function (m) {
+      return h("div", {class: "muc-game3"},
+        h("strong", {}, g.tinh_huong + " " + m.tinh_huong_id),
+        h("span", {class: "mo-ta"}, " · " + m.so_tu + " " + g.so_tu + " · " + m.so_lan_dan + " " + g.so_lan_dan + " · " +
+          m.so_lan_roi_tab + " " + g.so_lan_roi_tab + " · " + m.thoi_gian_lam + " " + g.thoi_gian_lam),
+        h("p", {class: "noi-dung-game3"}, m.noi_dung));
+    }));
+  }
+
   function hienGiaTri(kieu, v) {
     var t = SM.ui.du_lieu;
     if (v === null || v === undefined || v === "") return h("span", {class: "mo-ta"}, "—");
@@ -16,6 +28,7 @@
     if (kieu === "datetime") return SM.gio(v);
     if (kieu === "float") return String(Math.round(v * 10) / 10);
     if (Array.isArray(v)) return v.join(", ");   // danh sách (vd. cờ chống gian lận)
+    if (v && Array.isArray(v.tinh_huong)) return hienGame3(v.tinh_huong);   // bài game 3: đọc từng tình huống
     if (kieu === "json" || typeof v === "object") return h("pre", {class: "json-nho"}, JSON.stringify(v, null, 2));
     return String(v);
   }
