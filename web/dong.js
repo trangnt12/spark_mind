@@ -8,7 +8,7 @@ function manDong(loai) {
   tt.demo = false;                                                    // rời bản demo (nếu đang ở đó)
   hienThi(0, banner(h("span", { class: "emo" }, u.bieu_tuong), u.tieu_de),
     h("div", { class: "the" }, cacDoan(u.mo_ta), h("a", { class: "nut-mail", href: "mailto:" + email }, email)),
-    khungNut(h("button", { type: "button", class: "phu", onclick: manMa }, tt.ui.dong.nut_quay_lai)));
+    khungNut(h("button", { type: "button", class: "phu", onclick: loai === "huong1" ? () => { location.href = "/"; } : manMa }, tt.ui.dong.nut_quay_lai)));   // hướng 1 là trang riêng: về trang chủ
   danhDauGioiThieu();
   document.getElementById("nhan-tien-do").textContent = "";           // trang đóng không có "Bước 0 trên N"
 }
@@ -18,6 +18,7 @@ function khiBiKhoa(duongDan) {
   if (!tt.ui) return;
   if (duongDan.startsWith("/api/predict/demo")) manDong("demo");
   else if (duongDan.startsWith("/api/research")) manDong("khao_sat");
+  else if (duongDan.startsWith("/api/huong1")) manDong("huong1");
 }
 
 /** Hiện dòng thông báo ở đầu trang (rỗng thì ẩn). Dùng textContent nên không chèn HTML được. */

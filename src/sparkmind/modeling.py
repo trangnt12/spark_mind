@@ -47,6 +47,8 @@ CAM_TEN = set(CC) | {"diem_sang_tao", "muc", "C6", "C6_so", "dot", "nguon", "tho
 CAM_TEN |= {"flags", "flag_count", "thoi_gian_cau", "khoang_ms", "sua_cuoi_ms", "an_tab_ms", "tong_ms", "ty_le_cau_nhanh",
             "lam_qua_nhanh", "mot_dap_an", "bi_gian_doan", "duration_sec", "batch"}
 # Game 3 (25/11): số từ, số lần dán, thời gian làm, cờ copy AI... là dữ liệu hành vi khi chơi game, KHÔNG được làm biến dự đoán
+# Hướng 1 trên web: thời gian làm bài và cờ trùng mẫu chỉ để gắn cờ chất lượng, KHÔNG được làm biến dự đoán
+CAM_TEN |= {"thoi_gian_lam_bai", "trung_mau"}
 CAM_TEN |= {"copy_ai_goc", "so_tu", "so_lan_dan", "so_lan_roi_tab", "thoi_gian_lam", "tinh_huong_id", "noi_dung", "nop_luc",
             "paste_count", "tab_leave_count", "answer_length"}
 CAM_TIEN_TO = ("in_", "co_", "truong", "ten_truong", "flag", "thoi_gian", "khoang_", "ty_le_cau", "so_tu", "so_lan_")

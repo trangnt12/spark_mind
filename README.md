@@ -56,6 +56,9 @@ Chỉ cần thêm **một mục** vào `BANG` trong `src/sparkmind/admin_registr
 Rồi chạy `python -m pytest tests -q`: test kiểm tra registry và route (bảng readonly không được có PATCH, mọi route phải có kiểm tra quyền).
 Dữ liệu nghiên cứu luôn để `readonly`; xóa chỉ cho admin và gõ lại ID.
 
+## Khảo sát hướng 1 trên web (kênh thu thứ hai, đóng mặc định)
+Địa chỉ `/huong-1/khao-sat`. Công tắc `huong1_web_mo` ở trang Cài đặt đang tắt thì người dùng thấy trang "Trang này chưa mở" (API trả 423); đến hết tháng 12 hướng 1 vẫn thu bằng Google Form, từ tháng 1 mới bật. Câu hỏi lấy từ `content/form_b.json` (cùng nguồn với form B), chữ riêng ở `content/survey1_ui.json`. Bài nộp vào `survey_form1` với `nguon = "web"` (đúng các cột của bản ghi Google Form, thêm trường `thoi_gian_lam_bai`), làm sạch ngay; không thu email hay tên. Thử mà không để lại dữ liệu thật: mở `/huong-1/khao-sat?thu=1` (bài gán nhãn `thu` ở `survey_clean`, dọn ở trang Dọn dữ liệu thử). `python scripts/run_cleaning.py` gắn thêm cờ `trung_mau`. Kiểm tra: `python -m pytest tests/test_huong1_web.py -q` (phần trình duyệt cần node).
+
 ## Công tắc đóng/mở (trang Cài đặt)
 Vào web quản trị > Cài đặt (admin sửa, viewer chỉ xem): bật/tắt hướng 2, hướng 1 web, demo; đặt hạn tự đóng hướng 2; viết dòng thông báo ở đầu trang người dùng. Mỗi lần lưu có hộp xác nhận và được ghi vào `audit_log`. Hướng 2 đóng rồi, người đã bắt đầu vẫn nộp được thêm 48 giờ (`config.HUONG2_GIA_HAN_GIO`). Thay đổi có hiệu lực trong tối đa 10 giây. Kiểm tra: `python -m pytest tests/test_settings.py -q`.
 

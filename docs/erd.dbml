@@ -14,7 +14,7 @@ Table schools {
 
 Table survey_raw {
   id varchar [pk, note: 'hash of the content, same form never duplicates']
-  source varchar [note: 'google_form | web | excel_import']
+  source varchar [note: 'google_form | web | excel_import. web = /huong-1/khao-sat (opened from January 2027; a try-out with ?thu=1 is written only to survey_clean with data_label = thu, never to survey_raw)']
   submitted_at datetime
   a1_grade varchar
   a2_gender varchar
@@ -40,6 +40,7 @@ Table survey_raw {
   c4 int
   c5 int
   c6 varchar
+  time_spent json [note: 'thoi_gian_lam_bai, ONLY for source = web: {tong_ms, an_tab_ms, khoang_ms{B4_1..B4_7,C1..C5}, sua_cuoi_ms}. Form-quality data only, never a model feature. Web answers are stored as TEXT identical to Google Form rows (codes mapped on the server); web collects NO email or name']
 }
 
 Table survey_clean {
@@ -59,6 +60,9 @@ Table survey_clean {
   in_main boolean
   in_strict boolean
   in_very_strict boolean
+  source varchar [note: 'google_form | web | excel_import, copied from survey_raw']
+  time_spent json [note: 'copied from survey_raw (web only)']
+  is_duplicate_sample boolean [note: 'trung_mau. Set only by scripts/run_cleaning.py: every answer A1..C6 (not the timestamp) identical to another row, across google_form and web. Flag only, does not change in_main/in_strict/in_very_strict. Not a model feature']
 }
 
 Table access_codes {

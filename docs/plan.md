@@ -33,6 +33,7 @@ Nguồn: bảng `notebook_hang_ngay` của Trang. Mốc đã chốt (đổi 23/1
 - 23/11: `docs/rubric_game1.md` và `src/sparkmind/score_game1.py` (lọc ý hợp lệ, đếm fluency; không chấm lúc nộp).
 - **Làm khi phân tích (sau khi thu xong, sau 20/12):** chấm đa dạng (flexibility) và độc đáo (originality) của game 1. AI gán nhóm công dụng cho từng ý hợp lệ và gom ý tương tự; 2 người chấm kiểm tra lại một mẫu (cùng mẫu rút khoảng 12–15/12). Độc đáo tính trong cùng đồ vật, ý xuất hiện ở dưới 5% người chơi. Chi tiết: `docs/rubric_game1.md`.
 
+- 26/11 (hướng 1 trên web, kênh thu thứ hai, đóng mặc định): `/huong-1/khao-sat` (`server/huong1_web.py`, `src/sparkmind/form1_web.py`, `web/survey1*.js`, `content/survey1_ui.json`, `tests/test_huong1_web.py`, `tests/survey1_dom_test.js`); lưu `survey_form1` với `nguon="web"`; cờ `trung_mau` trong `run_cleaning.py`. Việc còn lại cho Trang: xác nhận các chỗ không khớp ở `docs/decisions.md` (mục "Hướng 1 trên web"), đối chiếu văn bản đồng ý với Google Form; từ tháng 1 bật công tắc `huong1_web_mo` và đổi `huong1_url` ở `content/landing_ui.json`.
 - 26/11 (landing page): `/` landing đầy đủ + popup chọn hướng + `/huong-1` (`web/landing*.js`, `landing.css`, `huong1.js`, `server/landing_page.py`, `content/landing_ui.json`, `tests/test_landing.py`, `tests/landing_dom_test.js`, `tests/huong1_dom_test.js`). Việc còn lại cho Trang: `dong_y_url`; đồng bộ thời gian hướng 2 (25–30 so với 20–25 phút) sau pilot 29/11; xem các chỗ chưa khớp văn bản đồng ý.
 
 ## Ba game (đã chốt hướng)

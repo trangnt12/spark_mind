@@ -539,3 +539,6 @@ button.co-sai:active:not(:disabled) { transform: none; box-shadow: none; }
   .the-xl2.co-co { padding-right: 48px; }   /* màn hẹp: chừa ít chỗ cho cờ hơn để chữ dài hơn */
   .the-xl2 { padding: 14px; }
 }
+
+/* Trường ẩn chống bot của khảo sát hướng 1: người thật không thấy và không bấm tới được, bot điền hết mọi ô thì bị phát hiện */
+.chong-bot { position: absolute; left: -10000px; top: auto; width: 1px; height: 1px; overflow: hidden; }

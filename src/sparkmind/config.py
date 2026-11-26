@@ -64,3 +64,9 @@ RATING_GIAY_TOI_DA_MOT_MUC = 3600    # chặn số vô lý từ trình duyệt: 
 HUONG2_GIA_HAN_GIO = 48              # hướng 2 đóng rồi: người ĐÃ bắt đầu (có phiên, chưa hoàn thành) vẫn làm tiếp và nộp được trong số giờ này
 CAI_DAT_NHO_DEM_GIAY = 10            # server nhớ cài đặt tối đa số giây này (nhiều tiến trình vẫn thấy công tắc đổi trong ~10 giây)
 CAI_DAT_THONG_BAO_TOI_DA = 300       # độ dài tối đa dòng thông báo ở đầu trang người dùng
+
+# ---- Hướng 1 trên web (kênh thu thứ hai, ĐÓNG mặc định; mở bằng settings.huong1_web_mo) ----
+HUONG1_GIOI_HAN_LAN = 40             # một địa chỉ mạng (đã băm) gửi tối đa số bài này trong HUONG1_GIOI_HAN_GIAY giây (lớp học dùng chung wifi nên không đặt thấp). Giá trị TẠM
+HUONG1_GIOI_HAN_GIAY = 600
+HUONG1_BODY_TOI_DA = 20_000          # byte: bài gửi lớn hơn mức này bị từ chối (HTTP 413)
+HUONG1_KHOA_NOP_LAI_GIO = 24         # trình duyệt đã nộp thì không cho nộp lại trong số giờ này (chỉ chặn ở trình duyệt, xem docs/decisions.md)

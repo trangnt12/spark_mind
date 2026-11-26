@@ -1,0 +1,33 @@
+{
+  "_ghi_chu": "Chữ giao diện của khảo sát hướng 1 trên web (/huong-1/khao-sat). CÂU HỎI, ĐÁP ÁN, THANG ĐIỂM không nằm ở đây: lấy từ content/form_b.json (cùng nguồn với form B hướng 2, khớp từng ký tự với docs/survey_v2.md). Nút, lỗi, tiêu đề chung lấy từ research_ui.json (chung, loi, hoan_thanh.email, dong.huong1). Văn bản đồng ý dưới đây Trang CHƯA đối chiếu với phần đồng ý của Google Form (không có trong repo): cần thay bằng văn bản chính thức nếu khác.",
+  "dong_y": {
+    "bieu_tuong": "📝",
+    "tieu_de": "Thông tin nghiên cứu",
+    "doan": [
+      "🎯 Mục đích: tìm hiểu mối liên hệ giữa cách sử dụng các công cụ AI (như ChatGPT, Gemini, Copilot, Claude) và khả năng tư duy sáng tạo của học sinh, sinh viên Việt Nam. Đây là một phần của đề án thạc sĩ ngành Hệ thống thông tin, người thực hiện: Nguyễn Thị Trang, người hướng dẫn: TS. Nguyễn Mạnh Cường.",
+      "🧩 Bạn sẽ làm gì: trả lời một khảo sát ngắn về cách dùng AI và tự đánh giá khả năng sáng tạo của mình. Thời gian khoảng 3–5 phút.",
+      "📋 Thông tin được thu thập: lớp hoặc năm học, giới tính, tên trường, câu trả lời của bạn và thời gian làm bài (gồm thời gian trả lời từng câu hỏi dạng lưới). Hệ thống không thu thập email hay họ tên của bạn. Để hạn chế gửi bài hàng loạt, hệ thống dùng địa chỉ mạng của bạn ở dạng mã hóa, chỉ để đếm số lần gửi trong ít phút và không lưu vào dữ liệu khảo sát.",
+      "🔒 Thông tin được dùng như thế nào: chỉ cho nghiên cứu này. Kết quả được báo cáo dưới dạng tổng hợp.",
+      "💚 Đây không phải bài kiểm tra: kết quả không dùng để đánh giá hay xếp loại bạn, và không phải là đánh giá chính thức về năng lực.",
+      "🙌 Tham gia là tự nguyện. Bạn có thể dừng bất cứ lúc nào bằng cách đóng trang. Vì hệ thống không thu thập email hay họ tên, sau khi gửi bài sẽ không xác định được bài của từng người để rút lại."
+    ],
+    "o_dong_y": "Tôi đã đọc và đồng ý tham gia nghiên cứu này.",
+    "o_nguoi_lon": "Tôi dưới 18 tuổi và xác nhận phụ huynh hoặc giáo viên phụ trách của tôi đã biết và đồng ý cho tôi tham gia."
+  },
+  "cam_on": {
+    "bieu_tuong": "💚",
+    "tieu_de": "Cảm ơn bạn đã tham gia!",
+    "mo_ta": "Câu trả lời của bạn giúp tìm hiểu cách học sinh, sinh viên Việt Nam dùng AI và tư duy sáng tạo. Dữ liệu chỉ được dùng cho mục đích nghiên cứu. Nếu có thắc mắc, vui lòng liên hệ:",
+    "chuc": "Chúc bạn luôn giữ được tinh thần ham học hỏi, tràn đầy năng lượng và đạt thật nhiều thành tích tốt trong học tập nhé! 🌱"
+  },
+  "da_nop": {
+    "bieu_tuong": "✅",
+    "tieu_de": "Bạn đã gửi khảo sát rồi, cảm ơn bạn!",
+    "mo_ta": "Trình duyệt này vừa gửi khảo sát xong nên chưa cần làm lại.\nNếu có thắc mắc, vui lòng liên hệ:"
+  },
+  "che_do_thu": "Chế độ thử: bài làm của bạn gắn nhãn thử và không vào dữ liệu thật.",
+  "loi": {
+    "gia_tri_sai": "Có câu trả lời không hợp lệ. Bạn tải lại trang rồi thử lại.",
+    "qua_lon": "Bài gửi quá lớn. Bạn kiểm tra lại các ô gõ chữ rồi thử lại."
+  }
+}

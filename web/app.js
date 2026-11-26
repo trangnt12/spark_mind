@@ -71,7 +71,7 @@ function hienThi(buoc, ...nodes) {
   goc.classList.remove("vao");
   void goc.offsetWidth;                       // buộc trình duyệt chạy lại hiệu ứng
   goc.classList.add("vao");
-  const tong = tt.demo ? TONG_BUOC_DEMO : TONG_BUOC;
+  const tong = tt.tongBuoc || (tt.demo ? TONG_BUOC_DEMO : TONG_BUOC);   // tt.tongBuoc: trang khảo sát hướng 1 (survey1.js) có số bước riêng
   const phanTram = Math.round((buoc / tong) * 100);
   document.getElementById("thanh").style.width = phanTram + "%";
   document.querySelector(".tien-do").setAttribute("aria-valuenow", phanTram);
@@ -771,4 +771,4 @@ async function khoiDong() {
   batDauTheoTrangThai();
 }
 
-khoiDong();
+if (!window.TRANG_RIENG) khoiDong();   // trang khảo sát hướng 1 (survey1.html) tự khởi động riêng, chỉ dùng lại các hàm ở file này

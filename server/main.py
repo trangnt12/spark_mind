@@ -24,7 +24,7 @@ from sparkmind.ingest import nhan_form  # noqa: E402
 from sparkmind.memory import rss_mb  # noqa: E402
 from sparkmind.game_store import tao_chi_muc_game  # noqa: E402
 from sparkmind.research_store import tao_chi_muc  # noqa: E402
-from server import admin_data_api, admin_rating_api, admin_settings_api, status_api, rate_api, admin_stats_api, admin_testdata_api, admin_users, auth, auth_api, content_api, game1, game2, game3, landing_page, predict_api, progress_api, research, review_api  # noqa: E402
+from server import admin_data_api, admin_rating_api, admin_settings_api, status_api, rate_api, admin_stats_api, admin_testdata_api, admin_users, auth, auth_api, content_api, game1, game2, game3, huong1_web, landing_page, predict_api, progress_api, research, review_api  # noqa: E402
 from sparkmind import audit, rating_store, session_store, user_store  # noqa: E402
 
 @lru_cache
@@ -57,6 +57,7 @@ app.include_router(progress_api.router)
 app.include_router(review_api.router)
 app.include_router(content_api.router)
 app.include_router(landing_page.router)
+app.include_router(huong1_web.router)
 app.include_router(predict_api.router)
 app.include_router(auth_api.router)
 app.include_router(admin_users.router)

@@ -112,6 +112,19 @@ def clean(raw: pd.DataFrame) -> pd.DataFrame:
     return them_cot_truong(df)
 
 
+def gan_co_trung_mau(df_sach: pd.DataFrame) -> pd.DataFrame:
+    """Cờ `trung_mau`: True cho MỌI form có toàn bộ câu trả lời (A1..C6, trừ thời gian nộp) giống hệt một form khác,
+    kể cả giữa nguồn google_form và web. CHỈ gắn cờ, không loại form, không đổi in_chinh / in_chat / in_rat_chat.
+
+    Khác các cờ khác, cờ này cần so với CẢ BẢNG nên không nằm trong clean() (clean() tính riêng từng form);
+    chỉ scripts/run_cleaning.py gọi hàm này. Form mới nộp có cờ sau lần chạy run_cleaning kế tiếp.
+    Web hướng 1 không phát hiện được một người làm hai lần: hai bài giống hệt nhau chỉ được gắn cờ này."""
+    kq = df_sach.copy()
+    cot = [k for k in RAW_KEYS if k != "thoi_gian" and k in kq]
+    kq["trung_mau"] = kq.duplicated(subset=cot, keep=False) if len(kq) else pd.Series(dtype=bool)
+    return kq
+
+
 def lay_ban(df_sach: pd.DataFrame, ten: str) -> pd.DataFrame:
     """Lấy một trong ba bản: 'chinh', 'chat', 'rat_chat'."""
     if ten not in VERSIONS:

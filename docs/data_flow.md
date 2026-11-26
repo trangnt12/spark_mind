@@ -21,8 +21,8 @@ File Excel cũ ──(import)─────┘          │
 
 ## Khi có form mới
 - Từ Google Form: Apps Script gửi sang server, server ghi `survey_form1`, làm sạch form đó, ghi `survey_clean`.
-- Từ web: server làm đúng như trên, với `nguon = "web"`.
-- Làm sạch cả bảng bất cứ lúc nào: `python scripts/run_cleaning.py`.
+- Từ web (`/huong-1/khao-sat`, mở từ tháng 1): server nhận mã lựa chọn, đổi thành chữ y hệt Google Form, rồi làm đúng như trên với `nguon = "web"` (thêm trường `thoi_gian_lam_bai`). Không thu email hay tên.
+- Làm sạch cả bảng bất cứ lúc nào: `python scripts/run_cleaning.py` (cũng gắn cờ `trung_mau` cho các form có mọi câu trả lời giống hệt nhau, kể cả giữa google_form và web).
 
 ## Mô hình KHÔNG tự huấn luyện lại mỗi lần có form
 Số trong báo cáo phải cố định. Quy ước:

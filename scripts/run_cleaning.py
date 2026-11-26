@@ -10,7 +10,7 @@ import argparse
 
 import _boot  # noqa: F401
 from sparkmind import config, data_label
-from sparkmind.cleaning import bang_loc_form, clean, lay_ban
+from sparkmind.cleaning import bang_loc_form, clean, gan_co_trung_mau, lay_ban
 from sparkmind.db import df_sang_docs, ghi_nhieu, lay_db
 from sparkmind.loaders import doc_excel, doc_goc_mongo
 
@@ -34,7 +34,8 @@ def main() -> None:
         db = lay_db()
         raw = doc_goc_mongo(db)
     print(f"Số form gốc: {len(raw)}")
-    sach = clean(raw)
+    sach = gan_co_trung_mau(clean(raw))   # cờ trùng mẫu cần so cả bảng (cả google_form lẫn web)
+    print(f"Số form trùng mẫu (cờ trung_mau): {int(sach['trung_mau'].sum())}")
 
     print(bang_loc_form(sach).to_string(index=False))
     print("\nSố form mỗi đợt:\n" + sach["dot"].value_counts().to_string())
