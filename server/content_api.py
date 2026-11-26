@@ -35,6 +35,12 @@ def giao_dien():
     return doc_noi_dung("research_ui.json")
 
 
+@router.get("/landing")
+def chu_trang_chu():
+    """Chữ cho trang chủ "/" và màn chọn hình thức tham gia (content/landing_ui.json)."""
+    return doc_noi_dung("landing_ui.json")
+
+
 @router.get("/results-ui")
 def chu_ket_qua():
     """Chữ cho trang kết quả (tên mức, lời nói rõ giới hạn)."""

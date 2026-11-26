@@ -30,6 +30,10 @@ python scripts/make_rating_sample.py --label thu --batch pilot_28_11 --n-game1 3
 
 Người chấm vào `/admin/#/rate`. Admin xem "Tiến độ chấm", "Độ đồng thuận" (kappa), "Xem câu trả lời" và tải CSV (chỉ admin). Hướng dẫn chấm nằm ở `content/rating_guide.json`. Chi tiết: `docs/decisions.md` mục "Chấm điểm trên web".
 
+## Trang chủ (landing), popup chọn hướng và trang /huong-1
+
+Địa chỉ `/` là landing page (`web/landing.html`, `landing*.js`, `landing.css`). Các nút "Tham gia" mở popup chọn hướng: hướng 1 sang `/huong-1` (`web/huong1.html`, nút "Bắt đầu khảo sát" mở link ngoài ở tab mới), hướng 2 sang `/play/` (màn chào có ô nhập mã, như cũ). Mọi chữ nằm ở **một file**: `content/landing_ui.json` (kể cả thẻ title/description/og trong mục `meta`). Đổi link hướng 1 chỉ cần sửa `huong1_url`. Hướng 2 hiện "Đã đóng" khi công tắc `huong2_mo` ở trang Cài đặt tắt; `huong1_url` trống thì hướng 1 hiện "Sắp mở". Tìm chỗ còn `[TODO]`: `grep -n "TODO" content/landing_ui.json`. Test: `python -m pytest tests/test_landing.py -q` (cần node để chạy phần DOM giả). `/play/`, `/admin/`, `/play/#demo` không đổi.
+
 ## Thêm một bảng vào trang dữ liệu quản trị
 
 Chỉ cần thêm **một mục** vào `BANG` trong `src/sparkmind/admin_registry.py` (không viết route, không sửa giao diện):

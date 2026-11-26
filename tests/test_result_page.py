@@ -192,7 +192,7 @@ def test_node_f5_o_dia_chi_xem_lai_chi_vao_khi_da_hoan_thanh():
     kq = chay_node(r"""
 (async () => {
   chay('web/review.js');
-  const app = fs.readFileSync('web/app.js', 'utf8');
+  const app = fs.readFileSync('web/app.js', 'utf8').replace(/\r\n/g, '\n');   // chuẩn hóa CRLF -> LF để cắt theo '\n' không phụ thuộc hệ điều hành
   const bat_dau = app.indexOf('function diDenBuoc(');
   vm.runInContext(app.slice(bat_dau, app.indexOf('\n}\n', bat_dau) + 3), ctx);
   vm.runInContext('var THU_TU_MAN = ["gioi_thieu","game1"]; var BUOC_SANG_MAN = { game1: { vao: "gioi_thieu", xa: "game1" }, cho_game_khac: { vao: "gioi_thieu", xa: "game1" } }; var MAN = { gioi_thieu: () => log.push("man:gioi_thieu"), game1: () => log.push("man:game1") };', ctx);

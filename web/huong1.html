@@ -1,0 +1,39 @@
+<!doctype html>
+<!-- Trang giới thiệu riêng của hướng 1 ("/huong-1"). Khung trang: thẻ title/description/og do server/landing_page.py chèn từ
+     content/landing_ui.json (mục "meta"), chữ còn lại do huong1.js lấy từ /api/content/landing. -->
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#2E9E3E">
+  <title>{{title}}</title>
+  <meta name="description" content="{{description}}">
+  <meta property="og:type" content="website">
+  <meta property="og:locale" content="vi_VN">
+  <meta property="og:title" content="{{og_title}}">
+  <meta property="og:description" content="{{og_description}}">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito:wght@500;700;800&display=swap">
+  <link rel="stylesheet" href="/play/style.css">
+  <link rel="stylesheet" href="/play/landing.css">
+</head>
+<body class="man-gioi-thieu trang-huong1">
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+    <symbol id="bd-logo" viewBox="0 0 64 64">
+      <rect width="64" height="64" rx="18" fill="#2E9E3E"/>
+      <path d="M32 10C34 22 42 30 54 32C42 34 34 42 32 54C30 42 22 34 10 32C22 30 30 22 32 10Z" fill="#fff"/>
+      <path d="M44 7C53 8 57 15 56 23C48 22 43 16 44 7Z" fill="#FFC93C"/>
+    </symbol>
+  </svg>
+  <header>
+    <div class="dau">
+      <span class="ten-hieu"><svg class="logo" aria-hidden="true"><use href="#bd-logo"/></svg><span id="ten-he-thong" class="ten"></span></span>
+    </div>
+  </header>
+  <main id="man-hinh" tabindex="-1"></main>
+  <footer id="chan-trang" class="an"></footer>
+  <script src="/play/landing_chung.js"></script>
+  <script src="/play/huong1.js"></script>
+</body>
+</html>

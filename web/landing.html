@@ -1,0 +1,51 @@
+<!doctype html>
+<!-- Trang chủ "/". Đây chỉ là khung: thẻ title/description/og do server/landing_page.py chèn từ content/landing_ui.json (mục "meta"),
+     mọi chữ còn lại do landing*.js lấy từ /api/content/landing. -->
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#2E9E3E">
+  <title>{{title}}</title>
+  <meta name="description" content="{{description}}">
+  <meta property="og:type" content="website">
+  <meta property="og:locale" content="vi_VN">
+  <meta property="og:title" content="{{og_title}}">
+  <meta property="og:description" content="{{og_description}}">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito:wght@500;700;800&display=swap">
+  <link rel="stylesheet" href="/play/style.css">
+  <link rel="stylesheet" href="/play/landing.css">
+</head>
+<body class="lp">
+  <!-- Bộ biểu tượng SVG nhúng sẵn (không tải thư viện icon) -->
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+    <symbol id="bd-logo" viewBox="0 0 64 64">
+      <rect width="64" height="64" rx="18" fill="#2E9E3E"/>
+      <path d="M32 10C34 22 42 30 54 32C42 34 34 42 32 54C30 42 22 34 10 32C22 30 30 22 32 10Z" fill="#fff"/>
+      <path d="M44 7C53 8 57 15 56 23C48 22 43 16 44 7Z" fill="#FFC93C"/>
+    </symbol>
+    <symbol id="bd-tick" viewBox="0 0 24 24">
+      <path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/>
+    </symbol>
+    <symbol id="bd-x" viewBox="0 0 24 24">
+      <path d="M6 6l12 12M18 6L6 18" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
+    </symbol>
+    <symbol id="bd-menu" viewBox="0 0 24 24">
+      <path d="M4 7h16M4 12h16M4 17h16" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"/>
+    </symbol>
+    <symbol id="bd-mui-xuong" viewBox="0 0 24 24">
+      <path d="M6 9.5l6 6 6-6" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+    </symbol>
+  </svg>
+  <header id="dau-trang" class="lp-dau"></header>
+  <div id="thong-bao" class="thong-bao an" role="status"></div>
+  <main id="man-hinh" tabindex="-1"></main>
+  <footer id="chan-trang" class="lp-chan"></footer>
+  <script src="/play/landing_chung.js"></script>
+  <script src="/play/landing_popup.js"></script>
+  <script src="/play/landing_khoi.js"></script>
+  <script src="/play/landing.js"></script>
+</body>
+</html>

@@ -1,0 +1,223 @@
+{
+  "_ghi_chu": "Mọi chữ của trang chủ (đường dẫn /), popup chọn hướng và trang /huong-1 nằm ở file này (một chỗ). Chỗ nào còn [TODO] là Trang cần điền.",
+  "ten_he_thong": "SparkMind",
+  "huong1_url": "https://forms.gle/7Qx29MKnVx2c2x1d6",
+  "_ghi_chu_huong1_url": "[TODO] Trang điền: link Google Form của hướng 1 (bắt đầu bằng https://). Để trống thì thẻ hướng 1 hiện 'Sắp mở'. Sau này đổi sang web hướng 1 chỉ cần sửa dòng này.",
+  "dong_y_url": "",
+  "_ghi_chu_dong_y_url": "[TODO] Trang điền: địa chỉ văn bản đồng ý tham gia (bắt đầu bằng https://). Để trống thì không hiện liên kết.",
+  "meta": {
+    "trang_chu": {
+      "title": "SparkMind: AI và tư duy sáng tạo",
+      "description": "Nghiên cứu về cách học sinh, sinh viên Việt Nam dùng AI và tư duy sáng tạo. Tham gia khảo sát nhanh hoặc khảo sát kèm 3 trò chơi.",
+      "og_title": "SparkMind: AI giúp bạn nghĩ tốt hơn, hay nghĩ ít đi?",
+      "og_description": "Cùng tham gia nghiên cứu về AI và tư duy sáng tạo của học sinh, sinh viên Việt Nam."
+    },
+    "huong1": {
+      "title": "Khảo sát nhanh | SparkMind",
+      "description": "Khảo sát ngắn 3–5 phút về thói quen dùng AI, không cần mã tham gia, không thu thập email hay họ tên.",
+      "og_title": "SparkMind: Khảo sát nhanh",
+      "og_description": "Chỉ 3–5 phút để chia sẻ cách bạn dùng AI trong học tập."
+    }
+  },
+  "dau_trang": {
+    "ten_du_an": "SparkMind",
+    "nut_menu": "Mở menu",
+    "nut_dong_menu": "Đóng menu",
+    "nhan_dieu_huong": "Điều hướng chính",
+    "muc": [
+      { "id": "gioi-thieu", "chu": "Giới thiệu" },
+      { "id": "ban-se-lam-gi", "chu": "Bạn sẽ làm gì?" },
+      { "id": "quyen-rieng-tu", "chu": "Quyền riêng tư" },
+      { "id": "hoi-dap", "chu": "Hỏi đáp" },
+      { "id": "lien-he", "chu": "Liên hệ" }
+    ],
+    "nut_tham_gia": "Tham gia"
+  },
+  "dang_lam_do": {
+    "tieu_de": "Bạn đang có bài làm dở trên máy này",
+    "mo_ta": "Bấm Tiếp tục để quay lại đúng chỗ bạn đã dừng.",
+    "nut": "Tiếp tục"
+  },
+  "mo_dau": {
+    "tieu_de": "SparkMind: AI giúp bạn nghĩ tốt hơn, hay nghĩ ít đi?",
+    "mo_ta": [
+      "AI đang thay đổi cách chúng ta học tập, tìm kiếm thông tin và giải quyết vấn đề. Nhưng liệu việc sử dụng AI có thực sự giúp chúng ta sáng tạo hơn, hay đôi khi khiến chúng ta ít suy nghĩ độc lập hơn?",
+      "SparkMind là một nghiên cứu tìm hiểu cách học sinh, sinh viên Việt Nam sử dụng AI và mối liên hệ giữa cách sử dụng AI với tư duy sáng tạo.",
+      "Cùng tham gia để khám phá cách bạn và AI đang tư duy cùng nhau!"
+    ],
+    "nut_chinh": "Tham gia nghiên cứu",
+    "nut_demo": "Thử bản demo"
+  },
+  "gioi_thieu": {
+    "tieu_de": "Vì sao có SparkMind?",
+    "doan": [
+      "AI ngày càng trở thành công cụ quen thuộc trong học tập. Chúng ta có thể sử dụng AI để tìm kiếm thông tin, giải thích kiến thức, lên ý tưởng hay giải quyết những bài tập khó.",
+      "Tuy nhiên, việc sử dụng AI có thể tác động đến cách mỗi người suy nghĩ và sáng tạo theo nhiều cách khác nhau. Tại Việt Nam, những vấn đề này vẫn cần được tìm hiểu thêm thông qua các nghiên cứu thực tế.",
+      "SparkMind được thực hiện nhằm góp phần tìm hiểu mối liên hệ giữa cách sử dụng AI và tư duy sáng tạo của học sinh, sinh viên Việt Nam."
+    ],
+    "muc_tieu": {
+      "bieu_tuong": "🎯",
+      "tieu_de": "Mục tiêu nghiên cứu",
+      "dan": "Nghiên cứu hướng đến việc tìm hiểu:",
+      "y": [
+        "Học sinh, sinh viên Việt Nam đang sử dụng AI trong học tập như thế nào?",
+        "Những cách sử dụng AI khác nhau có mối liên hệ như thế nào với tư duy sáng tạo?",
+        "Người học tự đánh giá khả năng sáng tạo của bản thân ra sao?"
+      ]
+    },
+    "phuong_phap": {
+      "bieu_tuong": "🧪",
+      "tieu_de": "Phương pháp nghiên cứu",
+      "dan": "SparkMind kết hợp ba hoạt động chính:",
+      "y": [
+        { "ten": "Khảo sát", "mo_ta": "Tìm hiểu thói quen, mức độ và quan điểm sử dụng AI trong học tập." },
+        { "ten": "Trò chơi", "mo_ta": "Thực hiện các hoạt động tương tác nhằm thu thập dữ liệu liên quan đến tư duy sáng tạo." },
+        { "ten": "Phân tích dữ liệu", "mo_ta": "Ứng dụng các phương pháp học máy để phân tích dữ liệu và tìm hiểu những mối liên hệ trong nghiên cứu." }
+      ]
+    }
+  },
+  "hai_huong": {
+    "tieu_de": "Bạn muốn tham gia theo cách nào?",
+    "mo_ta": "SparkMind cung cấp hai hình thức tham gia. Bạn có thể lựa chọn hình thức phù hợp với thời gian và trải nghiệm mong muốn của mình.",
+    "huong1": {
+      "bieu_tuong": "⚡",
+      "ten": "Hướng 1: Khảo sát nhanh",
+      "thoi_gian": "Thời gian: Khoảng 3–5 phút.",
+      "mo_ta": "Chia sẻ thói quen sử dụng AI và quan điểm của bạn về tư duy sáng tạo thông qua một bảng khảo sát ngắn.",
+      "y": ["Không cần mã tham gia.", "Không thu thập email hoặc họ tên.", "Chỉ cần hoàn thành bảng khảo sát.", "Hướng 1 dùng Google Form, dữ liệu do Google xử lý theo chính sách của họ."],
+      "nut": "Tìm hiểu và tham gia",
+      "sap_mo": "Sắp mở"
+    },
+    "huong2": {
+      "bieu_tuong": "🎮",
+      "ten": "Hướng 2: Khảo sát và trò chơi",
+      "thoi_gian": "Thời gian: Khoảng 25–30 phút.",
+      "mo_ta": "Tham gia một hành trình gồm khảo sát và 3 trò chơi ngắn nhằm tìm hiểu cách bạn tư duy, sáng tạo và tương tác với các tình huống khác nhau.",
+      "y": ["Cần mã tham gia do người nghiên cứu cung cấp.", "Bao gồm khảo sát và 3 trò chơi ngắn.", "Có thể xem kết quả tham khảo và xem lại bài làm sau khi hoàn thành cả 3 trò chơi, trên cùng trình duyệt đã dùng để làm bài."],
+      "nut": "Tìm hiểu và tham gia",
+      "da_dong": "Đã đóng",
+      "da_dong_mo_ta": "Đợt tham gia này đã đóng, cảm ơn bạn đã quan tâm."
+    }
+  },
+  "quy_trinh": {
+    "tieu_de": "Quy trình tham gia",
+    "phu_de": "Hướng 2: Khảo sát và trò chơi",
+    "buoc": [
+      { "ten": "Nhập mã tham gia", "mo_ta": "Nhập mã được người nghiên cứu cung cấp để bắt đầu hành trình trải nghiệm SparkMind." },
+      { "ten": "Đọc thông tin và xác nhận đồng ý", "mo_ta": "Tìm hiểu mục đích nghiên cứu, nội dung tham gia và cách dữ liệu được sử dụng trước khi quyết định tham gia." },
+      { "ten": "Hoàn thành khảo sát", "mo_ta": "Trả lời các câu hỏi về thói quen sử dụng AI và quan điểm cá nhân." },
+      { "ten": "Trải nghiệm 3 trò chơi", "mo_ta": "Thực hiện ba trò chơi ngắn liên quan đến tư duy và sáng tạo." },
+      { "ten": "Xem kết quả tham khảo", "mo_ta": "Sau khi hoàn thành cả 3 trò chơi, xem kết quả tham khảo và xem lại bài làm của mình trên cùng trình duyệt đã dùng để làm bài." }
+    ],
+    "nhan_buoc": "Bước"
+  },
+  "ket_qua": {
+    "tieu_de": "Không chỉ là một khảo sát, mà còn là cơ hội khám phá cách bạn tư duy.",
+    "dan": "Khi tham gia Hướng 2, bạn có thể:",
+    "y": [
+      { "bieu_tuong": "📊", "ten": "Kết quả tham khảo", "mo_ta": "Nhận một ước lượng tham khảo về mức sáng tạo mà những người có cách dùng AI giống bạn thường tự đánh giá." },
+      { "bieu_tuong": "🔍", "ten": "Xem lại bài làm", "mo_ta": "Sau khi hoàn thành cả 3 trò chơi, bạn có thể xem lại những câu trả lời và bài làm đã thực hiện, trên cùng trình duyệt đã dùng để làm bài." },
+      { "bieu_tuong": "💡", "ten": "Trải nghiệm tư duy sáng tạo", "mo_ta": "Thử sức với các hoạt động tương tác và khám phá những cách tiếp cận vấn đề khác nhau." }
+    ],
+    "luu_y_nhan": "Lưu ý:",
+    "luu_y": "Kết quả chỉ mang tính tham khảo trong phạm vi nghiên cứu, không phải kết luận hay đánh giá chính thức về năng lực sáng tạo của bạn."
+  },
+  "rieng_tu": {
+    "tieu_de": "Chúng tôi tôn trọng quyền riêng tư của bạn",
+    "mo_ta": "SparkMind hướng đến việc thu thập dữ liệu cần thiết cho mục đích nghiên cứu và hạn chế sử dụng thông tin nhận diện cá nhân.",
+    "thu_thap_tieu_de": "Dữ liệu được thu thập theo từng hình thức tham gia:",
+    "huong1": {
+      "ten": "Hướng 1 – Khảo sát nhanh:",
+      "y": ["Câu trả lời khảo sát.", "Không thu thập email hoặc họ tên.", "Không yêu cầu mã tham gia.", "Hướng 1 dùng Google Form, dữ liệu do Google xử lý theo chính sách của họ."]
+    },
+    "huong2": {
+      "ten": "Hướng 2 – Khảo sát và trò chơi:",
+      "y": [
+        "Câu trả lời khảo sát và thông tin cơ bản (email, lớp hoặc năm học, giới tính, tên trường).",
+        "Dữ liệu bài làm từ 3 trò chơi.",
+        "Số lần bạn sửa bài.",
+        "Loại trình duyệt và thiết bị bạn đang dùng.",
+        "Thời gian làm bài (gồm thời gian từng câu, số lần rời khỏi trang và số lần dán nội dung) để đánh giá chất lượng dữ liệu chung của nghiên cứu.",
+        "Các dấu hiệu chất lượng bài làm do hệ thống tự tính (ví dụ làm quá nhanh hoặc chọn một đáp án cho mọi câu), để đánh giá chất lượng dữ liệu chung của nghiên cứu.",
+        "Dấu vân tay mã hóa của địa chỉ mạng (không lưu địa chỉ gốc) để phát hiện nộp bài trùng lặp.",
+        "Mã tham gia để quản lý quá trình thực hiện và kết quả."
+      ]
+    },
+    "su_dung_tieu_de": "Dữ liệu được sử dụng như thế nào?",
+    "su_dung": [
+      "Dữ liệu chỉ được sử dụng cho mục đích nghiên cứu đã thông báo.",
+      "Ở Hướng 2, bài làm trong các trò chơi có thể được một dịch vụ AI và hai người chấm đọc để chấm điểm; bài làm được gửi đi không kèm email hoặc họ tên của bạn.",
+      "Kết quả không được sử dụng để đánh giá hay xếp loại năng lực cá nhân.",
+      "Bản demo không lưu câu trả lời của bạn.",
+      "Nếu có thắc mắc về dữ liệu hoặc muốn yêu cầu rút dữ liệu, bạn có thể liên hệ trực tiếp người nghiên cứu."
+    ],
+    "cam_ket_nhan": "Cam kết minh bạch:",
+    "cam_ket": "Bạn được cung cấp thông tin về việc thu thập và sử dụng dữ liệu trước khi quyết định tham gia nghiên cứu.",
+    "lien_ket_dong_y": "Đọc văn bản đồng ý tham gia"
+  },
+  "hoi_dap": {
+    "tieu_de": "Hỏi đáp thường gặp",
+    "cau": [
+      { "hoi": "Tôi cần chuẩn bị gì trước khi tham gia?", "dap": "Bạn chỉ cần một thiết bị có kết nối Internet và một chút thời gian. Với Hướng 2, bạn cần có mã tham gia do người nghiên cứu cung cấp. Nếu bạn dưới 18 tuổi, bạn cần có sự biết và đồng ý của phụ huynh hoặc giáo viên phụ trách trước khi tham gia." },
+      { "hoi": "Tôi có bắt buộc phải tham gia không?", "dap": "Không. Việc tham gia hoàn toàn tự nguyện. Bạn có thể quyết định không tham gia. Bạn có thể dừng bất cứ lúc nào bằng cách đóng trang." },
+      { "hoi": "Dữ liệu của tôi được sử dụng vào việc gì?", "dap": "Dữ liệu được sử dụng để phục vụ nghiên cứu về cách sử dụng AI và mối liên hệ với tư duy sáng tạo. Việc xử lý, phân tích và báo cáo dữ liệu tuân theo phạm vi đã thông báo cho người tham gia." },
+      { "hoi": "Kết quả tôi nhận được có chính xác không?", "dap": "Kết quả trên hệ thống chỉ mang tính tham khảo, được xây dựng dựa trên phương pháp và dữ liệu nghiên cứu. Đây không phải bài kiểm tra chuẩn hóa hay đánh giá chính thức về năng lực sáng tạo của bạn." },
+      { "hoi": "Tôi muốn rút dữ liệu thì phải làm sao?", "dap": "Hướng 2: bạn gửi email tới người nghiên cứu, kèm email đã dùng để tham gia và mã tham gia (nếu có). Hướng 1: do không thu thập email hay họ tên nên không xác định được bài của từng người, vì vậy không thể rút riêng từng bài." }
+    ]
+  },
+  "nguoi_thuc_hien": {
+    "tieu_de": "Người thực hiện",
+    "gioi_thieu": "Nghiên cứu được thực hiện bởi",
+    "ten": "Nguyễn Thị Trang",
+    "vai_tro": "người thực hiện nghiên cứu SparkMind",
+    "don_vi_nhan": "Đơn vị:",
+    "don_vi": "Trường Công nghệ Thông tin và Truyền thông, Đại học Công nghiệp Hà Nội (HaUI)",
+    "email_nhan": "Email liên hệ:",
+    "email": "nguyenthitrang.ttd@gmail.com",
+    "ho_tro": "Nếu bạn có câu hỏi hoặc cần hỗ trợ trong quá trình tham gia, vui lòng liên hệ qua email."
+  },
+  "chan_trang": {
+    "khau_hieu": "SparkMind – Hiểu cách chúng ta tư duy trong thời đại AI.",
+    "mo_ta": "Một nghiên cứu về cách sử dụng trí tuệ nhân tạo và mối liên hệ với tư duy sáng tạo ở học sinh, sinh viên Việt Nam.",
+    "ban_quyen": "© 2026 SparkMind"
+  },
+  "popup": {
+    "tieu_de": "Bạn muốn tham gia theo cách nào?",
+    "mo_ta": "Chọn một hình thức phù hợp với thời gian và trải nghiệm bạn mong muốn.",
+    "nut_dong": "Đóng",
+    "huong1": {
+      "ten": "Khảo sát nhanh",
+      "thoi_gian": "Thời gian: 3–5 phút.",
+      "mo_ta": "Chia sẻ thói quen sử dụng AI thông qua bảng khảo sát ngắn. Không cần mã tham gia.",
+      "nut": "Chọn Hướng 1"
+    },
+    "huong2": {
+      "ten": "Khảo sát và trò chơi",
+      "thoi_gian": "Thời gian: 25–30 phút.",
+      "mo_ta": "Hoàn thành khảo sát và trải nghiệm 3 trò chơi. Cần mã tham gia do người nghiên cứu cung cấp.",
+      "nut": "Chọn Hướng 2"
+    }
+  },
+  "huong1_trang": {
+    "tieu_de": "Bắt đầu bằng một khảo sát nhỏ!",
+    "mo_ta": [
+      "Bạn đang tham gia một phần của nghiên cứu SparkMind nhằm tìm hiểu cách học sinh, sinh viên Việt Nam sử dụng AI trong học tập và mối liên hệ giữa việc sử dụng AI với tư duy sáng tạo.",
+      "Thông qua một số câu hỏi ngắn, chúng tôi mong muốn tìm hiểu thói quen, trải nghiệm và quan điểm của bạn về AI."
+    ],
+    "thong_tin_tieu_de": "Thông tin tham gia:",
+    "thong_tin": [
+      "Thời gian thực hiện: Khoảng 3–5 phút.",
+      "Không cần mã tham gia.",
+      "Không thu thập email hoặc họ tên.",
+      "Việc tham gia hoàn toàn tự nguyện.",
+      "Hướng 1 dùng Google Form, dữ liệu do Google xử lý theo chính sách của họ."
+    ],
+    "cam_on": "Cảm ơn bạn đã dành thời gian đóng góp cho nghiên cứu!",
+    "nut_bat_dau": "Bắt đầu khảo sát",
+    "sap_mo": "Sắp mở",
+    "nut_quay_lai": "Về trang chủ"
+  },
+  "loi": {
+    "khong_tai_duoc": "Không tải được nội dung. Bạn tải lại trang sau vài giây."
+  }
+}

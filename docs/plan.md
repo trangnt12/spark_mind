@@ -33,6 +33,8 @@ Nguồn: bảng `notebook_hang_ngay` của Trang. Mốc đã chốt (đổi 23/1
 - 23/11: `docs/rubric_game1.md` và `src/sparkmind/score_game1.py` (lọc ý hợp lệ, đếm fluency; không chấm lúc nộp).
 - **Làm khi phân tích (sau khi thu xong, sau 20/12):** chấm đa dạng (flexibility) và độc đáo (originality) của game 1. AI gán nhóm công dụng cho từng ý hợp lệ và gom ý tương tự; 2 người chấm kiểm tra lại một mẫu (cùng mẫu rút khoảng 12–15/12). Độc đáo tính trong cùng đồ vật, ý xuất hiện ở dưới 5% người chơi. Chi tiết: `docs/rubric_game1.md`.
 
+- 26/11 (landing page): `/` landing đầy đủ + popup chọn hướng + `/huong-1` (`web/landing*.js`, `landing.css`, `huong1.js`, `server/landing_page.py`, `content/landing_ui.json`, `tests/test_landing.py`, `tests/landing_dom_test.js`, `tests/huong1_dom_test.js`). Việc còn lại cho Trang: `dong_y_url`; đồng bộ thời gian hướng 2 (25–30 so với 20–25 phút) sau pilot 29/11; xem các chỗ chưa khớp văn bản đồng ý.
+
 ## Ba game (đã chốt hướng)
 1. Đồ vật bí ẩn (kiểu AUT): số ý, số ý hợp lệ (AI lọc), độ độc đáo theo tần suất.
 2. Soi lỗi AI (đã xong 24/11): 12 ý, 5 ý sai, chọn ý cho là sai, +1/−1, tối thiểu 0, tối đa 5, chấm tự động; không nói số ý sai.

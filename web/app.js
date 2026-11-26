@@ -718,6 +718,11 @@ function manTiepTuc() {
 
 /** Mở web: (1) vừa tải lại trang -> ở lại đúng màn đang xem; (2) vào lại sau khi đã thoát -> hỏi tiếp tục hay làm mới; (3) chưa có gì -> nhập mã. */
 function batDauTheoTrangThai() {
+  if (location.hash === "#demo") {            // từ trang chủ "/": "Thử bản demo" mở thẳng bản demo (không đụng phiên hướng 2 đang có)
+    history.replaceState(null, "", location.pathname + location.search);
+    manDemoGioiThieu();
+    return;
+  }
   const luu = localStorage.getItem(KHOA_TOKEN), man = docMan();
   if (luu) {
     tt.token = luu;
