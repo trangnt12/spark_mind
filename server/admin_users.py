@@ -5,7 +5,7 @@ Không bao giờ trả password_hash. Mật khẩu tạm (do admin nhập hoặc
 from fastapi import APIRouter, Depends
 from pydantic import BaseModel, Field
 
-from server.auth import chay_ma, loi, require_role
+from server.auth import chay_ma, khoa_ten_dang_nhap, loi, require_role
 from sparkmind import passwords, session_store, user_store
 from sparkmind.audit import write_audit
 
@@ -61,6 +61,7 @@ def dat_lai_mat_khau(username: str, body: DatLaiBody, ctx=Depends(chi_admin)):
     user_store.dat_mat_khau(db, user, mat_khau, bat_buoc_doi=True)
     session_store.xoa_phien_cua_user(db, user["_id"])   # đăng xuất mọi nơi
     session_store.xoa_dem_sai(db, user_id=user["_id"])
+    session_store.xoa_dem_sai(db, khoa_ten_dang_nhap(user["username"]))
     write_audit(db, admin, "user_reset_password", user_store.COL_USERS, user["_id"], {"username": user["username"]})
     return {"temp_password": mat_khau}
 
@@ -83,6 +84,7 @@ def khoa_hoac_mo(username: str, body: SuaUserBody, ctx=Depends(chi_admin)):
     user_store.dat_hoat_dong(db, user, body.is_active)
     if body.is_active:
         session_store.xoa_dem_sai(db, user_id=user["_id"])
+        session_store.xoa_dem_sai(db, khoa_ten_dang_nhap(user["username"]))
     else:
         session_store.xoa_phien_cua_user(db, user["_id"])
     write_audit(db, admin, "user_unlock" if body.is_active else "user_lock", user_store.COL_USERS, user["_id"],

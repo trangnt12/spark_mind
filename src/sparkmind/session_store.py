@@ -16,6 +16,7 @@ GIO_TOI_DA = timedelta(hours=12)
 SO_LAN_SAI_TOI_DA = 5
 CUA_SO_SAI = timedelta(minutes=15)
 THOI_GIAN_KHOA = timedelta(minutes=15)
+SO_NGAN_TEN = 4096   # bộ đếm theo TÊN chia vào tối đa ngần này ngăn (băm tên chia lấy dư): số tài liệu đếm không bao giờ vượt mức này, dù bị thử bằng hàng triệu tên lạ
 
 
 def tao_chi_muc_phien(db) -> None:
@@ -75,12 +76,22 @@ def khoa_thu(username: str, ip: str) -> str:
     return hashlib.sha256(f"{username}|{ip}".encode("utf-8")).hexdigest()
 
 
-def giay_con_khoa(db, khoa: str) -> int:
-    """Số giây còn bị khóa; 0 nếu không bị khóa."""
-    d = db[COL_THU_DANG_NHAP].find_one({"_id": khoa})
-    if not d or not d.get("locked_until"):
-        return 0
-    return max(0, int((d["locked_until"] - utc_now()).total_seconds()) + 1)
+def khoa_ten(username: str) -> str:
+    """Khóa đếm theo TÊN (không phụ thuộc IP, nên giả X-Forwarded-For không qua mặt được).
+    Mọi tên (có thật hay không) đều đi qua cùng một cách băm vào SO_NGAN_TEN ngăn: hành vi khóa giống hệt nhau nên không lộ tên nào có thật,
+    và bộ nhớ có giới hạn. Hai tên trùng ngăn thì dùng chung bộ đếm (hiếm, chỉ làm khóa sớm hơn, không bao giờ muộn hơn)."""
+    so = int.from_bytes(hashlib.sha256(f"ten|{username}".encode("utf-8")).digest()[:8], "big") % SO_NGAN_TEN
+    return f"ten:{so}"
+
+
+def giay_con_khoa(db, *cac_khoa: str) -> int:
+    """Số giây còn bị khóa (lấy khóa nào còn lâu nhất); 0 nếu không bị khóa."""
+    kq = 0
+    for khoa in cac_khoa:
+        d = db[COL_THU_DANG_NHAP].find_one({"_id": khoa})
+        if d and d.get("locked_until"):
+            kq = max(kq, int((d["locked_until"] - utc_now()).total_seconds()) + 1)
+    return kq
 
 
 def ghi_that_bai(db, khoa: str, user_id=None):

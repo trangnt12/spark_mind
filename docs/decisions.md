@@ -294,3 +294,9 @@ Chi tiết từng phát hiện, mức độ và việc cần Trang quyết đị
 - **Chưa kiểm trong trình duyệt thật:** CSP công khai và cờ `Secure` của cookie trên Render (cách kiểm: `docs/security_review.md` mục 1 và 7).
 - **pip-audit (26/11/2026):** không có lỗ hổng đã biết trong 136 gói của môi trường dev. `requirements-server.txt` chưa ghim phiên bản (trừ xgboost).
 
+## Khóa đăng nhập theo tên và ghim thư viện (27/11/2026, xử lý S-01 và S-08)
+- **Khóa theo tên (`session_store.khoa_ten`, `server/auth_api.py`):** ngoài bộ đếm theo cặp (tên + IP) có thêm bộ đếm chỉ theo tên, vì IP giả được qua `X-Forwarded-For` (xem mục 26/11). Quá 5 lần sai trong 15 phút thì khóa tên đó 15 phút (429, `locked`, thông báo chung giống nhau dù tên có thật hay không, chữ ở `content/admin_ui.json` > `loi.locked`). Cả hai bộ đếm ghi cùng lúc; khóa nào còn lâu hơn thì áp dụng. Mỗi lần bắt đầu khóa ghi `audit_log` `login_locked` (không tên, không IP). Đổi mật khẩu cũng tính vào cả hai bộ đếm. Đăng nhập đúng, admin đặt lại mật khẩu hoặc khóa/mở tài khoản thì xóa bộ đếm theo tên.
+- **Giới hạn số tên theo dõi:** tên được băm vào tối đa `SO_NGAN_TEN` = 4096 ngăn (khóa `ten:<số>` trong `login_attempts`, vẫn có TTL), nên bộ nhớ có trần và không phân biệt được tên thật/giả. Đánh đổi: hai tên trùng ngăn dùng chung bộ đếm; và người biết tên admin có thể cố ý khóa admin 15 phút (không vào được tài khoản). Nên có ít nhất 2 admin.
+- **Thay đổi hành vi so với 23/11:** trước đây IP khác không bị ảnh hưởng khi một tên bị khóa; nay bị khóa theo tên từ mọi IP. Test cũ đã sửa theo.
+- **Ghim thư viện:** `requirements-server.txt` ghim toàn bộ 21 gói (danh sách trong `docs/security_review.md` S-08), `xgboost-cpu==3.4.1` giữ nguyên. Muốn nâng cấp: đổi số, chạy pytest và pip-audit, rồi deploy. Chưa build thử trên Render.
+

@@ -46,7 +46,7 @@
   },
   "loi": {
     "bad_credentials": "Tên đăng nhập hoặc mật khẩu không đúng.",
-    "locked": "Đã thử sai quá nhiều lần. Vui lòng đợi 15 phút rồi thử lại.",
+    "locked": "Tài khoản này tạm bị khóa vì nhập sai mật khẩu quá nhiều lần. Vui lòng đợi 15 phút rồi thử lại.",
     "not_logged_in": "Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.",
     "forbidden": "Bạn không có quyền thực hiện thao tác này.",
     "csrf": "Yêu cầu không hợp lệ (mã bảo vệ sai). Hãy tải lại trang.",

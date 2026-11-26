@@ -10,15 +10,15 @@ Trạng thái: ✅ đã đạt · 🔧 đã sửa trong phiên này · ❓ cần
 
 | # | Mức | Phát hiện | Trạng thái |
 |---|---|---|---|
-| S-01 | **Cao** (có điều kiện) | Giả `X-Forwarded-For` qua mặt khóa đăng nhập và mọi giới hạn tốc độ | ❓ cần quyết định |
+| S-01 | **Cao** (có điều kiện) | Giả `X-Forwarded-For` qua mặt khóa đăng nhập và mọi giới hạn tốc độ | 🔧 đã xử lý phần khóa đăng nhập (27/11); giới hạn tốc độ khác vẫn ⚠ chấp nhận |
 | S-02 | Trung bình | Tài khoản Atlas dùng cho server có vai trò `atlasAdmin` (quá quyền) | ❓ Trang làm trên Atlas |
 | S-03 | Trung bình | Trang công khai thiếu tiêu đề bảo mật (nosniff, khung, referrer, CSP, HSTS) | 🔧 đã sửa |
 | S-04 | Trung bình | Không giới hạn kích thước body (trừ hướng 1): gửi body khổng lồ làm tràn RAM 512 MB | 🔧 đã sửa |
 | S-05 | Trung bình | Bộ đếm tốc độ trong RAM phình mãi khi gặp rất nhiều IP khác nhau (kể cả IP giả) | 🔧 đã sửa |
 | S-06 | Thấp | `/docs`, `/redoc`, `/openapi.json` công khai, liệt kê cả route quản trị | 🔧 đã sửa |
 | S-07 | Thấp | Khóa `x-api-key` có ký tự ngoài ASCII làm `compare_digest` văng lỗi 500 | 🔧 đã sửa |
-| S-08 | Thấp | `requirements-server.txt` không ghim phiên bản (trừ xgboost) | ❓ |
-| S-09 | Thấp | Đăng nhập quản trị không có giới hạn theo IP riêng; mỗi lần thử tốn CPU (scrypt) | ❓ (liên quan S-01) |
+| S-08 | Thấp | `requirements-server.txt` không ghim phiên bản (trừ xgboost) | 🔧 đã ghim toàn bộ (27/11) |
+| S-09 | Thấp | Đăng nhập quản trị không có giới hạn theo IP riêng; mỗi lần thử tốn CPU (scrypt) | ⚠ giảm nhẹ: bộ đếm theo tên chặn tối đa 5 lần sai/15 phút mỗi tên |
 | S-10 | Thấp | `participants.session_token` lưu dạng thô (không băm); lộ bản sao lưu thì chiếm được phiên người chơi | ❓ |
 | S-11 | Thấp | Chuỗi tìm kiếm của admin (`?q=`) nằm trong URL, vào nhật ký truy cập của Render (có thể có email) | ⚠ + dặn dò |
 | S-12 | Thấp | scrypt `n=2^14` thấp hơn khuyến nghị mới (OWASP: 2^17) | ⚠ |
@@ -44,7 +44,11 @@ Không tìm thấy: lỗi XSS, NoSQL injection, đọc dữ liệu người khá
 - **S-01 (Cao, có điều kiện).** Server chạy với `--forwarded-allow-ips="*"`. Đã đọc mã uvicorn 0.54.0 (`ProxyHeadersMiddleware`): khi tin mọi proxy, nó lấy phần tử **đầu tiên** của `X-Forwarded-For` làm IP khách. Phần tử đầu do chính người gửi viết ra được (proxy chỉ nối thêm vào cuối). Kiểm tra bằng thử nghiệm tại chỗ (bọc app bằng đúng middleware đó, `trusted_hosts="*"`): 12 lần đăng nhập sai liên tiếp, mỗi lần một `X-Forwarded-For` khác, đều trả 401, **không bao giờ bị khóa**; không giả header thì lần thứ 5 bị khóa như thiết kế. Hệ quả: (a) kẻ tấn công thử mật khẩu quản trị không giới hạn; (b) mọi giới hạn tốc độ theo IP (nhập mã, demo, hướng 1) cũng bị qua mặt; (c) `ip_hash` không đáng tin. `docs/decisions.md` đã ghi (b) và (c) là rủi ro chấp nhận (chỉ để gắn cờ), nhưng **(a) chưa được ghi nhận**, và (a) mới là chỗ nguy hiểm vì liên quan quyền admin.
   - Điều kiện: chỉ đúng nếu proxy của Render để nguyên `X-Forwarded-For` do khách gửi (cách làm chuẩn là nối thêm). Cách kiểm trên Render: gửi 12 lần `curl -s -o /dev/null -w "%{http_code}\n" -X POST https://<địa-chỉ-render>/api/research/code/check -H "Content-Type: application/json" -H "X-Forwarded-For: 9.9.9.$i" -d '{"code":"SAISAI"}'` với `$i` khác nhau; nếu không lần nào ra 429 thì giả được.
   - Giảm nhẹ hiện có: mật khẩu tối thiểu 12 ký tự; mỗi lần thử tốn khoảng 40 ms CPU trên máy dev (scrypt, đã đo; trên Render miễn phí chậm hơn) nên tốc độ thử bị giới hạn ở vài chục lần mỗi giây; mọi đăng nhập đều vào `audit_log`.
-  - **Cần Trang chọn** (xem mục "Việc cần Trang quyết định").
+  - **ĐÃ XỬ LÝ (27/11/2026, cách A):** thêm bộ đếm đăng nhập sai **theo tên tài khoản**, không phụ thuộc IP, chạy song song với bộ đếm tên+IP. Quá 5 lần sai trong 15 phút (từ bất kỳ IP nào, kể cả giả `X-Forwarded-For`) thì tên đó bị khóa 15 phút; trong lúc khóa, ngay cả mật khẩu đúng cũng bị chặn. Thông báo khóa giống hệt nhau (HTTP 429, mã `locked`, `Retry-After` 900) dù tên có thật hay không: "Tài khoản này tạm bị khóa vì nhập sai mật khẩu quá nhiều lần. Vui lòng đợi 15 phút rồi thử lại." Tên được chuẩn hóa (chữ thường, bỏ khoảng trắng) nên gõ `TRANG` hay ` Trang ` không né được. Mỗi lần bắt đầu khóa ghi một dòng `audit_log` `login_locked` (không có tên gõ vào, không có IP). Đăng nhập đúng, admin đặt lại mật khẩu hoặc mở khóa tài khoản thì xóa cả bộ đếm theo tên.
+  - **Giới hạn bộ nhớ:** bộ đếm theo tên chia vào tối đa 4096 "ngăn" bằng băm tên (`session_store.SO_NGAN_TEN`), nên số tài liệu đếm không bao giờ quá 4096 dù bị thử bằng hàng triệu tên lạ; mọi tên (có thật hay không) hành xử giống nhau nên không dò được tên nào có thật. Đánh đổi: hai tên trùng ngăn dùng chung bộ đếm (hiếm; chỉ làm khóa sớm hơn).
+  - **Đánh đổi cần biết:** kẻ xấu biết tên admin có thể cố tình gõ sai 5 lần để khóa admin 15 phút (không vào được tài khoản, nhưng admin bị làm phiền). Cách thoát: đợi 15 phút, hoặc admin khác mở khóa, hoặc chạy lại `python scripts/create_user.py`/đặt lại mật khẩu cho tài khoản. Nên có ít nhất 2 tài khoản admin.
+  - Test: `tests/test_admin_auth.py` mục "S-01" (giả IP bằng `X-Forwarded-For` qua đúng middleware uvicorn của Render vẫn bị khóa; thông báo giống nhau; đăng nhập đúng sau hết khóa; không phình bộ nhớ; audit; mở khóa).
+  - **Phần còn lại là rủi ro chấp nhận:** giới hạn tốc độ nhập mã, demo, hướng 1 và `ip_hash` vẫn theo IP nên vẫn giả được (chỉ để gắn cờ).
 
 ### 3. Quyền theo vai trò và theo dữ liệu — ✅
 - Từ chối mặc định: `tests/test_admin_auth.py` duyệt mọi route `/api/admin/*` và `/api/rate/*` (cả router gộp lười) và FAIL nếu route nào thiếu `require_role` hoặc khóa ingest. Route mới `/api/admin/health` đã qua bộ quét. Có test chứng minh bộ quét bắt được route thiếu.
@@ -99,10 +103,10 @@ Tất cả giới hạn theo IP đều bị S-01 qua mặt. **S-05 (đã sửa):
 - **S-06 (đã sửa):** `/docs`, `/redoc`, `/openapi.json` công khai liệt kê toàn bộ route kể cả `/api/admin/*`. Nay tắt mặc định, chỉ bật khi đặt `BAT_TAI_LIEU_API=1` trên máy dev (đã ghi vào `.env.example`). Chạy thử trên máy muốn xem `/docs`: thêm `BAT_TAI_LIEU_API=1` vào `.env`.
 - **S-07 (đã sửa):** `hmac.compare_digest(str, str)` văng TypeError (500) nếu header `x-api-key` có ký tự ngoài ASCII; nay so sánh dạng byte, trả 401 (test `test_khoa_ingest_khong_phai_ascii...`). Không lộ gì, chỉ là lỗi sạch hơn.
 
-### 10. Phụ thuộc có lỗ hổng đã biết — ✅ (kèm S-08)
+### 10. Phụ thuộc có lỗ hổng đã biết — ✅ (S-08 đã xử lý)
 - `pip-audit` (cài trong môi trường tạm, chạy trên toàn bộ 136 gói của môi trường dev, kiểm với cơ sở dữ liệu lỗ hổng ngày 26/11/2026): **"No known vulnerabilities found"**. Lệnh tái lập: `pip freeze > freeze.txt && pip-audit -r freeze.txt --no-deps --disable-pip`.
 - Phiên bản server đang dùng: fastapi 0.165.0, starlette 1.10.0, uvicorn 0.54.0, pydantic 2.14.4, pymongo 4.20.0, pandas 3.1.1, numpy 2.5.5, python-dotenv 1.2.4, xgboost(-cpu) 3.4.1.
-- **S-08 (Thấp):** `requirements-server.txt` chỉ ghim `xgboost-cpu==3.4.1`; các gói khác lấy bản mới nhất mỗi lần Render build. Rủi ro: một lần deploy kéo bản mới gây lỗi bất ngờ giữa đợt thu 1–20/12. Đề xuất: ghim đúng các bản trên (kiểm Render có đủ các bản này cho phiên bản Python của Render), đóng băng trước 1/12; chưa làm vì cần thử build trên Render.
+- **S-08 (ĐÃ XỬ LÝ 27/11/2026):** `requirements-server.txt` nay ghim đúng phiên bản đang cài và đã chạy đạt toàn bộ test: gồm 7 gói chính (như trên, giữ nguyên `xgboost-cpu==3.4.1`) và 14 gói đi kèm (scipy 1.18.1, starlette 1.10.0, pydantic 2.14.4, pydantic-core 2.50.5, annotated-types 0.8.0, annotated-doc 0.0.7, typing-extensions 4.16.0, typing-inspection 0.4.5, anyio 4.16.0, idna 3.20, h11 0.16.0, click 8.5.1, dnspython 2.9.2, python-dateutil 4.0.0, tzdata 2026.6, opentelemetry-api 1.45.2). `pip-audit` trên chính file này: không có lỗ hổng. Lưu ý: máy dev cài `xgboost` đầy đủ (không phải `xgboost-cpu`) cùng số 3.4.1; việc Render tải được đủ các bản này cho phiên bản Python của Render chỉ biết chắc sau lần build đầu, nên build thử trước 1/12.
 
 ### 11. Quyền Atlas và IP cho phép — ❓ (S-02)
 - **S-02 (Trung bình).** Kiểm tra chỉ đọc: tài khoản trong chuỗi kết nối đang có vai trò **`atlasAdmin`** (toàn quyền trên mọi database và quản trị cụm). Nếu chuỗi kết nối trên Render bị lộ (ví dụ vào nhầm log, ảnh chụp màn hình), kẻ xấu xóa được cả database. Ba quy tắc "không drop database" trong `CLAUDE.md` chỉ ràng buộc mã của dự án, không ràng buộc quyền của tài khoản.
@@ -122,13 +126,9 @@ Tất cả giới hạn theo IP đều bị S-01 qua mặt. **S-05 (đã sửa):
 
 ## Việc cần Trang quyết định
 
-1. **S-01 (ưu tiên cao nhất, trước 1/12).** Chống thử mật khẩu admin khi IP giả được. Các cách, từ đơn giản đến tốn công:
-   - **A (khuyến nghị, nhỏ):** thêm bộ đếm thứ hai theo **tên tài khoản** (không theo IP): quá 20 lần sai trong 15 phút từ mọi IP thì mọi lần đăng nhập vào tài khoản đó bị chậm/khóa 15 phút. Nhược điểm: kẻ xấu có thể cố tình làm admin bị khóa tạm (nhưng không vào được). Vì chỉ có vài tài khoản, đây là đánh đổi chấp nhận được; cần thêm cách mở khóa bằng script cho admin cuối cùng.
-   - **B:** đọc IP khách từ header riêng của Render (nếu Render đảm bảo header đó không giả được) thay cho `X-Forwarded-For`. Cần xác minh tài liệu và thử trên Render trước khi làm.
-   - **C (lớn):** thêm xác thực hai lớp (TOTP) cho admin. Mạnh nhất, nhưng thêm nhiều việc; không kịp trước 1/12 nếu không cần thiết.
-   - Cho tới khi chọn: dùng mật khẩu admin dài (từ 16 ký tự, ngẫu nhiên), và trang Quản trị chỉ cần đưa cho ít người.
+1. ~~S-01~~ Đã xử lý bằng cách A (bộ đếm theo tên). Còn chọn thêm: cách B/C (IP từ header Render, TOTP) chỉ khi Trang muốn mạnh hơn; nên có ít nhất 2 tài khoản admin.
 2. **S-02:** tạo tài khoản Atlas riêng cho Render với quyền `readWrite` trên `spark-mind` (mục 11). Việc của Trang trên Atlas, khoảng 10 phút, nên làm trước 29/11 (pilot) để thử luôn.
-3. **S-08:** ghim phiên bản `requirements-server.txt` (mục 10).
+3. ~~S-08~~ Đã ghim. Build thử trên Render trước 1/12.
 4. **S-10:** có băm `session_token` của người chơi không (mục 8). Đề xuất: không làm trước khi thu xong.
 5. **S-13, S-14:** hai việc kiểm tra 5 phút sau khi deploy (mục 1 và mục 7).
 

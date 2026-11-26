@@ -96,3 +96,8 @@ def xoa_cookie(response, request: Request) -> None:
 def khoa_dang_nhap(request: Request, username: str) -> str:
     """Khóa đếm đăng nhập sai theo (username + IP). IP lấy từ request.client.host, không tin x-forwarded-for."""
     return session_store.khoa_thu(user_store.chuan_hoa_username(username)[:64], lay_ip(request))
+
+
+def khoa_ten_dang_nhap(username: str) -> str:
+    """Khóa đếm đăng nhập sai chỉ theo tên tài khoản (bên cạnh khoa_dang_nhap theo tên + IP)."""
+    return session_store.khoa_ten(user_store.chuan_hoa_username(username)[:64])

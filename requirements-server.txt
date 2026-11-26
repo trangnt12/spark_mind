@@ -1,12 +1,34 @@
 # Thư viện tối thiểu để chạy server trên Render (gói miễn phí 512MB RAM).
 # Không có jupyter, shap, matplotlib, scikit-learn, openpyxl:
 # server chỉ import fastapi, pymongo, pandas, numpy, python-dotenv, xgboost (đã kiểm tra).
+# TẤT CẢ phiên bản được GHIM đúng bản đang cài trên máy dev và đã chạy đạt toàn bộ test (26/11/2026, docs/security_review.md S-08),
+# để mỗi lần Render build không kéo bản mới ngoài ý muốn giữa đợt thu. Muốn nâng cấp: đổi số, chạy pytest, chạy pip-audit, rồi mới deploy.
 # xgboost-cpu (bản không có phần GPU, nhẹ hơn) ghim ĐÚNG bản đã huấn luyện (models/model_b4_meta.json, phien_ban.xgboost);
 # code vẫn viết "import xgboost". Đổi bản thì phải kiểm tra lại mô hình. Máy dev có thể cài xgboost đầy đủ.
-fastapi
-uvicorn
-pymongo[srv]
-pandas
-numpy
-python-dotenv
+
+# --- Gói chính ---
+fastapi==0.165.0
+uvicorn==0.54.0
+pymongo[srv]==4.20.0
+pandas==3.1.1
+numpy==2.5.5
+python-dotenv==1.2.4
 xgboost-cpu==3.4.1
+
+# --- Gói đi kèm (do các gói trên kéo theo), ghim luôn để bản dựng lặp lại được ---
+scipy==1.18.1
+starlette==1.10.0
+pydantic==2.14.4
+pydantic-core==2.50.5
+annotated-types==0.8.0
+annotated-doc==0.0.7
+typing-extensions==4.16.0
+typing-inspection==0.4.5
+anyio==4.16.0
+idna==3.20
+h11==0.16.0
+click==8.5.1
+dnspython==2.9.2
+python-dateutil==4.0.0
+tzdata==2026.6
+opentelemetry-api==1.45.2

@@ -8,7 +8,7 @@ from functools import lru_cache
 from fastapi import APIRouter, Depends, Request, Response
 from pydantic import BaseModel, Field
 
-from server.auth import (dang_nhap_bat_buoc, dat_cookie, khoa_dang_nhap, kiem_origin, loi,
+from server.auth import (dang_nhap_bat_buoc, dat_cookie, khoa_dang_nhap, khoa_ten_dang_nhap, kiem_origin, loi,
                          TEN_COOKIE, xoa_cookie)
 from server.research import lay_db_nghien_cuu
 from sparkmind import config, passwords, session_store, user_store
@@ -41,18 +41,23 @@ def lay_chu_giao_dien():
 
 
 def _bao_that_bai(db, request: Request, username: str, user: dict | None) -> None:
-    """Ghi lần sai, ghi nhật ký (không ghi tên gõ vào), rồi báo lỗi chung chung (hoặc 429 nếu vừa bị khóa)."""
-    khoa_den = session_store.ghi_that_bai(db, khoa_dang_nhap(request, username), user["_id"] if user else None)
+    """Ghi lần sai vào CẢ HAI bộ đếm (tên + IP, và chỉ tên), ghi nhật ký (không ghi tên gõ vào), rồi báo lỗi chung chung
+    (hoặc 429 nếu vừa bị khóa). Mỗi lần bắt đầu khóa ghi thêm một dòng audit_log `login_locked`."""
+    uid = user["_id"] if user else None
+    khoa_cap = session_store.ghi_that_bai(db, khoa_dang_nhap(request, username), uid)
+    khoa_ten = session_store.ghi_that_bai(db, khoa_ten_dang_nhap(username), uid)
+    khoa_den = khoa_cap or khoa_ten
     user_store.ghi_dang_nhap_sai(db, user, khoa_den)
-    write_audit(db, user, "login_failed", user_store.COL_USERS, user["_id"] if user else None,
-                {"locked": bool(khoa_den)})
+    write_audit(db, user, "login_failed", user_store.COL_USERS, uid, {"locked": bool(khoa_den)})
     if khoa_den:
+        write_audit(db, user, "login_locked", user_store.COL_USERS, uid,
+                    {"theo_cap_ten_ip": bool(khoa_cap), "theo_ten": bool(khoa_ten)})   # không ghi tên gõ vào, không ghi IP
         raise loi(429, "locked", headers={"Retry-After": str(int(session_store.THOI_GIAN_KHOA.total_seconds()))})
     raise loi(401, "bad_credentials")
 
 
 def _chan_neu_dang_khoa(db, request: Request, username: str) -> None:
-    cho = session_store.giay_con_khoa(db, khoa_dang_nhap(request, username))
+    cho = session_store.giay_con_khoa(db, khoa_dang_nhap(request, username), khoa_ten_dang_nhap(username))
     if cho:
         raise loi(429, "locked", headers={"Retry-After": str(cho)})
 
@@ -73,6 +78,7 @@ def dang_nhap(body: DangNhapBody, request: Request, response: Response, db=Depen
     if not (dung and user["is_active"]):
         _bao_that_bai(db, request, body.username, user)
     session_store.xoa_dem_sai(db, khoa_dang_nhap(request, body.username))
+    session_store.xoa_dem_sai(db, khoa_ten_dang_nhap(body.username))   # đăng nhập đúng: xóa cả bộ đếm theo tên
     user_store.ghi_dang_nhap_ok(db, user)
     write_audit(db, user, "login", user_store.COL_USERS, user["_id"])
     return _gui_phien(db, request, response, user)
@@ -103,6 +109,7 @@ def doi_mat_khau(body: DoiMatKhauBody, request: Request, response: Response, ctx
     if ma_loi or body.new_password == body.current_password:
         raise loi(422, ma_loi or "same_password")
     session_store.xoa_dem_sai(db, khoa)
+    session_store.xoa_dem_sai(db, khoa_ten_dang_nhap(user["username"]))
     user_store.dat_mat_khau(db, user, body.new_password, bat_buoc_doi=False)
     session_store.xoa_phien_cua_user(db, user["_id"])   # đăng xuất mọi nơi, cấp phiên mới cho nơi đang đổi
     write_audit(db, user, "change_password", user_store.COL_USERS, user["_id"])

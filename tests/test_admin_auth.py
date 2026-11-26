@@ -136,7 +136,8 @@ def test_khoa_sau_5_lan_sai_theo_username_va_ip(db):
     assert ket_qua == [401, 401, 401, 401, 429]                 # lần thứ 5 kích hoạt khóa
     r = dang_nhap(c, "trang")                                    # đúng mật khẩu vẫn bị chặn trong lúc khóa
     assert r.status_code == 429 and int(r.headers["retry-after"]) > 0
-    assert dang_nhap(client("8.8.8.8"), "trang").status_code == 200   # IP khác không bị khóa
+    assert dang_nhap(client("8.8.8.8"), "trang").status_code == 429   # IP khác cũng bị khóa vì còn bộ đếm theo TÊN (S-01)
+    assert dang_nhap(client("8.8.8.8"), "nguoi-khac").status_code == 401   # tên khác thì không liên quan
     assert "9.9.9.9" not in str(list(db["login_attempts"].find()))    # không lưu IP thô
 
 
@@ -387,3 +388,78 @@ def test_chu_giao_dien_du_ma_loi_va_khong_co_bi_mat():
     for ma in ("bad_credentials", "locked", "csrf", "forbidden", "must_change_password", "weak_password", "username_taken", "last_admin", "mang", "khac"):
         assert ma in ui["loi"]
     assert set(ui["vai_tro"]) == {"admin", "viewer", "rater"} and "403" in ui
+
+
+# ---------- S-01: khóa theo TÊN (không phụ thuộc IP) ----------
+
+def _sai(c, ten, xff=None):
+    h = {**GOC, **({"X-Forwarded-For": xff} if xff else {})}
+    return c.post("/api/auth/login", json={"username": ten, "password": "sai-mat-khau-12"}, headers=h)
+
+
+def test_gia_ip_bang_x_forwarded_for_van_bi_khoa_theo_ten(db):
+    """Mô phỏng Render: uvicorn tin mọi X-Forwarded-For nên mỗi lần một IP khác. Bộ đếm theo cặp tên+IP không bắt được, bộ đếm theo tên thì có."""
+    from uvicorn.middleware.proxy_headers import ProxyHeadersMiddleware
+    tao(db, "trang", "admin")
+    c = TestClient(ProxyHeadersMiddleware(main.app, trusted_hosts="*"), client=("10.0.0.1", 1))
+    ma = [_sai(c, "trang", f"9.9.9.{i}").status_code for i in range(5)]
+    assert ma == [401, 401, 401, 401, 429]
+    r = c.post("/api/auth/login", json={"username": "trang", "password": MK}, headers={**GOC, "X-Forwarded-For": "7.7.7.7"})
+    assert r.status_code == 429 and r.json() == {"detail": {"code": "locked"}}      # mật khẩu ĐÚNG từ IP lạ vẫn bị chặn trong lúc khóa
+
+
+def test_thong_bao_khoa_giong_nhau_du_ten_co_that_hay_khong(db):
+    tao(db, "trang", "admin")
+    kq = {}
+    for ten in ("trang", "khong-ton-tai"):
+        c = client("5.5.5.5")
+        for i in range(5):
+            r = _sai(c, ten, f"1.1.1.{i}")
+        kq[ten] = (r.status_code, r.json(), r.headers["retry-after"])
+        assert _sai(client("6.6.6.6"), ten).status_code == 429
+    assert kq["trang"] == kq["khong-ton-tai"] == (429, {"detail": {"code": "locked"}}, "900")
+
+
+def test_dang_nhap_dung_sau_khi_het_han_khoa_theo_ten(db):
+    tao(db, "trang", "admin")
+    for i in range(5):
+        _sai(client("5.5.5.5"), "trang", f"2.2.2.{i}")
+    assert dang_nhap(client("3.3.3.3"), "trang").status_code == 429
+    db["login_attempts"].update_many({}, {"$set": {"locked_until": utc_now() - timedelta(seconds=1)}})
+    assert dang_nhap(client("3.3.3.3"), "trang").status_code == 200
+    assert dang_nhap(client("4.4.4.4"), "trang").status_code == 200       # đăng nhập đúng đã xóa bộ đếm theo tên
+
+
+def test_chu_hoa_va_khoang_trang_khong_ne_duoc_khoa_theo_ten(db):
+    tao(db, "trang", "admin")
+    for ten in ("trang", "TRANG", " Trang ", "trang", "Trang"):
+        _sai(client("5.5.5.5"), ten, "8.8.8.1")
+    assert dang_nhap(client("3.3.3.3"), "trang").status_code == 429
+
+
+def test_audit_ghi_moi_lan_khoa_khong_lo_ten_hay_ip(db):
+    tao(db, "trang", "admin")
+    for i in range(5):
+        _sai(client("5.5.5.5"), "trang", f"2.2.2.{i}")
+    ds = list(db["audit_log"].find({"action": "login_locked"}))
+    assert len(ds) == 1 and ds[0]["detail"]["theo_ten"] is True
+    ket = str(ds)
+    assert "5.5.5.5" not in ket and "2.2.2." not in ket
+
+
+def test_bo_dem_theo_ten_co_gioi_han_so_tai_lieu(db, monkeypatch):
+    monkeypatch.setattr(session_store, "SO_NGAN_TEN", 50)                   # thu nhỏ số ngăn cho test chạy nhanh
+    for i in range(session_store.SO_NGAN_TEN * 4):                          # gấp 4 lần số ngăn, mỗi lần một tên lạ
+        session_store.ghi_that_bai(db, session_store.khoa_ten(f"ten-la-{i}"))
+    so_ten = db["login_attempts"].count_documents({"_id": {"$regex": "^ten:"}})
+    assert 0 < so_ten <= session_store.SO_NGAN_TEN
+
+
+def test_admin_mo_khoa_tai_khoan_xoa_ca_bo_dem_theo_ten(db):
+    admin = dang_nhap_ok(db, "trang", "admin")
+    tao(db, "cham1", "rater")
+    for i in range(5):
+        _sai(client("5.5.5.5"), "cham1", f"2.2.2.{i}")
+    assert dang_nhap(client("3.3.3.3"), "cham1").status_code == 429
+    admin.post("/api/admin/users/cham1/reset-password", json={"temp_password": "mat-khau-tam-12-ky"}, headers=GOC)
+    assert dang_nhap(client("3.3.3.3"), "cham1", "mat-khau-tam-12-ky").status_code == 200
