@@ -177,7 +177,7 @@
     var t = SM.ui.du_lieu;
     SM.api("GET", "/api/admin/data/" + b.khoa + "/" + encodeURIComponent(id) + "/lien-quan").then(function (kq) {
       if (!kq.ok) { cho.replaceChildren(h("p", {class: "loi"}, SM.chuLoi(kq.ma))); return; }
-      var ten = function (k) { var x = (SM.tables || []).filter(function (y) { return y.khoa === k; })[0]; return x ? x.ten + " (" + k + ")" : k; };
+      var ten = function (k) { if (SM.ui.don_dep.ten_bang[k]) return SM.ui.don_dep.ten_bang[k]; var x = (SM.tables || []).filter(function (y) { return y.khoa === k; })[0]; return x ? x.ten + " (" + k + ")" : k; };
       cho.replaceChildren(h("p", {}, t.xoa_con), h("ul", {class: "ds-con"}, Object.keys(kq.data.bang_con).map(function (k) {
         return h("li", {}, ten(k) + ": ", h("strong", {}, SM.so(kq.data.bang_con[k])));
       })));

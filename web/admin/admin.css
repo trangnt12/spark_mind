@@ -181,3 +181,21 @@ button.nguy-hiem { background: var(--loi-chu); box-shadow: 0 4px 0 #7E1A15; }
 /* Game 3 dạng đọc ở trang chi tiết */
 .muc-game3 { margin: 0 0 12px; }
 .noi-dung-game3 { margin: 4px 0 0; white-space: pre-wrap; overflow-wrap: anywhere; }
+
+/* ---------- Chấm điểm (phiên 3) ---------- */
+.trang-cham { max-width: 760px; margin: 0 auto; }   /* trang người chấm: cột hẹp, dễ đọc trên điện thoại */
+.tien-do-cham progress, .bang progress { width: 100%; max-width: 360px; height: 14px; accent-color: var(--xanh); }
+.bang progress { width: 120px; vertical-align: middle; }
+.khung-huong-dan > summary { font-size: 15px; }
+.gt-muc { margin: 0 0 12px; font-size: 18px; font-weight: 700; overflow-wrap: anywhere; }
+.y-nguoi-choi { white-space: pre-wrap; }
+.khung-ai-goc { margin: 4px 0 14px; padding: 10px 14px; color: var(--chu-phu); background: #EDF1EE; border-radius: 10px; border-left: 4px solid var(--vien); overflow-wrap: anywhere; }
+blockquote.khung-ai-goc { margin-left: 0; margin-right: 0; }
+.luoi-chon { display: grid; gap: 14px; margin: 14px 0; }
+@media (min-width: 700px) { .luoi-chon { grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); } }
+textarea { width: 100%; padding: 8px 12px; font: inherit; color: var(--chu); background: var(--trang); border: 2px solid var(--vien); border-radius: 12px; resize: vertical; }
+textarea:focus { border-color: var(--xanh-dam); outline: none; }
+.bang-cheo th, .bang-cheo td { text-align: center; }
+.bang-cheo td.duong-cheo { background: var(--xanh-nhat); }
+.trang-cham .thao-tac { margin-top: 14px; }
+.trang-cham .thao-tac button { flex: 1 1 130px; }

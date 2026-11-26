@@ -217,12 +217,65 @@ Table audit_log {
   user_id objectid
   username varchar
   role varchar
-  action varchar [note: 'login | login_failed | logout | change_password | user_create | user_create_script | user_reset_password | user_lock | user_unlock | data_create | data_update | data_delete | data_export | test_data_delete']
+  action varchar [note: 'login | login_failed | logout | change_password | user_create | user_create_script | user_reset_password | user_lock | user_unlock | data_create | data_update | data_delete | data_export | test_data_delete | rating_sample | rating_lock | rating_unlock | rating_export | rating_key_export']
   collection varchar
   doc_id varchar
   detail json [note: 'never contains passwords, hashes or tokens (filtered)']
   indexes { at }
 }
+
+// ---------- Chấm điểm trên web (phiên 3, 26/11/2026) ----------
+Table rating_batches {
+  id objectid [pk]
+  name varchar [not null, unique, note: 'tên đợt, vd pilot_28_11 (chỉ chữ không dấu, số, _ -)']
+  data_label varchar [not null, note: 'thu | pilot | that; một đợt chỉ chứa một nhãn. Nhãn thu/pilot bị "Xóa dữ liệu thử" xóa cùng đợt']
+  raters varchar [note: 'mảng username được giao; rỗng = mọi tài khoản rater']
+  locked bool [note: 'true: người chấm không lưu hay sửa được']
+  locked_at datetime
+  created_at datetime
+}
+
+Table rating_items {
+  id objectid [pk]
+  item_code varchar [not null, unique, note: 'G1-0001, G3-0001... cấp SAU khi trộn thứ tự nên không suy ra được người chơi. Đây là thứ DUY NHẤT người chấm nhìn thấy để định danh']
+  game int [not null, note: '1 hoặc 3']
+  noi_dung json [not null, note: 'chép từ game_responses. Game 1: {do_vat, cong_dung}; game 3: {tinh_huong, ai_goc, y_tuong}']
+  participant_id objectid [note: 'CHỈ quản trị: để đối chiếu. Không bao giờ trả cho người chấm']
+  nguon_khoa varchar [note: 'game 1: y<số thứ tự ý trong bài>; game 3: tinh_huong_id. Cùng participant_id tạo khóa chống rút lại']
+  prompt_id varchar [note: 'CHỈ quản trị: id đồ vật (game 1) hoặc tinh_huong_id (game 3)']
+  data_label varchar
+  rating_batch varchar [not null]
+  thu_tu int [note: 'thứ tự đã trộn trong đợt; mọi người chấm thấy cùng thứ tự']
+  rut_luc datetime
+  seed int
+  indexes { item_code [unique] (rating_batch, participant_id, game, nguon_khoa) [unique] }
+}
+
+Table ratings {
+  id objectid [pk]
+  item_code varchar [not null]
+  rater varchar [not null, note: 'username']
+  rating_batch varchar
+  diem json [note: 'game 1: {nhom: A..H | X}; game 3: {them_y_moi, khac_goc, kha_thi}, mỗi cái 1-5 hoặc X. Bản nháp có thể thiếu khóa']
+  hoan_tat bool [note: 'đủ điểm chưa; chỉ bản hoàn tất tính vào tiến độ và độ đồng thuận']
+  ghi_chu varchar
+  thoi_gian_cham_giay int [note: 'đo ở trình duyệt (trừ lúc ẩn tab), của LẦN LƯU ĐẦU']
+  thoi_gian_sua_giay int [note: 'cộng dồn thời gian các lần mở lại để sửa']
+  tao_luc datetime
+  sua_luc datetime
+  indexes { (item_code, rater) [unique] }
+}
+
+// Chưa làm (để chỗ): ai_scores, khóa item_code, điểm AI để so với điểm người chấm.
+Table ai_scores {
+  item_code varchar [pk, note: 'CHƯA TẠO. Làm ở phiên sau; điểm AI không bao giờ hiện cho người chấm']
+}
+
+Ref: rating_batches.name < rating_items.rating_batch
+Ref: rating_items.item_code < ratings.item_code
+Ref: rating_items.item_code - ai_scores.item_code
+Ref: participants.id < rating_items.participant_id
+Ref: users.username < ratings.rater
 
 Ref: users.id < admin_sessions.user_id
 Ref: users.id < audit_log.user_id

@@ -24,8 +24,8 @@ from sparkmind.ingest import nhan_form  # noqa: E402
 from sparkmind.memory import rss_mb  # noqa: E402
 from sparkmind.game_store import tao_chi_muc_game  # noqa: E402
 from sparkmind.research_store import tao_chi_muc  # noqa: E402
-from server import admin_data_api, admin_stats_api, admin_testdata_api, admin_users, auth, auth_api, content_api, game1, game2, game3, predict_api, progress_api, research, review_api  # noqa: E402
-from sparkmind import audit, session_store, user_store  # noqa: E402
+from server import admin_data_api, admin_rating_api, rate_api, admin_stats_api, admin_testdata_api, admin_users, auth, auth_api, content_api, game1, game2, game3, predict_api, progress_api, research, review_api  # noqa: E402
+from sparkmind import audit, rating_store, session_store, user_store  # noqa: E402
 
 @lru_cache
 def lay_db_dung_chung():
@@ -42,6 +42,7 @@ async def vong_doi(_app):
         user_store.tao_chi_muc_user(lay_db_dung_chung())
         session_store.tao_chi_muc_phien(lay_db_dung_chung())
         audit.tao_chi_muc_audit(lay_db_dung_chung())
+        rating_store.tao_chi_muc_cham(lay_db_dung_chung())
     except Exception as loi:
         logging.getLogger("uvicorn.error").error("Không tạo được chỉ mục: %s", type(loi).__name__)
     yield
@@ -61,6 +62,8 @@ app.include_router(admin_users.router)
 app.include_router(admin_stats_api.router)
 app.include_router(admin_data_api.router)
 app.include_router(admin_testdata_api.router)
+app.include_router(admin_rating_api.router)
+app.include_router(rate_api.router)
 
 # Trang quản trị không được lập chỉ mục, không lưu cache, không nhúng vào khung (iframe) của trang khác
 DUONG_QUAN_TRI = ("/admin", "/play/admin", "/api/auth", "/api/admin", "/api/rate")

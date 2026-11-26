@@ -10,12 +10,16 @@
   var TRANG = [
     {duong: "/", vaiTro: ["admin", "viewer"], icon: "home", ten: function (u) { return u.dieu_huong.trang_chu; }, nhom: "tong_quan", ve: function (g) { SM.trang.tongQuan(g); }},
     {duong: "/rate", vaiTro: ["rater"], icon: "rate", ten: function (u) { return u.dieu_huong.cham_bai; }, nhom: "cham_bai", ve: function (g) { SM.trang.chamBai(g); }},
+    {duong: "/rating/samples", vaiTro: ["admin", "viewer"], icon: "rate", ten: function (u) { return u.dieu_huong.mau_cham; }, nhom: "cham_diem", ve: function (g) { SM.trang.mauCham(g); }},
+    {duong: "/rating/progress", vaiTro: ["admin", "viewer"], icon: "table", ten: function (u) { return u.dieu_huong.tien_do_cham; }, nhom: "cham_diem", ve: function (g) { SM.trang.tienDoCham(g); }},
+    {duong: "/rating/agreement", vaiTro: ["admin", "viewer"], icon: "shield", ten: function (u) { return u.dieu_huong.dong_thuan; }, nhom: "cham_diem", ve: function (g) { SM.trang.dongThuan(g); }},
+    {duong: "/rating/answers", vaiTro: ["admin", "viewer"], icon: "table", ten: function (u) { return u.dieu_huong.xem_tra_loi; }, nhom: "cham_diem", ve: function (g) { SM.trang.xemTraLoi(g); }},
     {duong: "/users", vaiTro: ["admin"], icon: "users", ten: function (u) { return u.dieu_huong.nguoi_dung; }, nhom: "cau_hinh", ve: function (g) { SM.trang.nguoiDung(g); }},
     {duong: "/cleanup", vaiTro: ["admin"], icon: "trash", ten: function (u) { return u.dieu_huong.don_dep; }, nhom: "he_thong", ve: function (g) { SM.trang.donDep(g); }},
     {duong: "/password", vaiTro: ["admin", "viewer", "rater"], icon: "key", ten: function (u) { return u.dieu_huong.doi_mat_khau; }, an: true,
       ve: function (g) { SM.trang.doiMatKhau(g, false, function () { alert(SM.ui.doi_mat_khau.da_doi); vaoTrangChu(); }); }}
   ];
-  var NHOM_MENU = ["tong_quan", "cham_bai", "huong1", "huong2", "cau_hinh", "he_thong"];
+  var NHOM_MENU = ["tong_quan", "cham_bai", "huong1", "huong2", "cham_diem", "cau_hinh", "he_thong"];
   var ICON_NHOM = {huong1: "table", huong2: "table", cau_hinh: "cog", he_thong: "shield"};
   SM.tables = [];
 
@@ -26,11 +30,7 @@
     return ds.concat(SM.tables.map(function (b) { return {duong: "/data/" + b.khoa, icon: ICON_NHOM[b.nhom] || "table", ten: b.ten, nhom: b.nhom}; }));
   }
 
-  SM.trang = SM.trang || {};
-  SM.trang.chamBai = function (g) {
-    var t = SM.ui.cham_bai;
-    g.replaceChildren(h("section", {class: "trang"}, h("h1", {}, t.tieu_de), h("div", {class: "the"}, h("p", {}, t.mo_ta))));
-  };
+  SM.trang = SM.trang || {};   // trang chấm của người chấm nằm ở page-rate.js
 
   function duongHienTai() { return (location.hash || "#/").slice(1) || "/"; }
   function trangMacDinh() { return SM.me.role === "rater" ? "/rate" : "/"; }
@@ -79,7 +79,7 @@
   }
 
   function danhDauMenu(duong) {
-    var goc2 = duong.replace(/^(\/data\/[a-z_0-9]+).*$/, "$1");   // trang chi tiết thì đánh dấu mục của bảng
+    var goc2 = duong.replace(/^(\/data\/[a-z_0-9]+).*$/, "$1").replace(/^\/rate\/.*$/, "/rate");   // trang chi tiết thì đánh dấu mục của bảng
     document.querySelectorAll(".muc-menu").forEach(function (a) {
       var chon = a.getAttribute("data-duong") === goc2;
       a.classList.toggle("dang-chon", chon);
@@ -100,8 +100,9 @@
     var duong = duongHienTai(), noiDung = document.getElementById("noi-dung");
     if (!noiDung) return;
     document.body.classList.remove("mo-ngan-keo");
+    if (!/^\/rate(\/|$)/.test(duong) && SM.trang.roiChamBai) SM.trang.roiChamBai();   // rời trang chấm: lưu điểm đang dở
     danhDauMenu(duong);
-    var trang = TRANG.filter(function (t) { return t.duong === duong; })[0];
+    var trang = TRANG.filter(function (t) { return t.duong === duong.replace(/^\/rate\/[A-Za-z0-9-]+$/, "/rate"); })[0];   // /rate/<mã mục> dùng chung trang chấm (F5 vẫn đúng mục)
     if (!trang && /^\/data\//.test(duong)) { veTrangBang(noiDung, duong); noiDung.focus(); return; }
     if (!trang) { SM.trang.khongTim(noiDung); return; }
     if (trang.vaiTro.indexOf(SM.me.role) < 0) { SM.trang.cam(noiDung, vaoTrangChu); return; }

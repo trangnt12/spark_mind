@@ -1,0 +1,102 @@
+{
+  "_ghi_chu": "Hướng dẫn cho người chấm (trang /rate). Nhóm công dụng A–H lấy từ docs/rubric_game1.md (mục c), đúng thứ tự bảng. Bảng mốc game 3 do Trang chốt 26/11/2026 (mốc 1, 3, 5 có mô tả; 2 và 4 là mức trung gian). Mã nhóm/tiêu chí ở đây là nguồn duy nhất: server kiểm tra điểm theo file này.",
+  "game1": {
+    "tieu_de": "Game 1: xếp ý vào nhóm công dụng",
+    "mo_ta": "Mỗi mục là MỘT ý của người chơi cho đồ vật được nêu. Hãy chọn đúng MỘT nhóm công dụng phù hợp nhất. Chọn X khi ý không chấm được (vô nghĩa, chỉ lặp lại tên đồ vật, không phải một cách dùng).",
+    "nhom": [
+      {
+        "ma": "A",
+        "ten": "Xây dựng",
+        "vi_du": "Xây bếp, lót đường"
+      },
+      {
+        "ma": "B",
+        "ten": "Trang trí",
+        "vi_du": "Làm chặn sách để trang trí, xếp thành bồn hoa"
+      },
+      {
+        "ma": "C",
+        "ten": "Đồ dùng gia đình",
+        "vi_du": "Kê nồi, chặn cửa"
+      },
+      {
+        "ma": "D",
+        "ten": "Thể thao và trò chơi",
+        "vi_du": "Làm cột gôn, xếp hình trò chơi"
+      },
+      {
+        "ma": "E",
+        "ten": "Nghệ thuật",
+        "vi_du": "Nghiền làm bột màu vẽ, tạc tượng"
+      },
+      {
+        "ma": "F",
+        "ten": "Công cụ",
+        "vi_du": "Đập vỡ vật cứng, làm búa"
+      },
+      {
+        "ma": "G",
+        "ten": "Đựng và chứa",
+        "vi_du": "Khoét làm chậu cây nhỏ"
+      },
+      {
+        "ma": "H",
+        "ten": "Khác",
+        "vi_du": "Ý có nghĩa nhưng không xếp được vào nhóm nào ở trên"
+      }
+    ],
+    "khong_cham_duoc": {
+      "ma": "X",
+      "ten": "Không chấm được",
+      "mo_ta": "Ý vô nghĩa, chỉ là tên đồ vật, hoặc không phải một cách dùng."
+    }
+  },
+  "game3": {
+    "tieu_de": "Game 3: chấm ý tưởng so với bản gốc của AI",
+    "mo_ta": "Mỗi mục có một tình huống, câu trả lời gốc của AI (nền xám) và ý tưởng của người chơi. Chấm ba tiêu chí ĐỘC LẬP nhau, mỗi tiêu chí từ 1 đến 5 (mốc 2 và 4 là mức trung gian giữa các mốc nêu rõ). Không tính độ dài hay chính tả. Chọn X khi không chấm được (ví dụ bài trống hoặc không hiểu).",
+    "tieu_chi": [
+      {
+        "ma": "them_y_moi",
+        "ten": "Thêm ý mới",
+        "hoi": "Ý của người chơi có thêm điều gì mà bản gốc của AI chưa có?",
+        "moc": {
+          "1": "Không có ý mới, chỉ nhắc lại bản gốc",
+          "2": "Mức trung gian",
+          "3": "Có một ý mới rõ nhưng đơn giản, phổ biến",
+          "4": "Mức trung gian",
+          "5": "Nhiều ý mới đáng chú ý, mở ra hướng mới"
+        }
+      },
+      {
+        "ma": "khac_goc",
+        "ten": "Khác bản gốc AI",
+        "hoi": "Cách tiếp cận của người chơi khác bản gốc của AI đến mức nào?",
+        "moc": {
+          "1": "Gần như giống bản gốc",
+          "2": "Mức trung gian",
+          "3": "Giữ khung cũ nhưng đổi một phần đáng kể",
+          "4": "Mức trung gian",
+          "5": "Cách tiếp cận hoàn toàn khác"
+        }
+      },
+      {
+        "ma": "kha_thi",
+        "ten": "Khả thi",
+        "hoi": "Ý tưởng có làm được trong thực tế của một trường hoặc một nhóm học sinh, sinh viên không?",
+        "moc": {
+          "1": "Không làm được hoặc không rõ cách làm",
+          "2": "Mức trung gian",
+          "3": "Làm được nếu có thêm điều kiện",
+          "4": "Mức trung gian",
+          "5": "Làm được ngay, cách làm rõ ràng"
+        }
+      }
+    ],
+    "khong_cham_duoc": {
+      "ma": "X",
+      "ten": "Không chấm được"
+    },
+    "diem_toi_thieu": 1,
+    "diem_toi_da": 5
+  }
+}

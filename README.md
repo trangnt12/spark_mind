@@ -19,6 +19,17 @@ Dự đoán năng lực tư duy sáng tạo (tự nhận thức) của học sin
 | `tests/` | Kiểm tra tự động (chạy `python -m pytest tests -q`) |
 | `docs/` | Tài liệu: luồng dữ liệu, ghi chú quyết định |
 
+## Chấm điểm trên web (người chấm và độ đồng thuận)
+
+Tạo tài khoản người chấm (admin: trang Người dùng, vai trò `rater`). Rút mẫu bằng nút ở trang "Mẫu chấm" hoặc bằng script (mặc định chỉ xem, thêm `--apply` để ghi):
+
+```bash
+python scripts/make_rating_sample.py --label thu --batch pilot_28_11 --n-game1 30 --n-game3 20 --seed 1
+python scripts/make_rating_sample.py --label thu --batch pilot_28_11 --n-game1 30 --n-game3 20 --seed 1 --apply
+```
+
+Người chấm vào `/admin/#/rate`. Admin xem "Tiến độ chấm", "Độ đồng thuận" (kappa), "Xem câu trả lời" và tải CSV (chỉ admin). Hướng dẫn chấm nằm ở `content/rating_guide.json`. Chi tiết: `docs/decisions.md` mục "Chấm điểm trên web".
+
 ## Thêm một bảng vào trang dữ liệu quản trị
 
 Chỉ cần thêm **một mục** vào `BANG` trong `src/sparkmind/admin_registry.py` (không viết route, không sửa giao diện):

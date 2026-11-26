@@ -36,7 +36,11 @@
     "mo_menu": "Mở menu",
     "dong_menu": "Đóng menu",
     "menu_chinh": "Menu chính",
-    "don_dep": "Dọn dữ liệu thử"
+    "don_dep": "Dọn dữ liệu thử",
+    "mau_cham": "Mẫu chấm",
+    "tien_do_cham": "Tiến độ chấm",
+    "dong_thuan": "Độ đồng thuận",
+    "xem_tra_loi": "Xem câu trả lời"
   },
   "loi": {
     "bad_credentials": "Tên đăng nhập hoặc mật khẩu không đúng.",
@@ -66,7 +70,19 @@
     "ma_trung": "Mã này đã tồn tại.",
     "ma_da_dung": "Mã đã được người tham gia dùng, không thể sửa hoặc xóa.",
     "khong_co_thay_doi": "Không có gì thay đổi.",
-    "bo_loc_sai": "Bộ lọc hoặc cách sắp xếp không hợp lệ."
+    "bo_loc_sai": "Bộ lọc hoặc cách sắp xếp không hợp lệ.",
+    "dot_khong_co": "Không tìm thấy đợt chấm này.",
+    "muc_khong_co": "Không tìm thấy mục này.",
+    "dot_da_khoa": "Đợt chấm đã bị khóa, không sửa được nữa.",
+    "diem_khong_hop_le": "Điểm gửi lên không hợp lệ.",
+    "nhan_khong_hop_le": "Nhãn dữ liệu không hợp lệ.",
+    "ten_dot_khong_hop_le": "Tên đợt gồm 1–40 ký tự: chữ không dấu, số, gạch dưới, gạch ngang.",
+    "tham_so_khong_hop_le": "Số lượng hoặc seed không hợp lệ (số nguyên từ 0 đến 5000).",
+    "dot_khac_nhan": "Đợt này đã có và thuộc nhãn dữ liệu khác.",
+    "trung_ma_muc": "Trùng mã mục, hãy thử lại.",
+    "rate_limited": "Bạn thao tác quá nhanh, đợi một chút rồi thử lại.",
+    "can_hai_nguoi_cham": "Cần chọn hai người chấm khác nhau trong đợt này.",
+    "khong_tim_thay": "Không tìm thấy."
   },
   "403": {
     "tieu_de": "Không có quyền truy cập",
@@ -79,7 +95,36 @@
   },
   "cham_bai": {
     "tieu_de": "Chấm bài",
-    "mo_ta": "Trang chấm bài của người chấm sẽ có ở bước sau. Tài khoản của bạn đã sẵn sàng."
+    "mo_ta": "Chấm từng mục theo hướng dẫn. Điểm được lưu khi bạn bấm \"Lưu và tiếp theo\" hoặc chuyển sang mục khác.",
+    "tien_do": "Đã chấm {n}/{tong}",
+    "khong_co_muc": "Chưa có mục nào được giao cho bạn.",
+    "dot": "Đợt",
+    "da_khoa": "Đợt này đã bị khóa, bạn chỉ xem được.",
+    "huong_dan": "Hướng dẫn chấm",
+    "truoc": "Mục trước",
+    "sau": "Mục sau",
+    "luu_tiep": "Lưu và tiếp theo",
+    "luu_xong": "Lưu",
+    "da_luu": "Đã lưu.",
+    "het": "Bạn đã chấm hết các mục. Cảm ơn bạn!",
+    "chua_chon": "Chọn…",
+    "ghi_chu": "Ghi chú (không bắt buộc)",
+    "chua_du": "Mục này chưa chấm đủ nên chưa tính vào tiến độ.",
+    "muc_so": "Mục {i}/{tong}",
+    "g1": {
+      "do_vat": "Đồ vật",
+      "cong_dung": "Công dụng người chơi nêu",
+      "nhom": "Nhóm công dụng",
+      "vi_du": "Ví dụ"
+    },
+    "g3": {
+      "tinh_huong": "Tình huống",
+      "ai_goc": "Câu trả lời gốc của AI",
+      "y_tuong": "Ý tưởng của người chơi",
+      "moc": "Mốc điểm"
+    },
+    "cho_chon": "Chọn mục",
+    "nhay_toi": "Mở mục"
   },
   "tong_quan": {
     "tieu_de": "Tổng quan",
@@ -190,10 +235,17 @@
     "huong2": "Hướng 2",
     "cau_hinh": "Cấu hình",
     "he_thong": "Hệ thống",
-    "cham_bai": "Chấm bài"
+    "cham_bai": "Chấm bài",
+    "cham_diem": "Chấm điểm"
   },
   "du_lieu": {
-    "game3": {"tinh_huong": "Tình huống", "so_tu": "từ", "so_lan_dan": "dán", "so_lan_roi_tab": "rời tab", "thoi_gian_lam": "giây"},
+    "game3": {
+      "tinh_huong": "Tình huống",
+      "so_tu": "từ",
+      "so_lan_dan": "dán",
+      "so_lan_roi_tab": "rời tab",
+      "thoi_gian_lam": "giây"
+    },
     "tim": "Tìm kiếm…",
     "tat_ca": "Tất cả",
     "co": "Có",
@@ -255,6 +307,118 @@
     "go_xac_nhan": "Gõ chữ {chu} để xác nhận",
     "nut": "Xóa dữ liệu thử",
     "lam_moi": "Làm mới số liệu",
-    "xong": "Đã xóa xong. Số bản ghi đã xóa:"
+    "xong": "Đã xóa xong. Số bản ghi đã xóa:",
+    "nhac_xuat": "Xuất CSV điểm chấm trước khi xóa nếu cần giữ.",
+    "ten_bang": {
+      "rating_items": "Mục cần chấm (rating_items)",
+      "ratings": "Điểm của người chấm (ratings)",
+      "rating_batches": "Đợt chấm (rating_batches)"
+    }
+  },
+  "mau_cham": {
+    "tieu_de": "Mẫu chấm",
+    "mo_ta": "Rút mẫu để hai người chấm chấm cùng một tập mục. Rút ngẫu nhiên, cùng seed thì ra đúng cùng mẫu, không rút lại mục đã có trong đợt.",
+    "tao": "Rút mẫu mới",
+    "nhan": "Nhãn dữ liệu",
+    "dot": "Tên đợt (ví dụ pilot_28_11)",
+    "n1": "Số ý game 1",
+    "n3": "Số bài game 3 (chia đều hai tình huống)",
+    "seed": "Seed (số cố định)",
+    "raters": "Người chấm được giao (cách nhau bằng dấu phẩy; để trống = mọi người chấm)",
+    "xem_truoc": "Xem trước (chưa ghi)",
+    "rut_that": "Rút thật",
+    "ket_qua_xem_truoc": "Xem trước: sẽ rút {g1} ý game 1 (thiếu {t1}) và {g3} bài game 3 (thiếu {t3}).",
+    "ket_qua_that": "Đã rút {g1} ý game 1 và {g3} bài game 3 vào đợt.",
+    "danh_sach": "Các đợt chấm",
+    "trong": "Chưa có đợt nào.",
+    "cot": {
+      "dot": "Đợt",
+      "nhan": "Nhãn",
+      "muc": "Số mục (G1 / G3)",
+      "diem": "Điểm đã nộp",
+      "nguoi": "Người chấm",
+      "trang_thai": "Trạng thái",
+      "thao_tac": ""
+    },
+    "khoa": "Khóa đợt",
+    "mo": "Mở khóa",
+    "da_khoa": "Đã khóa",
+    "dang_mo": "Đang mở",
+    "xac_nhan_khoa": "Khóa đợt này? Người chấm sẽ không sửa được nữa.",
+    "xac_nhan_mo": "Mở khóa đợt này?",
+    "xem_muc": "Xem mục",
+    "muc_cua_dot": "Mục của đợt {dot}",
+    "chi_xem": "Chỉ quản trị viên được rút mẫu và khóa đợt.",
+    "xuat_diem": "Tải CSV điểm",
+    "xuat_khoa": "Tải CSV khóa đối chiếu",
+    "canh_bao_khoa": "File khóa nối mã mục với mã người chơi: chỉ giữ trong đội nghiên cứu, không gửi cho người chấm."
+  },
+  "tien_do_cham": {
+    "tieu_de": "Tiến độ chấm",
+    "chon_dot": "Chọn đợt",
+    "chua_co": "Chưa có đợt nào.",
+    "cot": {
+      "nguoi": "Người chấm",
+      "xong": "Đã chấm",
+      "tb": "Trung bình mỗi mục",
+      "con_lai": "Ước tính còn lại"
+    },
+    "giay": "{n} giây",
+    "phut": "{n} phút",
+    "gio": "{n} giờ {m} phút",
+    "chua_co_so": "Chưa có số liệu",
+    "tong": "Tổng số mục: {n}",
+    "lam_moi": "Làm mới"
+  },
+  "dong_thuan": {
+    "tieu_de": "Độ đồng thuận",
+    "mo_ta": "Chỉ tính các mục cả hai người đã chấm xong. Kappa gần 1 là đồng thuận cao; gần 0 là chỉ ngang mức đoán ngẫu nhiên.",
+    "chon_dot": "Chọn đợt",
+    "nguoi_a": "Người chấm A",
+    "nguoi_b": "Người chấm B",
+    "toi_thieu": "Số mục tối thiểu để tính (mặc định 20, hạ xuống 10 để thử)",
+    "chua_du": "Chưa đủ dữ liệu: có {n} mục, cần ít nhất {min}.",
+    "so_muc_ca_hai": "Số mục cả hai đã chấm: {n}",
+    "g1": "Game 1: nhóm công dụng (Cohen's kappa, tính cả X như một nhóm)",
+    "g3": "Game 3: điểm ba tiêu chí (kappa trọng số bậc hai, bỏ cặp có X)",
+    "kappa": "Kappa",
+    "kappa_tb": "Kappa trung bình ba tiêu chí",
+    "dong_y_tho": "Tỉ lệ đồng ý thô",
+    "so_cap": "Số cặp",
+    "khong_xac_dinh": "Không xác định",
+    "bang_cheo": "Bảng chéo (hàng: {a}, cột: {b})",
+    "tieu_chi": {
+      "them_y_moi": "Thêm ý mới",
+      "khac_goc": "Khác bản gốc AI",
+      "kha_thi": "Khả thi"
+    },
+    "lech": "Các mục hai người chấm lệch nhau ({n})",
+    "khong_lech": "Không có mục nào lệch.",
+    "lech_g3": "Game 3: lệch từ {n} điểm trở lên ở một tiêu chí, hoặc một bên chọn X.",
+    "lech_g1": "Game 1: hai người chọn nhóm khác nhau.",
+    "tinh": "Tính",
+    "cot_ma": "Mã",
+    "cot_noi_dung": "Nội dung",
+    "canh_bao_thu": "Chỉ để thử công cụ: ngưỡng tối thiểu đang thấp hơn mức chuẩn {min} mục. Không dùng số này để báo cáo."
+  },
+  "xem_tra_loi": {
+    "tieu_de": "Xem câu trả lời",
+    "chon_dot": "Chọn đợt",
+    "tat_ca": "Cả hai game",
+    "game1": "Game 1",
+    "game3": "Game 3",
+    "chua_cham": "chưa chấm",
+    "dang_do": "chưa chấm đủ",
+    "truoc": "Trang trước",
+    "sau": "Trang sau",
+    "trang": "Trang {t}",
+    "tong": "{n} mục",
+    "trong": "Đợt này chưa có mục nào.",
+    "ghi_chu": "Ghi chú",
+    "giay": "{n} giây",
+    "participant": "Mã người chơi (chỉ quản trị viên)",
+    "cot_ma": "Mã",
+    "cot_noi_dung": "Nội dung",
+    "game": "Game"
   }
 }

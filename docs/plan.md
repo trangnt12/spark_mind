@@ -18,6 +18,7 @@ Nguồn: bảng `notebook_hang_ngay` của Trang. Mốc đã chốt (đổi 23/1
 | trước 15/12 | Phiên 4 xong | |
 
 ## Việc phát sinh
+- 26/11 (phiên 3, chấm điểm trên web): rút mẫu (`scripts/make_rating_sample.py` và nút ở trang quản trị), trang chấm cho `rater` (`#/rate`), tiến độ, độ đồng thuận (Cohen's kappa, kappa trọng số bậc hai), xem câu trả lời, xuất CSV, dọn dữ liệu thử có kèm điểm chấm. Còn cần Trang duyệt: bảng mốc 1–5 game 3 (`content/rating_guide.json`), ngưỡng kappa tối thiểu 20 mục và ngưỡng "lệch" 2 điểm; còn lại: điểm AI (`ai_scores`) ở phiên sau. Xem `docs/decisions.md` mục "Chấm điểm trên web".
 - 25/11 (sao lưu MongoDB): `scripts/backup_mongo.py`, `scripts/restore_mongo.py`, `src/sparkmind/backup.py`, `tests/test_backup.py`; sao lưu chỉ đọc, khôi phục chỉ vào database mới. Việc còn lại: chạy sao lưu thật hằng ngày từ 28/11 và thử khôi phục vào database tạm một lần. Xem `docs/decisions.md` mục cuối.
 - 24/11 (cờ và lô mã): `src/sparkmind/flags.py`, `flags_store.py`, `scripts/compute_flags.py`, `web/thoigian.js` (đo thời gian từng câu), cờ `lam_qua_nhanh`, `mot_dap_an`, `bi_gian_doan` ở `participants.flags`; `make_codes.py --batch`; trang quản trị có cột/lọc cờ, thống kê cờ ở Tổng quan, thống kê theo lô mã. Quyết định của Trang: KHÔNG thêm câu kiểm tra chú ý. Việc còn lại: chỉnh ngưỡng `config.CO_*` sau pilot 29/11 rồi chạy `python scripts/compute_flags.py`.
 - 22/11: `tests/test_form_text.py` (kiểm tra chữ trên giao diện khớp nội dung form).

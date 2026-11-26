@@ -532,7 +532,7 @@ def test_lien_quan_chi_dem_khong_xoa(db, admin, viewer):
     nap_nguoi_day_du(db, email="khac@gmail.com")                      # người khác: không được tính
     truoc = dem(db)
     r = admin.get(f"/api/admin/data/participants/{pid}/lien-quan")
-    assert r.json() == {"bang_con": {"behavior_answers": 1, "self_assessment": 1, "game_responses": 2, "scores": 2}}
+    assert r.json() == {"bang_con": {"behavior_answers": 1, "self_assessment": 1, "game_responses": 2, "scores": 2, "rating_items": 0, "ratings": 0}}
     assert dem(db) == truoc                                           # xem số liệu không xóa gì
     assert viewer.get(f"/api/admin/data/participants/{pid}/lien-quan").status_code == 403      # chỉ người được xóa mới xem
     assert admin.get(f"/api/admin/data/participants/{ObjectId()}/lien-quan").status_code == 404
@@ -545,18 +545,18 @@ def test_xoa_nguoi_xoa_luon_bang_con_va_ghi_nhat_ky(db, admin):
     assert admin.delete(f"/api/admin/data/participants/{pid}?confirm=sai", headers=GOC).status_code == 422
     assert dem(db) == {"participants": 2, "behavior_answers": 2, "self_assessment": 2, "game_responses": 4, "scores": 4}   # sai xác nhận: chưa xóa gì
     r = admin.delete(f"/api/admin/data/participants/{pid}?confirm={pid}", headers=GOC)
-    assert r.status_code == 200 and r.json()["da_xoa_bang_con"] == {"behavior_answers": 1, "self_assessment": 1, "game_responses": 2, "scores": 2}
+    assert r.status_code == 200 and r.json()["da_xoa_bang_con"] == {"behavior_answers": 1, "self_assessment": 1, "game_responses": 2, "scores": 2, "rating_items": 0, "ratings": 0}
     assert dem(db) == {"participants": 1, "behavior_answers": 1, "self_assessment": 1, "game_responses": 2, "scores": 2}
     assert db["behavior_answers"].find_one()["participant_id"] == khac and db["game_responses"].count_documents({"participant_id": khac}) == 2   # người kia còn nguyên
     log = nhat_ky(db, "data_delete")[0]
-    assert log["collection"] == "participants" and log["detail"]["da_xoa_bang_con"] == {"behavior_answers": 1, "self_assessment": 1, "game_responses": 2, "scores": 2}
+    assert log["collection"] == "participants" and log["detail"]["da_xoa_bang_con"] == {"behavior_answers": 1, "self_assessment": 1, "game_responses": 2, "scores": 2, "rating_items": 0, "ratings": 0}
     assert EMAIL not in str(log)
 
 
 def test_xoa_nguoi_khong_co_du_lieu_con_van_duoc(db, admin):
     pid = nap_nguoi(db)
     r = admin.delete(f"/api/admin/data/participants/{pid}?confirm={pid}", headers=GOC)
-    assert r.json()["da_xoa_bang_con"] == {"behavior_answers": 0, "self_assessment": 0, "game_responses": 0, "scores": 0}
+    assert r.json()["da_xoa_bang_con"] == {"behavior_answers": 0, "self_assessment": 0, "game_responses": 0, "scores": 0, "rating_items": 0, "ratings": 0}
 
 
 def test_route_lien_quan_chi_o_bang_co_bang_con():

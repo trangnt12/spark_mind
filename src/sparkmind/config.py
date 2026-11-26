@@ -54,3 +54,8 @@ BAN_CHINH = "chat"
 
 # Tên file xuất ra cho từng bản dữ liệu (khóa nội bộ -> tên tiếng Anh)
 FILE_NAME = {"chinh": "main", "chat": "strict", "rat_chat": "very_strict"}
+
+# ---- Chấm điểm trên web (phiên 3) ----
+RATING_MUC_TOI_THIEU_KAPPA = 20      # ít hơn số mục hai người cùng chấm xong này thì báo "chưa đủ dữ liệu" (có thể đổi bằng tham số khi xem)
+RATING_NGUONG_LECH_GAME3 = 2         # game 3: hai người lệch từ số điểm này trở lên ở BẤT KỲ tiêu chí nào (hoặc một bên X, một bên không) thì liệt kê để thảo luận
+RATING_GIAY_TOI_DA_MOT_MUC = 3600    # chặn số vô lý từ trình duyệt: thời gian chấm một mục tối đa 1 giờ

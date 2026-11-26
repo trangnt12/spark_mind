@@ -6,6 +6,8 @@
   SM.trang = SM.trang || {};
 
   function tenBang(khoa) {
+    var ten = SM.ui.don_dep.ten_bang[khoa];   // bảng chấm điểm (không nằm trong danh sách bảng dữ liệu)
+    if (ten) return ten;
     var b = (SM.tables || []).filter(function (x) { return x.khoa === khoa; })[0];
     return b ? b.ten + " (" + khoa + ")" : khoa;
   }
@@ -44,7 +46,7 @@
       });
     }
     goc.replaceChildren(h("section", {class: "trang"}, h("div", {class: "dong-tieu-de"}, h("h1", {}, t.tieu_de),
-      h("button", {class: "nho phu", type: "button", onclick: tai}, t.lam_moi)), h("p", {class: "mo-ta"}, t.mo_ta), thongBao, h("section", {class: "the"}, noi)));
+      h("button", {class: "nho phu", type: "button", onclick: tai}, t.lam_moi)), h("p", {class: "mo-ta"}, t.mo_ta), h("p", {class: "the the-vang"}, t.nhac_xuat), thongBao, h("section", {class: "the"}, noi)));
     tai();
   };
 })();

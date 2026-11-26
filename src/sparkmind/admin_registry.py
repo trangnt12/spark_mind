@@ -80,7 +80,10 @@ BANG = {
         # xóa một người thì xóa luôn dữ liệu của người đó ở các bảng này (scores đi qua game_responses)
         "bang_con": [{"bang": "behavior_answers", "truong": "participant_id"}, {"bang": "self_assessment", "truong": "participant_id"},
                      {"bang": "game_responses", "truong": "participant_id"},
-                     {"bang": "scores", "truong": "response_id", "qua": "game_responses", "qua_truong": "participant_id"}],
+                     {"bang": "scores", "truong": "response_id", "qua": "game_responses", "qua_truong": "participant_id"},
+                     # mục chấm đã chép từ bài của người này và điểm của người chấm cho các mục đó (không nằm trong registry)
+                     {"bang": "rating_items", "truong": "participant_id", "ngoai_registry": True},
+                     {"bang": "ratings", "truong": "item_code", "qua": "rating_items", "qua_truong": "participant_id", "qua_lay": "item_code", "ngoai_registry": True}],
     },
     "behavior_answers": {
         "nhom": "huong2", "ten": "Form B (hành vi AI)", "che_do": "readonly", "co_nhan": True,
@@ -199,7 +202,7 @@ def kiem_tra_registry() -> list:
         if b["mac_dinh"][0] != "_id" and b["mac_dinh"][0] not in b["sap_xep"]:
             loi.append(f"{ten}: mac_dinh phải nằm trong sap_xep")
         for bc in b.get("bang_con", []):
-            if bc["bang"] not in BANG or ("qua" in bc and bc["qua"] not in BANG):
+            if not bc.get("ngoai_registry") and (bc["bang"] not in BANG or ("qua" in bc and bc["qua"] not in BANG)):
                 loi.append(f"{ten}: bang_con trỏ tới bảng không có trong registry")
         if any(k in TRUONG_CAM for k, *_ in b["cot"]):
             loi.append(f"{ten}: cột chứa trường cấm")

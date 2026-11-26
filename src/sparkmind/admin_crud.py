@@ -129,7 +129,8 @@ def _loc_bang_con(db, doc: dict, bc: dict) -> dict:
     """Bộ lọc tìm các bản ghi con của một bản ghi (có thể đi qua một bảng trung gian, vd scores -> game_responses)."""
     if "qua" not in bc:
         return {bc["truong"]: doc["_id"]}
-    ids = [d["_id"] for d in db[bc["qua"]].find({bc["qua_truong"]: doc["_id"]}, {"_id": 1})]
+    lay = bc.get("qua_lay", "_id")   # trường của bảng trung gian dùng để nối (mặc định _id; ratings nối theo item_code)
+    ids = [d[lay] for d in db[bc["qua"]].find({bc["qua_truong"]: doc["_id"]}, {lay: 1})]
     return {bc["truong"]: {"$in": ids}}
 
 
