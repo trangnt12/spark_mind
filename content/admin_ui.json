@@ -41,7 +41,8 @@
     "mau_cham": "Mẫu chấm",
     "tien_do_cham": "Tiến độ chấm",
     "dong_thuan": "Độ đồng thuận",
-    "xem_tra_loi": "Xem câu trả lời"
+    "xem_tra_loi": "Xem câu trả lời",
+    "suc_khoe": "Sức khỏe hệ thống"
   },
   "loi": {
     "bad_credentials": "Tên đăng nhập hoặc mật khẩu không đúng.",
@@ -457,5 +458,51 @@
     "cot_ma": "Mã",
     "cot_noi_dung": "Nội dung",
     "game": "Game"
+  },
+  "suc_khoe": {
+    "tieu_de": "Sức khỏe hệ thống",
+    "mo_ta": "Máy chủ đang chạy có ổn không. Chỉ là số vận hành, không có khóa bí mật, chuỗi kết nối, email hay nội dung người chơi.",
+    "lam_moi": "Làm mới",
+    "ket_noi": "Kết nối database",
+    "trang_thai": "Trạng thái",
+    "ok": "Bình thường",
+    "loi": "Lỗi",
+    "ten_db": "Tên database",
+    "do_tre": "Độ trễ ping",
+    "dung_luong": "Dung lượng đã dùng",
+    "tien_trinh": "Tiến trình máy chủ",
+    "bo_nho": "Bộ nhớ (RSS)",
+    "chay": "Đã chạy được",
+    "python": "Phiên bản Python",
+    "mo_hinh": "Phiên bản mô hình",
+    "cong_tac": "Công tắc đang bật/tắt",
+    "huong2": "Hướng 2",
+    "huong1_web": "Hướng 1 trên web",
+    "demo": "Demo công khai",
+    "thong_bao": "Dòng thông báo đầu trang",
+    "co": "Có",
+    "khong": "Không",
+    "cau_hinh": "Cấu hình bí mật",
+    "cau_hinh_ghi_chu": "Chỉ cho biết đã đặt hay chưa. Giá trị không bao giờ hiện ra.",
+    "da_co": "Đã đặt",
+    "chua_co": "Chưa đặt",
+    "chi_muc": "Chỉ mục bắt buộc",
+    "chi_muc_du": "Đủ chỉ mục.",
+    "chi_muc_thieu": "Thiếu {n} chỉ mục. Khởi động lại máy chủ để tạo lại; nếu vẫn thiếu thì báo người phát triển.",
+    "bang": "Bảng",
+    "truong": "Trường",
+    "duy_nhat": "duy nhất",
+    "thieu": "Thiếu",
+    "ban_ghi": "Số bản ghi từng bảng",
+    "ban_ghi_ghi_chu": "Số ước lượng (đọc từ thông tin bảng), không lọc dữ liệu thử.",
+    "truy_van": "Độ trễ truy vấn mẫu",
+    "truy_van_ghi_chu": "Vài truy vấn người dùng thật hay gặp (chỉ đọc). Quá khoảng vài trăm mili giây là chậm.",
+    "ten_truy_van": {
+      "nhap_ma": "Kiểm tra mã tham gia",
+      "tim_nguoi_theo_token": "Tìm người chơi theo phiên",
+      "dang_nhap_quan_tri": "Tìm tài khoản quản trị",
+      "cai_dat": "Đọc cài đặt"
+    },
+    "tinh_luc": "Tính lúc {gio}. Máy chủ nhớ kết quả {giay} giây nên bấm Làm mới liên tục không làm nặng database."
   }
 }

@@ -24,7 +24,7 @@ from sparkmind.ingest import nhan_form  # noqa: E402
 from sparkmind.memory import rss_mb  # noqa: E402
 from sparkmind.game_store import tao_chi_muc_game  # noqa: E402
 from sparkmind.research_store import tao_chi_muc  # noqa: E402
-from server import admin_data_api, admin_rating_api, admin_settings_api, status_api, rate_api, admin_stats_api, admin_testdata_api, admin_users, auth, auth_api, content_api, game1, game2, game3, huong1_web, landing_page, predict_api, progress_api, research, review_api  # noqa: E402
+from server import admin_data_api, admin_health_api, gioi_han_body, headers, admin_rating_api, admin_settings_api, status_api, rate_api, admin_stats_api, admin_testdata_api, admin_users, auth, auth_api, content_api, game1, game2, game3, huong1_web, landing_page, predict_api, progress_api, research, review_api  # noqa: E402
 from sparkmind import audit, rating_store, session_store, user_store  # noqa: E402
 
 @lru_cache
@@ -48,7 +48,10 @@ async def vong_doi(_app):
     yield
 
 
-app = FastAPI(title="SparkMind", lifespan=vong_doi)
+# Tài liệu API tự sinh (/docs, /redoc, /openapi.json) liệt kê mọi route kể cả quản trị: chỉ bật khi đặt BAT_TAI_LIEU_API=1 (chạy thử trên máy)
+app = FastAPI(title="SparkMind", lifespan=vong_doi, docs_url="/docs" if config.BAT_TAI_LIEU_API else None,
+              redoc_url="/redoc" if config.BAT_TAI_LIEU_API else None, openapi_url="/openapi.json" if config.BAT_TAI_LIEU_API else None)
+app.add_middleware(gioi_han_body.GioiHanBody)
 app.include_router(research.router)
 app.include_router(game1.router)
 app.include_router(game2.router)
@@ -62,6 +65,7 @@ app.include_router(predict_api.router)
 app.include_router(auth_api.router)
 app.include_router(admin_users.router)
 app.include_router(admin_stats_api.router)
+app.include_router(admin_health_api.router)
 app.include_router(admin_data_api.router)
 app.include_router(admin_testdata_api.router)
 app.include_router(admin_rating_api.router)
@@ -69,24 +73,11 @@ app.include_router(rate_api.router)
 app.include_router(admin_settings_api.router)
 app.include_router(status_api.router)
 
-# Trang quản trị không được lập chỉ mục, không lưu cache, không nhúng vào khung (iframe) của trang khác
-DUONG_QUAN_TRI = ("/admin", "/play/admin", "/api/auth", "/api/admin", "/api/rate")
-CSP_QUAN_TRI = ("default-src 'self'; style-src 'self' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; "
-                "img-src 'self' data:; frame-ancestors 'none'; base-uri 'none'; form-action 'self'")
-
-
 @app.middleware("http")
-async def header_quan_tri(request: Request, call_next):
-    """Thêm header bảo mật cho mọi đường của trang quản trị (giao diện và API)."""
+async def header_bao_mat(request: Request, call_next):
+    """Thêm header bảo mật cho mọi phản hồi (xem server/headers.py)."""
     resp = await call_next(request)
-    if request.url.path.startswith("/play/") and not request.url.path.startswith(DUONG_QUAN_TRI):
-        resp.headers["Cache-Control"] = "no-cache"   # luôn hỏi lại máy chủ (ETag): sửa JS/CSS thì người chơi nhận bản mới ngay, không bị kẹt bản cũ
-    if request.url.path.startswith(DUONG_QUAN_TRI):
-        resp.headers["X-Robots-Tag"] = "noindex, nofollow"
-        resp.headers["Cache-Control"] = "no-store"
-        resp.headers["X-Frame-Options"] = "DENY"
-        resp.headers["Referrer-Policy"] = "no-referrer"
-        resp.headers["Content-Security-Policy"] = CSP_QUAN_TRI
+    headers.them_header(request, resp)
     return resp
 
 
@@ -100,7 +91,8 @@ async def loi_dinh_dang(request: Request, loi: RequestValidationError):
 
 def kiem_tra_khoa(x_api_key: str = Header(default="")) -> None:
     """Chỉ cho phép nơi biết khóa bí mật (Apps Script) gửi form vào."""
-    if not config.INGEST_SECRET or not hmac.compare_digest(x_api_key, config.INGEST_SECRET):
+    # so sánh dạng byte: chuỗi có ký tự ngoài ASCII (kẻ lạ cố tình gửi) không làm compare_digest văng lỗi 500
+    if not config.INGEST_SECRET or not hmac.compare_digest(x_api_key.encode("utf-8"), config.INGEST_SECRET.encode("utf-8")):
         raise HTTPException(status_code=401, detail="Sai khóa")
 
 

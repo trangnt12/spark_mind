@@ -26,24 +26,33 @@ class GioiHanTocDo:
         self.toi_da = toi_da
         self.giay = giay
         self._lan = defaultdict(deque)
+        self._don_cuoi = 0.0   # lần dọn khóa hết hạn gần nhất (chống bộ đếm phình mãi khi bị gửi bằng rất nhiều IP khác nhau)
+
+    def _don_khoa_het_han(self, t: float) -> None:
+        """Xóa các khóa không còn lần nào trong cửa sổ thời gian. Chạy tối đa mỗi `giay` giây một lần."""
+        if t - self._don_cuoi < self.giay:
+            return
+        self._don_cuoi = t
+        for khoa in [k for k, h in self._lan.items() if not h or t - h[-1] >= self.giay]:
+            del self._lan[khoa]
+
+    def _don_hang(self, khoa: str, t: float) -> deque:
+        """Bỏ các lần đã quá cửa sổ thời gian rồi trả hàng đợi của khóa (chỉ ĐỌC: khóa chưa có thì không tạo mới)."""
+        hang = self._lan.get(khoa)
+        if hang is None:
+            return deque()
+        while hang and t - hang[0] >= self.giay:
+            hang.popleft()
+        return hang
 
     def cho_phep(self, khoa: str, bay_gio: float | None = None) -> bool:
         """True nếu còn lượt (và tính một lượt), False nếu đã vượt giới hạn."""
         t = time.monotonic() if bay_gio is None else bay_gio
-        hang = self._lan[khoa]
-        while hang and t - hang[0] >= self.giay:
-            hang.popleft()  # bỏ các lần đã quá cửa sổ thời gian
-        if len(hang) >= self.toi_da:
+        self._don_khoa_het_han(t)
+        if len(self._don_hang(khoa, t)) >= self.toi_da:
             return False
-        hang.append(t)
+        self._lan[khoa].append(t)
         return True
-
-    def _don_hang(self, khoa: str, t: float) -> deque:
-        """Bỏ các lần đã quá cửa sổ thời gian rồi trả hàng đợi của khóa."""
-        hang = self._lan[khoa]
-        while hang and t - hang[0] >= self.giay:
-            hang.popleft()
-        return hang
 
     def giay_phai_cho(self, khoa: str, bay_gio: float | None = None) -> int:
         """Số giây còn phải đợi nếu khóa đang bị chặn; 0 nếu chưa bị chặn. KHÔNG tính thêm lượt."""
@@ -56,7 +65,9 @@ class GioiHanTocDo:
     def ghi_nhan(self, khoa: str, bay_gio: float | None = None) -> None:
         """Ghi một lần (ví dụ một lần nhập mã sai) cho khóa."""
         t = time.monotonic() if bay_gio is None else bay_gio
-        self._don_hang(khoa, t).append(t)
+        self._don_khoa_het_han(t)
+        self._don_hang(khoa, t)
+        self._lan[khoa].append(t)
 
     def xoa(self) -> None:
         """Xóa hết bộ đếm (dùng khi thử)."""

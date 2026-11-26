@@ -15,6 +15,8 @@ MONGODB_DB = os.environ.get("MONGODB_DB", "spark-mind")
 INGEST_SECRET = os.environ.get("INGEST_SECRET", "")  # khóa bí mật để Apps Script gửi form vào server
 
 IP_HASH_SECRET = os.environ.get("IP_HASH_SECRET", "")  # khóa HMAC để băm IP, không bao giờ lưu IP thô
+BODY_TOI_DA_BYTE = 262_144   # mọi yêu cầu ghi lớn hơn mức này (256 KB) bị từ chối 413 (bài lớn nhất thật sự chỉ vài chục KB)
+BAT_TAI_LIEU_API = os.environ.get("BAT_TAI_LIEU_API", "") == "1"   # =1 mới bật /docs, /redoc, /openapi.json (chỉ khi chạy thử trên máy)
 
 # Trang quản trị (thống kê)
 NHAN_HOP_LE = ("thu", "pilot", "that")   # nhãn dữ liệu (trường data_label): thử, thử nghiệm 30/11, thật
