@@ -68,14 +68,24 @@
       SM.tienDo(d.luu_tru_mb + d.chi_muc_mb, d.gioi_han_mb, x.luu_tru));
   }
 
+  /* Thẻ trạng thái đóng/mở (ĐANG MỞ / ĐÃ ĐÓNG), lấy từ /api/admin/settings (không nhớ đệm 30 giây như số liệu). */
+  function theTrangThai(d, t) {
+    var v = d.hieu_luc, x = SM.ui.cai_dat;
+    var dong = function (ten, mo, phu) { return h("div", {class: "dong-trang-thai"}, h("strong", {}, ten), SM.nhanMoDong(mo), phu ? h("span", {class: "mo-ta"}, phu) : null); };
+    return the(t.trang_thai.tieu_de, dong(x.huong2, v.huong2_dang_mo, v.huong2_dang_mo ? null : SM.thayThe(t.trang_thai.dong_tu, {gio: SM.gio(v.huong2_dong_luc)})),
+      dong(x.huong1_web, v.huong1_web_mo), dong(x.demo, v.demo_mo),
+      h("a", {href: "#/settings", class: "nut-lien"}, t.trang_thai.doi_cai_dat));
+  }
+
   SM.trang.tongQuan = function (goc) {
     var t = SM.ui.tong_quan, an = true, noiDung = h("div", {class: "noi-dung-tq"}, SM.ui.dang_tai);
     var tat = h("input", {type: "checkbox", id: "an-thu", checked: true, onchange: function () { an = tat.checked; tai(); }});
     function tai() {
-      SM.api("GET", "/api/admin/stats?ex_test=" + an).then(function (kq) {
+      Promise.all([SM.api("GET", "/api/admin/stats?ex_test=" + an), SM.api("GET", "/api/admin/settings")]).then(function (ds) {
+        var kq = ds[0], cd = ds[1];
         if (!kq.ok) { noiDung.replaceChildren(h("p", {class: "loi"}, SM.chuLoi(kq.ma))); return; }
         var d = kq.data;
-        noiDung.replaceChildren(h("p", {class: "mo-ta"}, t.cap_nhat + " " + SM.gio(d.tao_luc) + ". " + t.ghi_chu),
+        noiDung.replaceChildren(cd.ok ? theTrangThai(cd.data, t) : null, h("p", {class: "mo-ta"}, t.cap_nhat + " " + SM.gio(d.tao_luc) + ". " + t.ghi_chu),
           huong1(d.huong1, t), huong2(d.huong2, t), heThong(d.he_thong, t));
       });
     }

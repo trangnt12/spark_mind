@@ -142,7 +142,7 @@ def kiem_tra_ma(body: MaBody, request: Request, db=Depends(lay_db_nghien_cuu)):
     if cho:
         raise HTTPException(status_code=429, headers={"Retry-After": str(cho)},
                             detail=f"Nhập sai mã quá nhiều lần, vui lòng đợi {cho} giây.")
-    kq = kho.kiem_tra_ma(db, body.code)
+    kq = chay(kho.kiem_tra_ma, db, body.code)
     if not kq["valid"] and not kq["can_resume"]:
         gioi_han_ma.ghi_nhan(ip)  # mã không tồn tại (hoặc đã dùng xong) mới tính một lần sai
     return kq

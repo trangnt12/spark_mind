@@ -199,3 +199,8 @@ textarea:focus { border-color: var(--xanh-dam); outline: none; }
 .bang-cheo td.duong-cheo { background: var(--xanh-nhat); }
 .trang-cham .thao-tac { margin-top: 14px; }
 .trang-cham .thao-tac button { flex: 1 1 130px; }
+
+/* Trang Cài đặt và thẻ trạng thái đóng/mở */
+.dong-trang-thai { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; padding: 8px 0; }
+.form-cai-dat { display: flex; flex-direction: column; gap: 16px; }
+.form-cai-dat textarea { width: 100%; font: inherit; }

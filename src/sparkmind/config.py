@@ -59,3 +59,8 @@ FILE_NAME = {"chinh": "main", "chat": "strict", "rat_chat": "very_strict"}
 RATING_MUC_TOI_THIEU_KAPPA = 20      # ít hơn số mục hai người cùng chấm xong này thì báo "chưa đủ dữ liệu" (có thể đổi bằng tham số khi xem)
 RATING_NGUONG_LECH_GAME3 = 2         # game 3: hai người lệch từ số điểm này trở lên ở BẤT KỲ tiêu chí nào (hoặc một bên X, một bên không) thì liệt kê để thảo luận
 RATING_GIAY_TOI_DA_MOT_MUC = 3600    # chặn số vô lý từ trình duyệt: thời gian chấm một mục tối đa 1 giờ
+
+# ---- Công tắc đóng/mở (trang Cài đặt, phiên 4a) ----
+HUONG2_GIA_HAN_GIO = 48              # hướng 2 đóng rồi: người ĐÃ bắt đầu (có phiên, chưa hoàn thành) vẫn làm tiếp và nộp được trong số giờ này
+CAI_DAT_NHO_DEM_GIAY = 10            # server nhớ cài đặt tối đa số giây này (nhiều tiến trình vẫn thấy công tắc đổi trong ~10 giây)
+CAI_DAT_THONG_BAO_TOI_DA = 300       # độ dài tối đa dòng thông báo ở đầu trang người dùng

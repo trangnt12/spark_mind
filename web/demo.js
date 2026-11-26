@@ -11,6 +11,7 @@ function cauB4() {
 // ---------- Bước 1: giới thiệu ngắn ----------
 
 function manDemoGioiThieu() {
+  if (tt.tt && tt.tt.demo_mo === false) { manDong("demo"); return; }   // demo tạm đóng (máy chủ cũng chặn: 423)
   tt.demo = true; tt.tl = {};                      // bắt đầu mới: xóa câu trả lời cũ (làm lại cũng vào đây)
   const u = tt.ui.demo;
   hienThi(1, tieuDe("demo", u.tieu_de), h("div", { class: "the" }, cacDoan(u.mo_ta)),

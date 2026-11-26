@@ -8,7 +8,7 @@ from datetime import datetime
 
 from pymongo.errors import DuplicateKeyError
 
-from . import config
+from . import config, settings_store
 
 COL_MA = "access_codes"
 COL_NGUOI = "participants"
@@ -87,14 +87,24 @@ def tao_ma_moi(db, n: int, nguon: str, data_label: str = config.NHAN_MAC_DINH, b
     return ket_qua
 
 
+def _chan_neu_dong(db, nguoi: dict | None) -> None:
+    """Hướng 2 đang đóng: người mới bị chặn (423); người đã bắt đầu và chưa hoàn thành vẫn vào được trong 48 giờ kể từ lúc đóng."""
+    da_bat_dau = bool(nguoi and not nguoi.get("completed_at"))
+    ma_loi = settings_store.ma_loi_huong2(db, da_bat_dau)
+    if ma_loi:
+        raise LoiNghiepVu(423, ma_loi)
+
+
 def kiem_tra_ma(db, code: str) -> dict:
-    """valid: mã tồn tại và chưa dùng. can_resume: mã đã dùng nhưng người đó chưa hoàn thành."""
+    """valid: mã tồn tại và chưa dùng. can_resume: mã đã dùng nhưng người đó chưa hoàn thành.
+    Khi hướng 2 đóng: người mới (và mã sai, để không lộ mã nào đúng) nhận 423; người dùng dở vẫn vào được trong thời gian nộp tiếp."""
     ma = db[COL_MA].find_one({"code": chuan_hoa_ma(code)})
+    nguoi = db[COL_NGUOI].find_one({"code_id": ma["_id"]}) if ma and ma["is_used"] else None
+    _chan_neu_dong(db, nguoi)
     if not ma:
         return {"valid": False, "can_resume": False}
     if not ma["is_used"]:
         return {"valid": True, "can_resume": False}
-    nguoi = db[COL_NGUOI].find_one({"code_id": ma["_id"]})
     return {"valid": False, "can_resume": bool(nguoi and not nguoi.get("completed_at"))}
 
 
@@ -130,6 +140,7 @@ def bat_dau(db, d: dict, ip_hash: str, user_agent: str) -> str:
     kiem_tra_dong_y(d)
     email = chuan_hoa_email(d["email"])
     ma = db[COL_MA].find_one({"code": chuan_hoa_ma(d["code"])})
+    _chan_neu_dong(db, db[COL_NGUOI].find_one({"code_id": ma["_id"]}) if ma and ma["is_used"] else None)
     if not ma:
         raise LoiNghiepVu(404, "Mã tham gia không đúng.")
     if ma["is_used"]:
@@ -149,6 +160,8 @@ def tim_nguoi(db, session_token: str) -> dict:
     nguoi = db[COL_NGUOI].find_one({"session_token": session_token}) if session_token else None
     if not nguoi:
         raise LoiNghiepVu(401, "Phiên làm bài không hợp lệ.")
+    if not nguoi.get("completed_at"):
+        _chan_neu_dong(db, nguoi)   # đóng rồi và hết thời gian nộp tiếp thì chặn; người đã hoàn thành vẫn xem được kết quả
     return nguoi
 
 

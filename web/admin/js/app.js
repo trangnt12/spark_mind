@@ -15,6 +15,7 @@
     {duong: "/rating/agreement", vaiTro: ["admin", "viewer"], icon: "shield", ten: function (u) { return u.dieu_huong.dong_thuan; }, nhom: "cham_diem", ve: function (g) { SM.trang.dongThuan(g); }},
     {duong: "/rating/answers", vaiTro: ["admin", "viewer"], icon: "table", ten: function (u) { return u.dieu_huong.xem_tra_loi; }, nhom: "cham_diem", ve: function (g) { SM.trang.xemTraLoi(g); }},
     {duong: "/users", vaiTro: ["admin"], icon: "users", ten: function (u) { return u.dieu_huong.nguoi_dung; }, nhom: "cau_hinh", ve: function (g) { SM.trang.nguoiDung(g); }},
+    {duong: "/settings", vaiTro: ["admin", "viewer"], icon: "cog", ten: function (u) { return u.dieu_huong.cai_dat; }, nhom: "cau_hinh", ve: function (g) { SM.trang.caiDat(g); }},
     {duong: "/cleanup", vaiTro: ["admin"], icon: "trash", ten: function (u) { return u.dieu_huong.don_dep; }, nhom: "he_thong", ve: function (g) { SM.trang.donDep(g); }},
     {duong: "/password", vaiTro: ["admin", "viewer", "rater"], icon: "key", ten: function (u) { return u.dieu_huong.doi_mat_khau; }, an: true,
       ve: function (g) { SM.trang.doiMatKhau(g, false, function () { alert(SM.ui.doi_mat_khau.da_doi); vaoTrangChu(); }); }}

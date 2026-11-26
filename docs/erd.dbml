@@ -217,11 +217,25 @@ Table audit_log {
   user_id objectid
   username varchar
   role varchar
-  action varchar [note: 'login | login_failed | logout | change_password | user_create | user_create_script | user_reset_password | user_lock | user_unlock | data_create | data_update | data_delete | data_export | test_data_delete | rating_sample | rating_lock | rating_unlock | rating_export | rating_key_export']
+  action varchar [note: 'login | login_failed | logout | change_password | user_create | user_create_script | user_reset_password | user_lock | user_unlock | data_create | data_update | data_delete | data_export | test_data_delete | settings_update | rating_sample | rating_lock | rating_unlock | rating_export | rating_key_export']
   collection varchar
   doc_id varchar
   detail json [note: 'never contains passwords, hashes or tokens (filtered)']
   indexes { at }
+}
+
+// ---------- Cài đặt đóng/mở (phiên 4a, 26/11/2026) ----------
+// MỘT tài liệu duy nhất (_id = 'chung'). Không có tài liệu thì dùng mặc định. Server đọc qua bộ nhớ đệm tối đa 10 giây.
+Table settings {
+  id varchar [pk, note: "luôn là 'chung'"]
+  huong2_mo boolean [note: 'mặc định true. false = hướng 2 đóng']
+  huong1_web_mo boolean [note: 'mặc định FALSE. Đường vào web hướng 1 (làm ở bước sau) trả trang chưa mở']
+  demo_mo boolean [note: 'mặc định true. false = demo trả 423, giao diện hiện trang tạm đóng']
+  han_dong_huong2 datetime [note: 'tùy chọn, UTC. Quá hạn thì tự coi như đóng (48 giờ nộp tiếp tính từ hạn)']
+  thong_bao varchar [note: 'tùy chọn, tối đa 300 ký tự: dòng hiện ở đầu trang người dùng']
+  huong2_dong_luc datetime [note: 'UTC. Lúc admin tắt hướng 2 (null khi mở); mốc để tính 48 giờ nộp tiếp (config.HUONG2_GIA_HAN_GIO)']
+  cap_nhat_luc datetime
+  cap_nhat_boi varchar [note: 'username admin sửa lần cuối']
 }
 
 // ---------- Chấm điểm trên web (phiên 3, 26/11/2026) ----------

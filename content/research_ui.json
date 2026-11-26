@@ -106,6 +106,25 @@
     "nut_nop_bai": "Nộp bài",
     "_ghi_chu_nut": "Tên nút duy nhất: mọi nút đi tiếp ở luồng người tham gia dùng nut_tiep_tuc; ngoại lệ duy nhất là nút cuối game 3 dùng nut_nop_bai. Đổi chữ ở đây là đổi ở mọi màn."
   },
+  "dong": {
+    "_ghi_chu": "Trang hiện khi công tắc đóng (web/app.js manDong). Email lấy từ hoan_thanh.email. Đổi chữ ở đây, không sửa trong code.",
+    "khao_sat": {
+      "bieu_tuong": "🌱",
+      "tieu_de": "Đợt khảo sát đã đóng, cảm ơn bạn quan tâm",
+      "mo_ta": "Cảm ơn bạn đã quan tâm đến nghiên cứu SparkMind.\nĐợt khảo sát hiện đã đóng nên chưa thể nhận thêm bài làm.\nNếu bạn có thắc mắc, vui lòng liên hệ:"
+    },
+    "demo": {
+      "bieu_tuong": "🛠️",
+      "tieu_de": "Bản demo tạm đóng",
+      "mo_ta": "Bản demo đang tạm đóng, bạn vui lòng quay lại sau nhé.\nNếu cần hỗ trợ, vui lòng liên hệ:"
+    },
+    "huong1": {
+      "bieu_tuong": "⏳",
+      "tieu_de": "Trang này chưa mở",
+      "mo_ta": "Chức năng này chưa mở, bạn vui lòng quay lại sau nhé.\nNếu cần hỗ trợ, vui lòng liên hệ:"
+    },
+    "nut_quay_lai": "Về trang đầu"
+  },
   "tiep_tuc": {
     "tieu_de": "Tiếp tục bài đang làm?",
     "mo_ta": "📌 Máy này có một bài làm dở.\n🤔 Bạn muốn làm tiếp hay bắt đầu lại bằng một mã khác?",

@@ -8,7 +8,7 @@ from fastapi import APIRouter, Body, Depends, Header, HTTPException, Request
 
 from server.content_api import doc_noi_dung
 from server.research import chay, lay_db_nghien_cuu, lay_ip
-from sparkmind import predict, research_store as kho
+from sparkmind import predict, research_store as kho, settings_store
 from sparkmind.security import GioiHanTocDo
 
 router = APIRouter()
@@ -45,7 +45,9 @@ def kiem_tra_demo(body) -> dict:
 
 
 @router.post("/api/predict/demo")
-def du_doan_demo(request: Request, body=Body(default=None)):
+def du_doan_demo(request: Request, body=Body(default=None), db=Depends(lay_db_nghien_cuu)):
+    if not settings_store.lay_cai_dat(db)["demo_mo"]:
+        raise HTTPException(status_code=423, detail=settings_store.MA_DEMO_DONG)   # demo tạm đóng (công tắc ở trang Cài đặt)
     ip = lay_ip(request)
     if not gioi_han_demo.cho_phep(ip):
         cho = gioi_han_demo.giay_phai_cho(ip)

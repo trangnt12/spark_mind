@@ -34,6 +34,7 @@ async function goiApi(duongDan, thanBody, dauTrang = {}) {
       method: "POST", headers: { "Content-Type": "application/json", ...dauTrang }, body: JSON.stringify(thanBody),
     });
     const du_lieu = await kq.json().catch(() => ({}));
+    if (kq.status === 423) khiBiKhoa(duongDan);   // công tắc đóng: vẽ trang thân thiện (dong.js); nơi gọi vẫn nhận status 423
     return { status: kq.status, du_lieu };
   } catch {
     return { status: 0, du_lieu: {} };
@@ -227,6 +228,7 @@ function chuLoi(status) {
   const l = tt.ui.loi;
   if (status === 0) return l.mat_ket_noi;
   if (status === 429) return l.bi_chan;
+  if (status === 423) return "";   // đã có trang "đóng" thay cho thông báo lỗi (dong.js)
   if (status === 401) return tt.ui.chung.phien_het_han;
   if (status === 422) return l.thieu_cau;
   return tt.ui.chung.loi_khac;
@@ -760,6 +762,7 @@ async function khoiDong() {
   goc.addEventListener("change", nhoNhap);
   goc.addEventListener("input", nhoNhap);
   theoDoiMang();
+  taiTrangThai();   // dòng thông báo ở đầu trang (không chờ)
   batDauTheoTrangThai();
 }
 

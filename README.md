@@ -52,6 +52,9 @@ Chỉ cần thêm **một mục** vào `BANG` trong `src/sparkmind/admin_registr
 Rồi chạy `python -m pytest tests -q`: test kiểm tra registry và route (bảng readonly không được có PATCH, mọi route phải có kiểm tra quyền).
 Dữ liệu nghiên cứu luôn để `readonly`; xóa chỉ cho admin và gõ lại ID.
 
+## Công tắc đóng/mở (trang Cài đặt)
+Vào web quản trị > Cài đặt (admin sửa, viewer chỉ xem): bật/tắt hướng 2, hướng 1 web, demo; đặt hạn tự đóng hướng 2; viết dòng thông báo ở đầu trang người dùng. Mỗi lần lưu có hộp xác nhận và được ghi vào `audit_log`. Hướng 2 đóng rồi, người đã bắt đầu vẫn nộp được thêm 48 giờ (`config.HUONG2_GIA_HAN_GIO`). Thay đổi có hiệu lực trong tối đa 10 giây. Kiểm tra: `python -m pytest tests/test_settings.py -q`.
+
 ## Gán nhãn dữ liệu thử / thật
 
 ```bash

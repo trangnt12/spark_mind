@@ -24,7 +24,7 @@ from sparkmind.ingest import nhan_form  # noqa: E402
 from sparkmind.memory import rss_mb  # noqa: E402
 from sparkmind.game_store import tao_chi_muc_game  # noqa: E402
 from sparkmind.research_store import tao_chi_muc  # noqa: E402
-from server import admin_data_api, admin_rating_api, rate_api, admin_stats_api, admin_testdata_api, admin_users, auth, auth_api, content_api, game1, game2, game3, predict_api, progress_api, research, review_api  # noqa: E402
+from server import admin_data_api, admin_rating_api, admin_settings_api, status_api, rate_api, admin_stats_api, admin_testdata_api, admin_users, auth, auth_api, content_api, game1, game2, game3, predict_api, progress_api, research, review_api  # noqa: E402
 from sparkmind import audit, rating_store, session_store, user_store  # noqa: E402
 
 @lru_cache
@@ -64,6 +64,8 @@ app.include_router(admin_data_api.router)
 app.include_router(admin_testdata_api.router)
 app.include_router(admin_rating_api.router)
 app.include_router(rate_api.router)
+app.include_router(admin_settings_api.router)
+app.include_router(status_api.router)
 
 # Trang quản trị không được lập chỉ mục, không lưu cache, không nhúng vào khung (iframe) của trang khác
 DUONG_QUAN_TRI = ("/admin", "/play/admin", "/api/auth", "/api/admin", "/api/rate")
