@@ -7,7 +7,7 @@ function manDong(loai) {
   const u = tt.ui.dong[loai], email = tt.ui.hoan_thanh.email;
   tt.demo = false;                                                    // rời bản demo (nếu đang ở đó)
   hienThi(0, banner(h("span", { class: "emo" }, u.bieu_tuong), u.tieu_de),
-    h("div", { class: "the" }, cacDoan(u.mo_ta), h("a", { class: "nut-mail", href: "mailto:" + email }, email)),
+    h("div", { class: "the cam-on-h1" }, cacDoan(u.mo_ta), h("a", { class: "nut-mail", href: "mailto:" + email }, email)),
     khungNut(h("button", { type: "button", class: "phu", onclick: loai === "huong1" ? () => { location.href = "/"; } : manMa }, tt.ui.dong.nut_quay_lai)));   // hướng 1 là trang riêng: về trang chủ
   danhDauGioiThieu();
   document.getElementById("nhan-tien-do").textContent = "";           // trang đóng không có "Bước 0 trên N"

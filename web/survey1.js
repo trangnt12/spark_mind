@@ -78,7 +78,8 @@ function manPhanC() {
 function manLienHe(buoc, u, cuoi) {
   const email = tt.ui.hoan_thanh.email;
   hienThi(buoc, banner(h("span", { class: "emo" }, u.bieu_tuong), u.tieu_de),
-    h("div", { class: "the" }, cacDoan(u.mo_ta), h("a", { class: "nut-mail", href: "mailto:" + email }, email), cuoi ? dongMoTa(cuoi) : ""));
+    h("div", { class: "the cam-on-h1" }, h("span", { class: "cam-on-tick", "aria-hidden": "true" }, bieuTuong("bd-tick", "tick-ve")),
+      cacDoan(u.mo_ta), h("a", { class: "nut-mail", href: "mailto:" + email }, email), cuoi ? dongMoTa(cuoi) : ""));   // class cam-on-h1: chỉ hướng 1 được căn giữa
   danhDauGioiThieu();
   document.getElementById("nhan-tien-do").textContent = "";
 }

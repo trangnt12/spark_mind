@@ -43,6 +43,7 @@ function veTrang() {
   goc.replaceChildren(...[theBaiDo(), khoiMoDau(u.mo_dau), khoiGioiThieu(u.gioi_thieu), khoiHaiHuong(u.hai_huong), khoiQuyTrinh(u.quy_trinh),
     khoiKetQua(u.ket_qua), khoiRiengTu(u.rieng_tu), khoiHoiDap(u.hoi_dap), khoiNguoiThucHien(u.nguoi_thuc_hien)].filter(Boolean));
   document.getElementById("chan-trang").replaceChildren(chanTrang(u.chan_trang));
+  if (typeof hieuUngTrang === "function") hieuUngTrang();   // landing_hieuung.js: chỉ thêm hiệu ứng, không đổi nội dung
 }
 
 /** Dòng thông báo của quản trị (settings.thong_bao): rỗng thì ẩn. Dùng textContent nên không chèn HTML được. */

@@ -300,3 +300,7 @@ Chi tiết từng phát hiện, mức độ và việc cần Trang quyết đị
 - **Thay đổi hành vi so với 23/11:** trước đây IP khác không bị ảnh hưởng khi một tên bị khóa; nay bị khóa theo tên từ mọi IP. Test cũ đã sửa theo.
 - **Ghim thư viện:** `requirements-server.txt` ghim toàn bộ 21 gói (danh sách trong `docs/security_review.md` S-08), `xgboost-cpu==3.4.1` giữ nguyên. Muốn nâng cấp: đổi số, chạy pytest và pip-audit, rồi deploy. Chưa build thử trên Render.
 
+
+## Nâng cấp giao diện landing và trang cảm ơn hướng 1 (26/11/2026)
+- **Chỉ đổi giao diện, không đổi chữ/luồng:** thêm `web/landing_dep.css` và `web/landing_hieuung.js` (tổng ~20 KB, trần 30 KB), thêm SVG/class trang trí vào `landing_khoi.js`; trang cảm ơn và "đã nộp" của hướng 1 căn giữa bằng class riêng `cam-on-h1` (không đụng trang kết quả hướng 2).
+- **Ràng buộc giữ cho mọi hiệu ứng sau này:** (1) CSP: CSS/JS để trong file tĩnh, không script nhúng mới; (2) `prefers-reduced-motion: reduce` tắt hiệu ứng lặp và hiệu ứng hiện dần, nội dung vẫn đọc đủ; (3) mặc định mọi khối hiện, JS chỉ thêm class `hd` để chạy hiệu ứng; (4) chỉ animate transform/opacity/background-position (accordion dùng grid-template-rows).

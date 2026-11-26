@@ -20,7 +20,7 @@ WEB = config.ROOT / "web"
 ND = json.loads((config.ROOT / "content" / "landing_ui.json").read_text(encoding="utf-8"))
 UI = json.loads((config.ROOT / "content" / "research_ui.json").read_text(encoding="utf-8"))
 CHU_VIET = re.compile(r"[àáảãạăằắẳẵặâầấẩẫậèéẻẽẹêềếểễệìíỉĩịòóỏõọôồốổỗộơờớởỡợùúủũụưừứửữựỳýỷỹỵđ]", re.I)
-JS_TRANG_CHU = ["landing_chung.js", "landing_popup.js", "landing_khoi.js", "landing.js"]
+JS_TRANG_CHU = ["landing_chung.js", "landing_popup.js", "landing_khoi.js", "landing.js", "landing_hieuung.js"]
 EMAIL = "nguyenthitrang.ttd@gmail.com"
 
 
@@ -160,6 +160,27 @@ def test_khong_thu_vien_ngoai_khong_anh_ngoai():
     for ten in JS_TRANG_CHU + ["huong1.js"]:
         assert not re.search(r"\b(import\s|require\(|https?://(?!www\.w3\.org))", doc(ten)), ten
     assert "url(http" not in doc("landing.css") and "@import" not in doc("landing.css")
+
+
+def test_giao_dien_dep_an_toan_csp_va_reduced_motion():
+    """Nâng cấp giao diện: CSS/JS ở file tĩnh (hợp CSP), không script/style nhúng mới, tôn trọng reduced-motion, mặc định nội dung hiện, nhẹ (<= 30 KB thêm)."""
+    html, css, js = doc("landing.html"), doc("landing_dep.css"), doc("landing_hieuung.js")
+    assert 'href="/play/landing_dep.css"' in html and 'src="/play/landing_hieuung.js"' in html
+    assert not re.search(r"<script(?![^>]*src=)[^>]*>", html) and "onclick=" not in html and ' style="' not in re.sub(r'<svg width="0"[^>]*>', "", html)
+    assert "prefers-reduced-motion" in js and ".hd .hd-an" in css and "@media (prefers-reduced-motion: reduce)" in css
+    assert re.search(r"\.hd \.hd-an \{ opacity: 0", css) and not re.search(r"^\.hd-an \{", css, re.M)   # ẩn trước khi hiện chỉ áp khi JS bật class "hd"
+    assert "url(http" not in css and "@import" not in css and "unsafe-eval" not in js and "eval(" not in js
+    for khung in re.findall(r"@keyframes [\w-]+ \{(.*?)\}\s*(?:\n|$)", css):   # keyframes chỉ đổi transform/opacity/background-position, không đổi kích thước/vị trí
+        assert not re.search(r"(?<![-\w])(width|height|top|left|right|bottom|margin|padding)\s*:", khung), khung
+    them = sum(len(doc(t).encode()) for t in ("landing_dep.css", "landing_hieuung.js"))
+    assert them <= 30 * 1024, them
+
+
+def test_trang_cam_on_huong1_can_giua_bang_class_rieng():
+    """Trang cảm ơn/đã nộp hướng 1 (survey1.js) và trang "chưa mở" (dong.js) căn giữa bằng cam-on-h1; trang kết quả hướng 2 (result.js) không đổi."""
+    assert "cam-on-h1" in doc("survey1.js") and "cam-on-h1" not in doc("result.js")
+    css = doc("style.css")
+    assert re.search(r"\.cam-on-h1 \.nut-mail \{[^}]*width: min\(100%, 480px\)", css) and "text-align: center" in css.split(".cam-on-h1 {")[1].split("}")[0]
 
 
 def test_ham_toi_da_30_dong():
